@@ -10,6 +10,14 @@
    PLUGINS
 ======================================== */
 
+/* ===============================
+   Swiper JS
+================================ */
+@import 'swiper/css';
+@import 'swiper/css/grid';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/css/effect-fade';
 
 /* ========================================
    SOURCES
@@ -104,6 +112,47 @@
    Layer Components Css
 ======================================== */
 @layer components {
+    .hero-swiper .swiper-pagination {
+        bottom: 20px !important;
+    }
+
+    @media (min-width: 640px) {
+        .hero-swiper .swiper-pagination {
+            bottom: 30px !important;
+        }
+    }
+
+    .hero-swiper .swiper-pagination-bullet {
+        width: 10px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.4);
+        opacity: 1;
+        transition: all 0.3s ease;
+    }
+
+    .hero-swiper .swiper-pagination-bullet-active {
+        width: 32px;
+        border-radius: 999px;
+        background: white;
+    }
+
+    .testimonial-swiper .swiper-pagination {
+        bottom: 0 !important;
+    }
+
+    .testimonial-swiper .swiper-pagination-bullet {
+        width: 10px;
+        height: 10px;
+        background: rgba(15, 23, 42, 0.25);
+        opacity: 1;
+        transition: all 0.3s ease;
+    }
+
+    .testimonial-swiper .swiper-pagination-bullet-active {
+        width: 30px;
+        border-radius: 999px;
+        background: rgb(15, 23, 42);
+    }
 }
 
 /* ========================================
