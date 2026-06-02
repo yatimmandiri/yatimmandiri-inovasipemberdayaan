@@ -3,8 +3,8 @@
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
-Breadcrumbs::for('home', function (BreadcrumbTrail $trail) {
-    $trail->push('Home', route('home'));
+Breadcrumbs::for('home.index', function (BreadcrumbTrail $trail) {
+    $trail->push('Home', route('home.index'));
 });
 
 Breadcrumbs::for('log-viewer.index', function (BreadcrumbTrail $trail) {
