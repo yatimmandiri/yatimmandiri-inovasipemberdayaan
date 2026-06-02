@@ -1,0 +1,172 @@
+import { Quote, Star } from 'lucide-react';
+import { Autoplay, Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+type TestimonialItemComponentProps = {
+    name: string;
+    role: string;
+    image: string;
+    message: string;
+    rating?: number;
+};
+
+type TestimonialItem = {
+    id: number;
+    name: string;
+    position?: string;
+    description: string;
+    photo?: string;
+    rating?: number;
+};
+
+export const TestimonialItemComponent = ({
+    name,
+    role,
+    image,
+    message,
+    rating = 5,
+}: TestimonialItemComponentProps) => {
+    return (
+        <div className="group relative h-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+            <div className="absolute top-5 right-5 text-primary/10">
+                <Quote size={64} strokeWidth={1.5} />
+            </div>
+
+            <div className="mb-5 flex items-center gap-1">
+                {Array.from({ length: rating }).map((_, index) => (
+                    <Star
+                        key={index}
+                        size={18}
+                        className="fill-yellow-400 text-yellow-400"
+                    />
+                ))}
+            </div>
+
+            <p className="relative z-10 line-clamp-5 text-sm leading-relaxed text-slate-600 md:text-base">
+                "{message}"
+            </p>
+
+            <div className="mt-6 flex items-center gap-4">
+                <img
+                    src={image}
+                    alt={name}
+                    className="h-14 w-14 rounded-full object-cover ring-4 ring-slate-100"
+                />
+
+                <div>
+                    <h4 className="font-semibold text-slate-900">{name}</h4>
+                    <p className="text-sm text-slate-500">{role}</p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export const TestimonialSection = ({
+    testimonials = [],
+}: {
+    testimonials?: TestimonialItem[];
+}) => {
+    const fallbackTestimonials: TestimonialItem[] = [
+        {
+            id: 1,
+            name: 'Ahmad Fauzi',
+            position: 'Peserta Program Digital',
+            photo: 'https://i.pravatar.cc/300?img=12',
+            description:
+                'Program ini benar-benar membantu saya memahami teknologi digital dan membuka peluang kerja baru.',
+        },
+        {
+            id: 2,
+            name: 'Siti Rahma',
+            position: 'Pelaku UMKM',
+            photo: 'https://i.pravatar.cc/300?img=32',
+            description:
+                'Berkat pelatihan dan pendampingan, usaha saya berkembang lebih cepat dan lebih dikenal secara online.',
+        },
+        {
+            id: 3,
+            name: 'Budi Santoso',
+            position: 'Relawan Sosial',
+            photo: 'https://i.pravatar.cc/300?img=15',
+            description:
+                'Kolaborasi yang luar biasa. Saya merasa bisa memberikan dampak nyata bagi masyarakat sekitar.',
+        },
+        {
+            id: 4,
+            name: 'Nabila Putri',
+            position: 'Mahasiswa Beasiswa',
+            photo: 'https://i.pravatar.cc/300?img=45',
+            description:
+                'Bantuan pendidikan dan mentoring membuat saya lebih percaya diri untuk meraih cita-cita.',
+        },
+    ];
+    const items = testimonials.length > 0 ? testimonials : fallbackTestimonials;
+
+    return (
+        <section
+            id="testimonials"
+            className="relative overflow-hidden bg-slate-50 py-20"
+        >
+            <div className="absolute top-0 left-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+            <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+
+            <div className="relative mx-auto max-w-7xl px-6">
+                <div className="mx-auto mb-14 max-w-3xl text-center">
+                    <span className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+                        Testimoni
+                    </span>
+
+                    <h2 className="mt-5 text-3xl font-black text-slate-900 md:text-5xl">
+                        Apa Kata Mereka?
+                    </h2>
+
+                    <p className="mt-5 text-base leading-relaxed text-slate-600 md:text-lg">
+                        Cerita nyata dari peserta, relawan, dan masyarakat yang
+                        telah merasakan manfaat program pemberdayaan.
+                    </p>
+                </div>
+
+                <Swiper
+                    modules={[Pagination, Autoplay]}
+                    spaceBetween={10}
+                    loop
+                    autoplay={{
+                        delay: 4000,
+                    }}
+                    slidesPerView={3}
+                    breakpoints={{
+                        0: {
+                            slidesPerView: 1,
+                        },
+                        768: {
+                            slidesPerView: 2,
+                        },
+                        1280: {
+                            slidesPerView: 3,
+                        },
+                    }}
+                    className="testimonial-swiper pb-14!"
+                >
+                    {items.map((item, index) => (
+                        <SwiperSlide key={item.id || index} className="h-auto">
+                            <TestimonialItemComponent
+                                name={item.name}
+                                role={item.position || 'Penerima Manfaat'}
+                                image={
+                                    item.photo?.startsWith('http')
+                                        ? item.photo
+                                        : item.photo
+                                          ? `/storage/${item.photo}`
+                                          : `https://i.pravatar.cc/300?img=${index + 20}`
+                                }
+                                message={item.description}
+                                rating={item.rating || 5}
+                            />
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+            </div>
+        </section>
+    );
+};

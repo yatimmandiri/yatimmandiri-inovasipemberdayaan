@@ -7,7 +7,13 @@ import roles from '@/routes/admin/core/roles';
 import users from '@/routes/admin/core/users';
 import activities from '@/routes/admin/logs/activities';
 import site from '@/routes/admin/settings/site';
-import { ChevronRight, CogIcon, CpuIcon, MapIcon } from 'lucide-react';
+import {
+    ChevronRight,
+    CogIcon,
+    CpuIcon,
+    DatabaseIcon,
+    MapIcon,
+} from 'lucide-react';
 
 export const NavigationList = [
     {
@@ -85,6 +91,31 @@ export const NavigationList = [
                         title: 'Log Activity',
                         href: activities.index().url,
                         permission: 'view-log-activity',
+                        icon: ChevronRight,
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        title: 'Inovasi Pemberdayaan',
+        roles: ['Administrators'],
+        children: [
+            {
+                title: 'Content',
+                roles: ['Administrators'],
+                icon: DatabaseIcon,
+                children: [
+                    {
+                        title: 'Program',
+                        href: '/admin/programs',
+                        permission: 'view-program',
+                        icon: ChevronRight,
+                    },
+                    {
+                        title: 'Testimonial',
+                        href: '/admin/testimonials',
+                        permission: 'view-testimonial',
                         icon: ChevronRight,
                     },
                 ],

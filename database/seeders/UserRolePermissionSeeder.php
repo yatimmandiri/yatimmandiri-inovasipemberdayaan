@@ -25,7 +25,7 @@ class UserRolePermissionSeeder extends Seeder
         collect([
             ['name' => 'Administrators', 'guard_name' => 'web'],
             ['name' => 'Users', 'guard_name' => 'web'],
-        ])->each(fn($role) => Role::create($role));
+        ])->each(fn ($role) => Role::firstOrCreate($role));
 
         collect([
             ['name' => 'view-permission', 'guard_name' => 'web'],
@@ -68,13 +68,24 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'data-village', 'guard_name' => 'web'],
             ['name' => 'view-log-activity', 'guard_name' => 'web'],
             ['name' => 'data-log-activity', 'guard_name' => 'web'],
-        ])->each(fn($permission) => Permission::create($permission)->assignRole('Administrators'));
+            ['name' => 'view-program', 'guard_name' => 'web'],
+            ['name' => 'create-program', 'guard_name' => 'web'],
+            ['name' => 'update-program', 'guard_name' => 'web'],
+            ['name' => 'delete-program', 'guard_name' => 'web'],
+            ['name' => 'data-program', 'guard_name' => 'web'],
+            ['name' => 'view-testimonial', 'guard_name' => 'web'],
+            ['name' => 'create-testimonial', 'guard_name' => 'web'],
+            ['name' => 'update-testimonial', 'guard_name' => 'web'],
+            ['name' => 'delete-testimonial', 'guard_name' => 'web'],
+            ['name' => 'data-testimonial', 'guard_name' => 'web'],
+        ])->each(fn ($permission) => Permission::firstOrCreate($permission)->assignRole('Administrators'));
 
         User::create([
             'name' => 'Administrator',
             'email' => 'scrum@yatimmandiri.org',
             'email_verified_at' => now(),
-            'password' => Hash::make(uniqid()),
+            // 'password' => Hash::make(uniqid()),
+            'password' => Hash::make('password'),
         ])->assignRole('Administrators');
 
         Province::query()->update([

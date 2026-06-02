@@ -8,8 +8,10 @@ use App\Http\Controllers\Admin\Core\Region\VillageController;
 use App\Http\Controllers\Admin\Core\RoleController;
 use App\Http\Controllers\Admin\Core\UserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\Settings\LogActivityController;
 use App\Http\Controllers\Admin\Settings\SiteSettingsController;
+use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +30,14 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
         Route::get('activities/data', [LogActivityController::class, 'getData'])->name('activities.data');
         Route::get('activities', [LogActivityController::class, 'index'])->name('activities.index');
     });
+
+    Route::put('programs/{program}/status', [ProgramController::class, 'status'])->name('programs.status');
+    Route::get('programs/data', [ProgramController::class, 'getData'])->name('programs.data');
+    Route::resource('programs', ProgramController::class);
+
+    Route::put('testimonials/{testimonial}/status', [TestimonialController::class, 'status'])->name('testimonials.status');
+    Route::get('testimonials/data', [TestimonialController::class, 'getData'])->name('testimonials.data');
+    Route::resource('testimonials', TestimonialController::class);
 
     Route::prefix('core')->as('core.')->group(function () {
         Route::get('permissions/data', [PermissionController::class, 'getData'])->name('permissions.data');
