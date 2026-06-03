@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -12,6 +13,7 @@ use Spatie\Sluggable\Attributes\Sluggable;
 
 #[Fillable([
     'name',
+    'program_category_id',
     'slug',
     'excerpt',
     'description',
@@ -35,11 +37,19 @@ class Program extends Model
         return $query->where('status', true);
     }
 
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ProgramCategory::class, 'program_category_id');
+    }
+
     public function scopeSearch(Builder $query, ?string $search): Builder
     {
         return $query->when($search, function (Builder $query, string $search) {
             $query->where('name', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhereHas('category', function (Builder $query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%");
+                });
         });
     }
 

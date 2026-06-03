@@ -22,6 +22,18 @@ export default function DetailPage() {
                             <span className="text-sm">{program.name}</span>
                         </li>
                         <li className="flex flex-col space-y-2">
+                            <span className="text-sm font-semibold">Slug</span>
+                            <span className="text-sm">{program.slug}</span>
+                        </li>
+                        <li className="flex flex-col space-y-2">
+                            <span className="text-sm font-semibold">
+                                Category
+                            </span>
+                            <span className="text-sm">
+                                {program.category?.name || '-'}
+                            </span>
+                        </li>
+                        <li className="flex flex-col space-y-2">
                             <span className="text-sm font-semibold">
                                 Status
                             </span>
@@ -31,9 +43,17 @@ export default function DetailPage() {
                         </li>
                         <li className="flex flex-col space-y-2 md:col-span-2">
                             <span className="text-sm font-semibold">
-                                Description
+                                Excerpt
                             </span>
                             <span className="text-sm">
+                                {program.excerpt || '-'}
+                            </span>
+                        </li>
+                        <li className="flex flex-col space-y-2 md:col-span-2">
+                            <span className="text-sm font-semibold">
+                                Description
+                            </span>
+                            <span className="text-sm whitespace-pre-line">
                                 {program.description}
                             </span>
                         </li>

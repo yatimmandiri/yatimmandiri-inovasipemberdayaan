@@ -1,25 +1,27 @@
 import { ButtonComponent } from '@/components/partials/button-component';
+import { CheckboxComponent } from '@/components/partials/checkbox-component';
 import {
     InputFileComponent,
     InputTextComponent,
 } from '@/components/partials/input-component';
+import { SelectComponent } from '@/components/partials/select-component';
 import { TextAreaComponent } from '@/components/partials/textarea-component';
-import { CheckboxComponent } from '@/components/partials/checkbox-component';
 import { Fieldset } from '@headlessui/react';
 import { useForm, usePage } from '@inertiajs/react';
 import { SaveIcon } from 'lucide-react';
 
 export const ProgramForm = ({ dataId }: { dataId?: number }) => {
-    const { program } = usePage<any>().props;
+    const { program, categories } = usePage<any>().props;
 
-    const { data, setData, post, processing, errors, transform } = useForm(
-        {
-            name: program?.name || '',
-            description: program?.description || '',
-            featured_image: null as File | null,
-            status: program?.status ?? true,
-        },
-    );
+    const { data, setData, post, processing, errors, transform } = useForm({
+        name: program?.name || '',
+        program_category_id: program?.program_category_id
+            ? String(program.program_category_id)
+            : '',
+        description: program?.description || '',
+        featured_image: null as File | null,
+        status: program?.status ?? true,
+    });
 
     transform((data: any) => ({
         ...data,
@@ -65,6 +67,21 @@ export const ProgramForm = ({ dataId }: { dataId?: number }) => {
                     color={errors.featured_image ? 'danger' : 'default'}
                     errors={errors.featured_image}
                     helperText={errors.featured_image}
+                />
+                <SelectComponent
+                    label="Category"
+                    placeholder="Select category..."
+                    data={categories?.map((item: any) => ({
+                        value: item.id.toString(),
+                        label: item.name,
+                    }))}
+                    dataSelected={data.program_category_id}
+                    handleOnChange={(value: string) =>
+                        setData('program_category_id', value)
+                    }
+                    color={errors.program_category_id ? 'danger' : 'default'}
+                    errors={errors.program_category_id}
+                    helperText={errors.program_category_id}
                 />
                 <div className="md:col-span-2">
                     <TextAreaComponent

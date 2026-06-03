@@ -31,4 +31,9 @@ class ProgramPolicy
     {
         return $user->hasPermissionTo('delete-program');
     }
+
+    public function data(User $user): bool
+    {
+        return $user->hasPermissionTo('data-program');
+    }
 }

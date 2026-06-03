@@ -1,6 +1,9 @@
 import { BeritaSection } from '@/components/sections/home/berita-section';
+import { usePage } from '@inertiajs/react';
 
 export default function BeritaPage() {
+    const { news } = usePage<any>().props;
+
     return (
         <div className="bg-white">
             {/* Hero */}
@@ -17,7 +20,7 @@ export default function BeritaPage() {
             </section>
 
             {/* News List */}
-            <BeritaSection />
+            <BeritaSection news={news} />
         </div>
     );
 }

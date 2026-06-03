@@ -5,8 +5,13 @@ import regencies from '@/routes/admin/core/regions/regencies';
 import villages from '@/routes/admin/core/regions/villages';
 import roles from '@/routes/admin/core/roles';
 import users from '@/routes/admin/core/users';
+import news from '@/routes/admin/news';
 import activities from '@/routes/admin/logs/activities';
+import programCategories from '@/routes/admin/program-categories';
+import programs from '@/routes/admin/programs';
 import site from '@/routes/admin/settings/site';
+import sponsorshipInquiries from '@/routes/admin/sponsorship-inquiries';
+import testimonials from '@/routes/admin/testimonials';
 import {
     ChevronRight,
     CogIcon,
@@ -107,15 +112,33 @@ export const NavigationList = [
                 icon: DatabaseIcon,
                 children: [
                     {
+                        title: 'Program Category',
+                        href: programCategories.index().url,
+                        permission: 'view-program-category',
+                        icon: ChevronRight,
+                    },
+                    {
                         title: 'Program',
-                        href: '/admin/programs',
+                        href: programs.index().url,
                         permission: 'view-program',
                         icon: ChevronRight,
                     },
                     {
                         title: 'Testimonial',
-                        href: '/admin/testimonials',
+                        href: testimonials.index().url,
                         permission: 'view-testimonial',
+                        icon: ChevronRight,
+                    },
+                    {
+                        title: 'Berita',
+                        href: news.index().url,
+                        permission: 'view-news',
+                        icon: ChevronRight,
+                    },
+                    {
+                        title: 'Sponsorship',
+                        href: sponsorshipInquiries.index().url,
+                        permission: 'view-sponsorship-inquiry',
                         icon: ChevronRight,
                     },
                 ],

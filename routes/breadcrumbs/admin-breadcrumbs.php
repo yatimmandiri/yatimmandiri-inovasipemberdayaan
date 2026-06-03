@@ -3,12 +3,10 @@
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
-// Dashboard Admin (root)
-Breadcrumbs::for(
-    'admin.index',
-    fn(BreadcrumbTrail $trail) =>
-    $trail->parent('admin.dashboard')->push('Dashboard', route('admin.index'))
-);
+// Admin root redirects to the real dashboard route under /admin/dashboard.
+Breadcrumbs::for('admin.index', function (BreadcrumbTrail $trail) {
+    $trail->push('Admin', route('admin.dashboard'));
+});
 
-require __DIR__ . '/admin/core-breadcrumbs.php';
-require __DIR__ . '/admin/content-breadcrumbs.php';
+require __DIR__.'/admin/core-breadcrumbs.php';
+require __DIR__.'/admin/content-breadcrumbs.php';

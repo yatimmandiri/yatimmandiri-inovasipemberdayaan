@@ -73,20 +73,37 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'update-program', 'guard_name' => 'web'],
             ['name' => 'delete-program', 'guard_name' => 'web'],
             ['name' => 'data-program', 'guard_name' => 'web'],
+            ['name' => 'view-program-category', 'guard_name' => 'web'],
+            ['name' => 'create-program-category', 'guard_name' => 'web'],
+            ['name' => 'update-program-category', 'guard_name' => 'web'],
+            ['name' => 'delete-program-category', 'guard_name' => 'web'],
+            ['name' => 'data-program-category', 'guard_name' => 'web'],
             ['name' => 'view-testimonial', 'guard_name' => 'web'],
             ['name' => 'create-testimonial', 'guard_name' => 'web'],
             ['name' => 'update-testimonial', 'guard_name' => 'web'],
             ['name' => 'delete-testimonial', 'guard_name' => 'web'],
             ['name' => 'data-testimonial', 'guard_name' => 'web'],
+            ['name' => 'view-news', 'guard_name' => 'web'],
+            ['name' => 'create-news', 'guard_name' => 'web'],
+            ['name' => 'update-news', 'guard_name' => 'web'],
+            ['name' => 'delete-news', 'guard_name' => 'web'],
+            ['name' => 'data-news', 'guard_name' => 'web'],
+            ['name' => 'view-sponsorship-inquiry', 'guard_name' => 'web'],
+            ['name' => 'create-sponsorship-inquiry', 'guard_name' => 'web'],
+            ['name' => 'update-sponsorship-inquiry', 'guard_name' => 'web'],
+            ['name' => 'delete-sponsorship-inquiry', 'guard_name' => 'web'],
+            ['name' => 'data-sponsorship-inquiry', 'guard_name' => 'web'],
         ])->each(fn ($permission) => Permission::firstOrCreate($permission)->assignRole('Administrators'));
 
-        User::create([
-            'name' => 'Administrator',
-            'email' => 'scrum@yatimmandiri.org',
-            'email_verified_at' => now(),
-            // 'password' => Hash::make(uniqid()),
-            'password' => Hash::make('password'),
-        ])->assignRole('Administrators');
+        User::firstOrCreate(
+            ['email' => 'scrum@yatimmandiri.org'],
+            [
+                'name' => 'Administrator',
+                'email_verified_at' => now(),
+                // 'password' => Hash::make(uniqid()),
+                'password' => Hash::make('password'),
+            ],
+        )->assignRole('Administrators');
 
         Province::query()->update([
             'created_at' => now(),

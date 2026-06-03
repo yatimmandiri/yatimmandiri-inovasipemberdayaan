@@ -31,4 +31,9 @@ class TestimonialPolicy
     {
         return $user->hasPermissionTo('delete-testimonial');
     }
+
+    public function data(User $user): bool
+    {
+        return $user->hasPermissionTo('data-testimonial');
+    }
 }

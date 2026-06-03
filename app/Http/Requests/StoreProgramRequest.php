@@ -15,6 +15,7 @@ class StoreProgramRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'program_category_id' => ['nullable', 'exists:program_categories,id'],
             'description' => ['required', 'string'],
             'featured_image' => ['nullable', 'image', 'max:2048'],
             'status' => ['nullable', 'boolean'],

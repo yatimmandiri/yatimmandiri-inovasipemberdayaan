@@ -1,0 +1,73 @@
+import { Card } from '@/components/ui/card';
+import { formatDate } from '@/utils/formatDate';
+import { usePage } from '@inertiajs/react';
+import { InfoIcon } from 'lucide-react';
+
+export default function DetailPage() {
+    const { category } = usePage<any>().props;
+
+    return (
+        <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+            <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
+                <Card className="min-h-full p-4 md:p-6">
+                    <div className="flex items-center space-x-2">
+                        <InfoIcon className="h-4 w-4" />
+                        <span className="text-sm font-semibold">
+                            Detail Information
+                        </span>
+                    </div>
+                    <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <li className="flex flex-col space-y-2">
+                            <span className="text-sm font-semibold">Name</span>
+                            <span className="text-sm">{category.name}</span>
+                        </li>
+                        <li className="flex flex-col space-y-2">
+                            <span className="text-sm font-semibold">Slug</span>
+                            <span className="text-sm">{category.slug}</span>
+                        </li>
+                        <li className="flex flex-col space-y-2">
+                            <span className="text-sm font-semibold">
+                                Programs
+                            </span>
+                            <span className="text-sm">
+                                {category.programs_count || 0}
+                            </span>
+                        </li>
+                        <li className="flex flex-col space-y-2">
+                            <span className="text-sm font-semibold">
+                                Status
+                            </span>
+                            <span className="text-sm">
+                                {category.status ? 'Active' : 'Inactive'}
+                            </span>
+                        </li>
+                        <li className="flex flex-col space-y-2 md:col-span-2">
+                            <span className="text-sm font-semibold">
+                                Description
+                            </span>
+                            <span className="text-sm whitespace-pre-line">
+                                {category.description || '-'}
+                            </span>
+                        </li>
+                        <li className="flex flex-col space-y-2">
+                            <span className="text-sm font-semibold">
+                                Created At
+                            </span>
+                            <span className="text-sm">
+                                {formatDate(category.created_at)}
+                            </span>
+                        </li>
+                        <li className="flex flex-col space-y-2">
+                            <span className="text-sm font-semibold">
+                                Updated At
+                            </span>
+                            <span className="text-sm">
+                                {formatDate(category.updated_at)}
+                            </span>
+                        </li>
+                    </ul>
+                </Card>
+            </div>
+        </div>
+    );
+}

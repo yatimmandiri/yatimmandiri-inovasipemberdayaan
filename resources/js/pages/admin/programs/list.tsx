@@ -1,18 +1,23 @@
 import { DataTableComponent } from '@/components/partials/dataTables';
 import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDataTables';
+import { SelectComponent } from '@/components/partials/select-component';
 import {
     renderRowHeader,
     renderRowImage,
     renderRowParagraph,
 } from '@/components/partials/dataTables/utils/dataTable-utils';
 import { Badge } from '@/components/ui/badge';
+import programs from '@/routes/admin/programs';
 import { formatDate } from '@/utils/formatDate';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { BadgeCheckIcon, BadgeXIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ListPage() {
+    const { categories } = usePage<any>().props;
+
     const [refreshData, setRefreshData] = useState(false);
+    const [filterValue, setFilterValue] = useState<any>({});
 
     const columns = [
         {
@@ -26,8 +31,17 @@ export default function ListPage() {
             accessorKey: 'name',
         },
         {
-            header: (info: any) => renderRowHeader(info, 'Description'),
-            accessorKey: 'description',
+            header: (info: any) => renderRowHeader(info, 'Category'),
+            accessorKey: 'category',
+            accessorFn: (row: any) => row.category?.name || '-',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Slug'),
+            accessorKey: 'slug',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Excerpt'),
+            accessorKey: 'excerpt',
             cell: (info: any) => renderRowParagraph(info.getValue()),
             enableSorting: false,
         },
@@ -43,7 +57,7 @@ export default function ListPage() {
                         variant={active ? 'default' : 'destructive'}
                         onClick={() =>
                             router.put(
-                                `/admin/programs/${info.row.original.id}/status`,
+                                programs.status(info.row.original.id).url,
                                 {},
                                 {
                                     preserveScroll: true,
@@ -64,6 +78,9 @@ export default function ListPage() {
         return data.map((item: any, i: number) => ({
             No: i + 1,
             Name: item.name,
+            Slug: item.slug,
+            Category: item.category?.name || '-',
+            Excerpt: item.excerpt,
             Status: item.status ? 'Active' : 'Inactive',
             'Created At': formatDate(item.created_at, 'datetime'),
             'Updated At': formatDate(item.updated_at, 'datetime'),
@@ -77,9 +94,29 @@ export default function ListPage() {
                     columns={columns}
                     refreshData={refreshData}
                     setRefreshData={setRefreshData}
-                    urlFetchData="/admin/programs/data"
+                    filterValue={filterValue}
+                    urlFetchData={programs.data().url}
                     formatDataExport={formatDataExport}
                 >
+                    <div className="flex flex-col space-y-4 px-4 pt-8 md:px-8">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                            <SelectComponent
+                                label="Category"
+                                placeholder="Filter by Category..."
+                                data={categories?.map((item: any) => ({
+                                    value: item.id.toString(),
+                                    label: item.name,
+                                }))}
+                                dataSelected={filterValue.category}
+                                handleOnChange={(value: any) =>
+                                    setFilterValue((prev: any) => ({
+                                        ...prev,
+                                        category: value,
+                                    }))
+                                }
+                            />
+                        </div>
+                    </div>
                     <DataTableComponent buttonActive={{ export: false }} />
                 </DataTableProvider>
             </div>

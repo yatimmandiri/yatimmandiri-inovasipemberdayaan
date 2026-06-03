@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProgramRequest;
 use App\Http\Requests\UpdateProgramRequest;
 use App\Models\Program;
+use App\Models\ProgramCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -20,21 +21,31 @@ class ProgramController extends Controller
     {
         $this->authorize('viewAny', Program::class);
 
-        return Inertia::render('admin/programs/list');
+        return Inertia::render('admin/programs/list', [
+            'categories' => ProgramCategory::query()
+                ->active()
+                ->orderBy('name')
+                ->get(['id', 'name']),
+        ]);
     }
 
     public function create()
     {
         $this->authorize('create', Program::class);
 
-        return Inertia::render('admin/programs/create');
+        return Inertia::render('admin/programs/create', [
+            'categories' => ProgramCategory::query()
+                ->active()
+                ->orderBy('name')
+                ->get(['id', 'name']),
+        ]);
     }
 
     public function store(StoreProgramRequest $request)
     {
         $this->authorize('create', Program::class);
 
-        $data = $request->only(['name', 'description']);
+        $data = $request->only(['name', 'program_category_id', 'description']);
         $data['status'] = $request->boolean('status', true);
         $data['excerpt'] = Str::limit(strip_tags($request->description), 140);
 
@@ -57,7 +68,7 @@ class ProgramController extends Controller
         $this->authorize('view', $program);
 
         return Inertia::render('admin/programs/show', [
-            'program' => $program,
+            'program' => $program->load('category'),
         ]);
     }
 
@@ -66,7 +77,11 @@ class ProgramController extends Controller
         $this->authorize('update', $program);
 
         return Inertia::render('admin/programs/edit', [
-            'program' => $program,
+            'program' => $program->load('category'),
+            'categories' => ProgramCategory::query()
+                ->active()
+                ->orderBy('name')
+                ->get(['id', 'name']),
         ]);
     }
 
@@ -76,7 +91,7 @@ class ProgramController extends Controller
 
         $oldData = $program->replicate();
 
-        $data = $request->only(['name', 'description']);
+        $data = $request->only(['name', 'program_category_id', 'description']);
         $data['status'] = $request->boolean('status');
         $data['excerpt'] = Str::limit(strip_tags($request->description), 140);
 
@@ -121,17 +136,23 @@ class ProgramController extends Controller
 
     public function getData(Request $request)
     {
-        $this->authorize('data-program', Program::class);
+        $this->authorize('data', Program::class);
 
         $perPage = $request->input('perPage', 10);
         $page = $request->input('page', 1);
         $globalSearch = $request->input('globalSearch', '');
         $orderDirection = $request->input('orderDirection', 'desc');
         $orderBy = $request->input('orderBy', 'id');
+        $filterValue = $request->input('filterValue', []);
         $allowedSorts = ['id', 'name', 'status', 'created_at', 'updated_at'];
 
         $query = Program::query()
+            ->with('category:id,name,slug')
             ->search($globalSearch)
+            ->when(
+                data_get($filterValue, 'category'),
+                fn ($query, $value) => $query->where('program_category_id', $value)
+            )
             ->orderBy(in_array($orderBy, $allowedSorts, true) ? $orderBy : 'id', $orderDirection === 'asc' ? 'asc' : 'desc');
 
         $data = $perPage
