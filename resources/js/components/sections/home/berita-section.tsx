@@ -63,7 +63,9 @@ export const BeritaItemSection = ({ item }: { item: any }) => {
                     <span className="text-sm text-gray-500">{item.date}</span>
                 </div>
 
-                <h3 className="mb-3 text-xl font-semibold">{item.title}</h3>
+                <h3 className="mb-3 text-xl font-semibold text-gray-900">
+                    {item.title}
+                </h3>
 
                 <p className="mb-4 text-gray-600">{item.excerpt}</p>
 
