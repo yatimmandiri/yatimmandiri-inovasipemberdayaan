@@ -18,7 +18,7 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
     const menus = [
         {
             label: 'Tentang Kami',
-            href: '#',
+            href: '/about',
         },
         {
             label: 'Program',
@@ -40,7 +40,7 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
         },
         {
             label: 'Berita',
-            href: '#',
+            href: '/berita',
         },
         {
             label: 'Sponsorship',

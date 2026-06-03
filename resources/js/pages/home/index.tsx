@@ -1,4 +1,5 @@
 import { AboutSection } from '@/components/sections/home/about-section';
+import { ImpactSection } from '@/components/sections/home/impact-section';
 import { MitraSection } from '@/components/sections/home/mitra-section';
 import { ProgramUnggulanSection } from '@/components/sections/home/program-unggulan-section';
 import { SliderSection } from '@/components/sections/home/slider-section';
@@ -10,7 +11,7 @@ export default function HomePage() {
         <Fragment>
             <SliderSection />
             <AboutSection />
-            {/* <ImpactSection /> */}
+            <ImpactSection />
             <ProgramUnggulanSection />
             <MitraSection />
             <TestimonialSection />

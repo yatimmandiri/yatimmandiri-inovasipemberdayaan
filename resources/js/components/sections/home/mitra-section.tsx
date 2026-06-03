@@ -28,19 +28,19 @@ export const MitraSection = () => {
             logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
         },
         {
-            name: 'Tokopedia',
+            name: 'Tokopedia2',
             logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
         },
         {
-            name: 'Tokopedia',
+            name: 'Tokopedia3',
             logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
         },
         {
-            name: 'Tokopedia',
+            name: 'Tokopedia4',
             logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
         },
         {
-            name: 'Tokopedia',
+            name: 'Tokopedia5',
             logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
         },
     ];

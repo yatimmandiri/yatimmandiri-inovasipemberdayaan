@@ -113,19 +113,6 @@ export const ProgramUnggulanSection = () => {
                         </SwiperSlide>
                     ))}
                 </Swiper>
-                <div className="mt-16 text-center">
-                    <p className="mb-6 text-slate-600">
-                        Bersama mitra dan masyarakat, kami terus mengembangkan
-                        program-program yang memberikan dampak nyata dan
-                        berkelanjutan.
-                    </p>
-                    <button
-                        type="button"
-                        className="rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
-                    >
-                        Lihat Semua Program
-                    </button>
-                </div>
             </div>
         </section>
     );
