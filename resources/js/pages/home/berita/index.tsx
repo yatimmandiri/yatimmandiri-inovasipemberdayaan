@@ -32,7 +32,7 @@ export default function BeritaPage() {
     return (
         <div className="bg-white">
             {/* Hero */}
-            <section className="bg-linear-to-r from-primary to-primary/80 py-20 text-white">
+            <section className="bg-linear-to-r from-orange-500 to-orange-500/80 py-20 text-white">
                 <div className="container mx-auto px-4 text-center">
                     <h1 className="mb-4 text-4xl font-bold md:text-5xl">
                         Berita & Artikel
@@ -61,7 +61,7 @@ export default function BeritaPage() {
 
                                 <div className="p-6">
                                     <div className="mb-3 flex items-center gap-3">
-                                        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                                        <span className="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-medium text-orange-500">
                                             {article.category}
                                         </span>
 
@@ -78,7 +78,7 @@ export default function BeritaPage() {
                                         {article.excerpt}
                                     </p>
 
-                                    <button className="font-medium text-primary hover:underline">
+                                    <button className="font-medium text-orange-500 hover:underline">
                                         Baca Selengkapnya →
                                     </button>
                                 </div>

@@ -150,11 +150,11 @@ export const NavigationSidebarComponent = ({
                                         <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
                                             <div>
                                                 <h2 className="text-xl font-black text-white">
-                                                    Empower.
+                                                    Growth YM.
                                                 </h2>
 
                                                 <p className="text-sm text-white/60">
-                                                    Innovation & Empowerment
+                                                    Inovasi & Pemberdayaan
                                                 </p>
                                             </div>
 
