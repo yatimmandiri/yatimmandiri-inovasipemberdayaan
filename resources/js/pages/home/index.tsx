@@ -1,4 +1,7 @@
-import { ProgramSection } from '@/components/sections/home/program-section';
+import { AboutSection } from '@/components/sections/home/about-section';
+import { ImpactSection } from '@/components/sections/home/impact-section';
+import { MitraSection } from '@/components/sections/home/mitra-section';
+import { ProgramUnggulanSection } from '@/components/sections/home/program-unggulan-section';
 import { SliderSection } from '@/components/sections/home/slider-section';
 import { TestimonialSection } from '@/components/sections/home/testimonial-section';
 import { usePage } from '@inertiajs/react';
@@ -10,8 +13,11 @@ export default function HomePage() {
     return (
         <Fragment>
             <SliderSection />
-            <ProgramSection programs={programs} />
-            <TestimonialSection testimonials={testimonials} />
+            <AboutSection />
+            <ImpactSection />
+            <ProgramUnggulanSection />
+            <MitraSection />
+            <TestimonialSection />
         </Fragment>
     );
 }

@@ -3,10 +3,6 @@
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
-Breadcrumbs::for('home.index', function (BreadcrumbTrail $trail) {
-    $trail->push('Home', route('home.index'));
-});
-
 Breadcrumbs::for('log-viewer.index', function (BreadcrumbTrail $trail) {
     $trail->push('Log Viewer', route('log-viewer.index'));
 });
@@ -14,3 +10,4 @@ Breadcrumbs::for('log-viewer.index', function (BreadcrumbTrail $trail) {
 require __DIR__ . '/breadcrumbs/admin-breadcrumbs.php';
 require __DIR__ . '/breadcrumbs/settings-breadcrumbs.php';
 require __DIR__ . '/breadcrumbs/auth-breadcrumbs.php';
+require __DIR__ . '/breadcrumbs/welcome-breadcrumbs.php';
