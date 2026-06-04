@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             IndoRegionSeeder::class,
+            ProgramCategorySeeder::class,
             UserRolePermissionSeeder::class,
         ]);
     }

@@ -22,21 +22,7 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
         },
         {
             label: 'Program',
-            href: '#',
-            children: [
-                {
-                    label: 'Pendidikan',
-                    href: '#',
-                },
-                {
-                    label: 'Pemberdayaan',
-                    href: '#',
-                },
-                {
-                    label: 'Sosial',
-                    href: '#',
-                },
-            ],
+            href: '/program',
         },
         {
             label: 'Berita',
@@ -44,11 +30,11 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
         },
         {
             label: 'Sponsorship',
-            href: '#',
+            href: '/sponsorship',
         },
         {
             label: 'Kontak',
-            href: '#',
+            href: '/kontak',
         },
     ];
 

@@ -28,13 +28,16 @@ Breadcrumbs::for('verification.notice', function (BreadcrumbTrail $trail) {
 });
 
 Breadcrumbs::for('admin.profile.edit', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.dashboard');
     $trail->push('Profile Settings', route('admin.profile.edit'));
 });
 
 Breadcrumbs::for('admin.security.edit', function (BreadcrumbTrail $trail) {
-    $trail->push('Profile Settings', route('admin.security.edit'));
+    $trail->parent('admin.profile.edit');
+    $trail->push('Security', route('admin.security.edit'));
 });
 
 Breadcrumbs::for('admin.appearance.edit', function (BreadcrumbTrail $trail) {
-    $trail->push('Profile Settings', route('admin.appearance.edit'));
+    $trail->parent('admin.profile.edit');
+    $trail->push('Appearance', route('admin.appearance.edit'));
 });

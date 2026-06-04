@@ -10,6 +10,15 @@ type TestimonialItemComponentProps = {
     rating?: number;
 };
 
+type TestimonialItem = {
+    id: number;
+    name: string;
+    position?: string;
+    description: string;
+    photo?: string;
+    rating?: number;
+};
+
 export const TestimonialItemComponent = ({
     name,
     role,
@@ -19,12 +28,10 @@ export const TestimonialItemComponent = ({
 }: TestimonialItemComponentProps) => {
     return (
         <div className="group relative h-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-            {/* Quote Icon */}
             <div className="absolute top-5 right-5 text-primary/10">
                 <Quote size={64} strokeWidth={1.5} />
             </div>
 
-            {/* Rating */}
             <div className="mb-5 flex items-center gap-1">
                 {Array.from({ length: rating }).map((_, index) => (
                     <Star
@@ -35,12 +42,10 @@ export const TestimonialItemComponent = ({
                 ))}
             </div>
 
-            {/* Message */}
             <p className="relative z-10 line-clamp-5 text-sm leading-relaxed text-slate-600 md:text-base">
-                “{message}”
+                "{message}"
             </p>
 
-            {/* User */}
             <div className="mt-6 flex items-center gap-4">
                 <img
                     src={image}
@@ -50,7 +55,6 @@ export const TestimonialItemComponent = ({
 
                 <div>
                     <h4 className="font-semibold text-slate-900">{name}</h4>
-
                     <p className="text-sm text-slate-500">{role}</p>
                 </div>
             </div>
@@ -58,46 +62,56 @@ export const TestimonialItemComponent = ({
     );
 };
 
-export const TestimonialSection = () => {
-    const testimonials = [
+export const TestimonialSection = ({
+    testimonials = [],
+}: {
+    testimonials?: TestimonialItem[];
+}) => {
+    const fallbackTestimonials: TestimonialItem[] = [
         {
+            id: 1,
             name: 'Ahmad Fauzi',
-            role: 'Peserta Program Digital',
-            image: 'https://i.pravatar.cc/300?img=12',
-            message:
+            position: 'Peserta Program Digital',
+            photo: 'https://i.pravatar.cc/300?img=12',
+            description:
                 'Program ini benar-benar membantu saya memahami teknologi digital dan membuka peluang kerja baru.',
         },
         {
+            id: 2,
             name: 'Siti Rahma',
-            role: 'Pelaku UMKM',
-            image: 'https://i.pravatar.cc/300?img=32',
-            message:
+            position: 'Pelaku UMKM',
+            photo: 'https://i.pravatar.cc/300?img=32',
+            description:
                 'Berkat pelatihan dan pendampingan, usaha saya berkembang lebih cepat dan lebih dikenal secara online.',
         },
         {
+            id: 3,
             name: 'Budi Santoso',
-            role: 'Relawan Sosial',
-            image: 'https://i.pravatar.cc/300?img=15',
-            message:
+            position: 'Relawan Sosial',
+            photo: 'https://i.pravatar.cc/300?img=15',
+            description:
                 'Kolaborasi yang luar biasa. Saya merasa bisa memberikan dampak nyata bagi masyarakat sekitar.',
         },
         {
+            id: 4,
             name: 'Nabila Putri',
-            role: 'Mahasiswa Beasiswa',
-            image: 'https://i.pravatar.cc/300?img=45',
-            message:
+            position: 'Mahasiswa Beasiswa',
+            photo: 'https://i.pravatar.cc/300?img=45',
+            description:
                 'Bantuan pendidikan dan mentoring membuat saya lebih percaya diri untuk meraih cita-cita.',
         },
     ];
+    const items = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 
     return (
-        <section className="relative overflow-hidden bg-slate-50 py-20">
-            {/* Background */}
+        <section
+            id="testimonials"
+            className="relative overflow-hidden bg-slate-50 py-20"
+        >
             <div className="absolute top-0 left-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
             <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
 
             <div className="relative mx-auto max-w-7xl px-6">
-                {/* Header */}
                 <div className="mx-auto mb-14 max-w-3xl text-center">
                     <span className="inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
                         Testimoni
@@ -113,7 +127,6 @@ export const TestimonialSection = () => {
                     </p>
                 </div>
 
-                {/* Slider */}
                 <Swiper
                     modules={[Pagination, Autoplay]}
                     spaceBetween={10}
@@ -135,13 +148,20 @@ export const TestimonialSection = () => {
                     }}
                     className="testimonial-swiper pb-14!"
                 >
-                    {testimonials.map((item, index) => (
-                        <SwiperSlide key={index} className="h-auto">
+                    {items.map((item, index) => (
+                        <SwiperSlide key={item.id || index} className="h-auto">
                             <TestimonialItemComponent
                                 name={item.name}
-                                role={item.role}
-                                image={item.image}
-                                message={item.message}
+                                role={item.position || 'Penerima Manfaat'}
+                                image={
+                                    item.photo?.startsWith('http')
+                                        ? item.photo
+                                        : item.photo
+                                          ? `/storage/${item.photo}`
+                                          : `https://i.pravatar.cc/300?img=${index + 20}`
+                                }
+                                message={item.description}
+                                rating={item.rating || 5}
                             />
                         </SwiperSlide>
                     ))}
