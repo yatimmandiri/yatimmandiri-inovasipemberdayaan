@@ -57,7 +57,7 @@ class NewsApiService
             $response = Http::timeout(10)
                 ->retry(2, 300)
                 ->acceptJson()
-                ->get(config('services.news_api.posts_url'), $params);
+                ->get(config(env('NEWS_API_POSTS_URL')), $params);
 
             if (! $response->successful()) {
                 report("News API failed with status {$response->status()}");

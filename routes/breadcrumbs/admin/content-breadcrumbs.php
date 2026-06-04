@@ -132,3 +132,30 @@ Breadcrumbs::for(
     'admin.sponsorship-inquiries.data',
     fn (BreadcrumbTrail $trail) => $trail->parent('admin.sponsorship-inquiries.index')->push('Sponsorship Data', route('admin.sponsorship-inquiries.data'))
 );
+
+// Videos
+Breadcrumbs::for(
+    'admin.videos.index',
+    fn (BreadcrumbTrail $trail) => $trail->parent('admin.dashboard')->push('Videos', route('admin.videos.index'))
+);
+
+Breadcrumbs::for(
+    'admin.videos.create',
+    fn (BreadcrumbTrail $trail) => $trail->parent('admin.videos.index')->push('Create', route('admin.videos.create'))
+);
+
+Breadcrumbs::for(
+    'admin.videos.show',
+    fn (BreadcrumbTrail $trail, $item) => $trail->parent('admin.videos.index')->push($item->title, route('admin.videos.show', $item))
+);
+
+Breadcrumbs::for(
+    'admin.videos.edit',
+    fn (BreadcrumbTrail $trail, $item) => $trail->parent('admin.videos.show', $item)->push('Edit', route('admin.videos.edit', $item))
+);
+
+Breadcrumbs::for(
+    'admin.videos.data',
+    fn (BreadcrumbTrail $trail) => $trail->parent('admin.videos.index')->push('Videos Data', route('admin.videos.data'))
+);
+
