@@ -5,11 +5,8 @@ import {
     renderRowImage,
     renderRowParagraph,
 } from '@/components/partials/dataTables/utils/dataTable-utils';
-import { Badge } from '@/components/ui/badge';
 import newsRoutes from '@/routes/admin/news';
 import { formatDate } from '@/utils/formatDate';
-import { router } from '@inertiajs/react';
-import { BadgeCheckIcon, BadgeXIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ListPage() {
@@ -19,7 +16,8 @@ export default function ListPage() {
         {
             header: (info: any) => renderRowHeader(info, 'Image'),
             accessorKey: 'featured_image',
-            cell: (info: any) => renderRowImage(info.getValue(), 'h-12 w-20'),
+            cell: (info: any) =>
+                renderRowImage(info.getValue(), 'h-12 w-20', true),
             enableSorting: false,
         },
         {
@@ -43,33 +41,6 @@ export default function ListPage() {
             cell: (info: any) =>
                 info.getValue() ? formatDate(info.getValue(), 'date') : '-',
         },
-        {
-            header: (info: any) => renderRowHeader(info, 'Status'),
-            accessorKey: 'status',
-            cell: (info: any) => {
-                const active = Boolean(info.getValue());
-
-                return (
-                    <Badge
-                        className="cursor-pointer"
-                        variant={active ? 'default' : 'destructive'}
-                        onClick={() =>
-                            router.put(
-                                newsRoutes.status(info.row.original.id).url,
-                                {},
-                                {
-                                    preserveScroll: true,
-                                    onSuccess: () => setRefreshData(true),
-                                },
-                            )
-                        }
-                    >
-                        {active ? <BadgeCheckIcon /> : <BadgeXIcon />}
-                        {active ? 'Published' : 'Draft'}
-                    </Badge>
-                );
-            },
-        },
     ];
 
     const formatDataExport = (data: any) => {
@@ -77,12 +48,9 @@ export default function ListPage() {
             No: i + 1,
             Title: item.title,
             Category: item.category,
-            Status: item.status ? 'Published' : 'Draft',
             'Published At': item.published_at
                 ? formatDate(item.published_at, 'date')
                 : '-',
-            'Created At': formatDate(item.created_at, 'datetime'),
-            'Updated At': formatDate(item.updated_at, 'datetime'),
         }));
     };
 
@@ -95,8 +63,11 @@ export default function ListPage() {
                     setRefreshData={setRefreshData}
                     urlFetchData={newsRoutes.data().url}
                     formatDataExport={formatDataExport}
+                    withActions={false}
                 >
-                    <DataTableComponent buttonActive={{ export: false }} />
+                    <DataTableComponent
+                        buttonActive={{ create: false, export: false }}
+                    />
                 </DataTableProvider>
             </div>
         </div>

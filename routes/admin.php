@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\Settings\LogActivityController;
 use App\Http\Controllers\Admin\Settings\SiteSettingsController;
 use App\Http\Controllers\Admin\SponsorshipInquiryController;
 use App\Http\Controllers\Admin\TestimonialController;
+use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,9 +47,12 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
     Route::get('testimonials/data', [TestimonialController::class, 'getData'])->name('testimonials.data');
     Route::resource('testimonials', TestimonialController::class);
 
-    Route::put('news/{news}/status', [NewsController::class, 'status'])->name('news.status');
+    Route::get('news', [NewsController::class, 'index'])->name('news.index');
     Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');
-    Route::resource('news', NewsController::class);
+
+    Route::put('videos/{video}/status', [VideoController::class, 'status'])->name('videos.status');
+    Route::get('videos/data', [VideoController::class, 'getData'])->name('videos.data');
+    Route::resource('videos', VideoController::class);
 
     Route::put('sponsorship-inquiries/{sponsorshipInquiry}/status', [SponsorshipInquiryController::class, 'status'])->name('sponsorship-inquiries.status');
     Route::get('sponsorship-inquiries/data', [SponsorshipInquiryController::class, 'getData'])->name('sponsorship-inquiries.data');

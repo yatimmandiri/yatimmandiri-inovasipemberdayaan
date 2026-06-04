@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Home;
 
 use App\Http\Controllers\Controller;
-use App\Models\News;
 use App\Models\Program;
 use App\Models\ProgramCategory;
 use App\Models\SponsorshipInquiry;
 use App\Models\Testimonial;
+use App\Services\NewsApiService;
 use Illuminate\Http\Request;
 
 class MainController extends Controller
 {
-    public function index()
+    public function index(NewsApiService $newsApi)
     {
         $data = [
             'pageTitle' => 'Home',
@@ -32,11 +32,7 @@ class MainController extends Controller
                 ->latest()
                 ->limit(8)
                 ->get(['id', 'name', 'position', 'description', 'photo', 'rating']),
-            'news' => News::query()
-                ->active()
-                ->latest('published_at')
-                ->limit(3)
-                ->get(['id', 'title', 'slug', 'category', 'excerpt', 'content', 'featured_image', 'published_at']),
+            'news' => $newsApi->latest(3),
         ];
 
         return inertia('home/index', $data);
@@ -56,8 +52,10 @@ class MainController extends Controller
         return inertia('home/about/index', $data);
     }
 
-    public function berita()
+    public function berita(Request $request, NewsApiService $newsApi)
     {
+        $page = max((int) $request->input('page', 1), 1);
+
         $data = [
             'pageTitle' => 'Berita',
             'meta' => [
@@ -65,34 +63,30 @@ class MainController extends Controller
                 'description' => 'Latest news and articles on the Berita page.',
                 'keywords' => 'berita, news, articles',
             ],
-            'news' => News::query()
-                ->active()
-                ->latest('published_at')
-                ->paginate(9, ['id', 'title', 'slug', 'category', 'excerpt', 'content', 'featured_image', 'published_at']),
+            'news' => $newsApi->paginate($page, 9),
         ];
 
         return inertia('home/berita/index', $data);
     }
 
-    public function beritaDetail(News $news)
+    public function beritaDetail(string $slug, NewsApiService $newsApi)
     {
-        abort_unless($news->status, 404);
+        $news = $newsApi->findBySlug($slug);
+
+        abort_unless($news, 404);
 
         $data = [
-            'pageTitle' => $news->title,
+            'pageTitle' => $news['title'],
             'meta' => [
-                'title' => $news->title,
-                'description' => $news->excerpt,
-                'keywords' => "{$news->category}, berita, artikel",
+                'title' => $news['title'],
+                'description' => $news['excerpt'],
+                'keywords' => "{$news['category']}, berita, artikel",
             ],
             'news' => $news,
-            'relatedNews' => News::query()
-                ->active()
-                ->whereKeyNot($news->id)
-                ->when($news->category, fn ($query) => $query->where('category', $news->category))
-                ->latest('published_at')
-                ->limit(3)
-                ->get(['id', 'title', 'slug', 'category', 'excerpt', 'content', 'featured_image', 'published_at']),
+            'relatedNews' => collect($newsApi->latest(4))
+                ->reject(fn ($item) => $item['slug'] === $slug)
+                ->take(3)
+                ->values(),
         ];
 
         return inertia('home/berita/show', $data);

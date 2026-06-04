@@ -57,9 +57,10 @@ export default function BeritaShowPage() {
                         className="aspect-[16/9] w-full rounded-3xl object-cover shadow-sm"
                     />
 
-                    <article className="mx-auto mt-12 max-w-3xl text-lg leading-relaxed whitespace-pre-line text-slate-700">
-                        {news.content}
-                    </article>
+                    <article
+                        className="mx-auto mt-12 max-w-3xl text-lg leading-relaxed text-slate-700"
+                        dangerouslySetInnerHTML={{ __html: news.content }}
+                    />
                 </div>
             </section>
 

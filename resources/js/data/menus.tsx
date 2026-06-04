@@ -136,6 +136,12 @@ export const NavigationList = [
                         icon: ChevronRight,
                     },
                     {
+                        title: 'Video',
+                        href: '/admin/videos',
+                        permission: 'view-video',
+                        icon: ChevronRight,
+                    },
+                    {
                         title: 'Sponsorship',
                         href: sponsorshipInquiries.index().url,
                         permission: 'view-sponsorship-inquiry',

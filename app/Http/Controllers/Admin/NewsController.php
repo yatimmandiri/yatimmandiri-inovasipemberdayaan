@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Concerns\Traits\LogActivity;
-use App\Concerns\Traits\UploadFiles;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreNewsRequest;
-use App\Http\Requests\UpdateNewsRequest;
 use App\Models\News;
+use App\Services\NewsApiService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class NewsController extends Controller
 {
-    use LogActivity, UploadFiles;
-
     public function index()
     {
         $this->authorize('viewAny', News::class);
@@ -25,119 +19,47 @@ class NewsController extends Controller
 
     public function create()
     {
-        $this->authorize('create', News::class);
-
-        return Inertia::render('admin/news/create');
+        abort(404);
     }
 
-    public function store(StoreNewsRequest $request)
+    public function store(Request $request)
     {
-        $this->authorize('create', News::class);
-
-        $data = $request->only(['title', 'category', 'content', 'published_at']);
-        $data['status'] = $request->boolean('status', true);
-        $data['excerpt'] = Str::limit(strip_tags($request->content), 160);
-
-        if ($request->hasFile('featured_image')) {
-            $data['featured_image'] = $this->uploadFile(null, $request->file('featured_image'), 'news');
-        }
-
-        $news = News::create($data);
-
-        $this->logSuccess('create-news', "Created News: {$news->title}", [
-            'news_id' => $news->id,
-            'new_data' => $news->toArray(),
-        ]);
-
-        return redirect()->route('admin.news.index')->with('success', 'News Created Successfully');
+        abort(404);
     }
 
-    public function show(News $news)
+    public function show(string $news)
     {
-        $this->authorize('view', $news);
-
-        return Inertia::render('admin/news/show', [
-            'news' => $news,
-        ]);
+        abort(404);
     }
 
-    public function edit(News $news)
+    public function edit(string $news)
     {
-        $this->authorize('update', $news);
-
-        return Inertia::render('admin/news/edit', [
-            'news' => $news,
-        ]);
+        abort(404);
     }
 
-    public function update(UpdateNewsRequest $request, News $news)
+    public function update(Request $request, string $news)
     {
-        $this->authorize('update', $news);
-
-        $oldData = $news->replicate();
-
-        $data = $request->only(['title', 'category', 'content', 'published_at']);
-        $data['status'] = $request->boolean('status');
-        $data['excerpt'] = Str::limit(strip_tags($request->content), 160);
-
-        if ($request->hasFile('featured_image')) {
-            $data['featured_image'] = $this->replaceFile($news->featured_image, $request->file('featured_image'), 'news');
-        }
-
-        $news->update($data);
-
-        $this->logSuccess('update-news', "Updated News: {$news->title}", [
-            'news_id' => $news->id,
-            'old_data' => $oldData->toArray(),
-            'new_data' => $news->toArray(),
-        ]);
-
-        return redirect()->route('admin.news.index')->with('success', 'News Updated Successfully');
+        abort(404);
     }
 
-    public function destroy(News $news)
+    public function destroy(string $news)
     {
-        $this->authorize('delete', $news);
-
-        $news->delete();
-
-        $this->logSuccess('delete-news', "Deleted News: {$news->title}", [
-            'news_id' => $news->id,
-        ]);
-
-        return redirect()->route('admin.news.index')->with('success', 'News Deleted Successfully');
+        abort(404);
     }
 
-    public function status(News $news)
+    public function status(string $news)
     {
-        $this->authorize('update', $news);
-
-        $news->update([
-            'status' => ! $news->status,
-        ]);
-
-        return redirect()->route('admin.news.index')->with('success', 'News Status Updated Successfully');
+        abort(404);
     }
 
-    public function getData(Request $request)
+    public function getData(Request $request, NewsApiService $newsApi)
     {
         $this->authorize('data', News::class);
 
-        $perPage = $request->input('perPage', 10);
-        $page = $request->input('page', 1);
+        $perPage = (int) $request->input('perPage', 10);
+        $page = (int) $request->input('page', 1);
         $globalSearch = $request->input('globalSearch', '');
-        $orderDirection = $request->input('orderDirection', 'desc');
-        $orderBy = $request->input('orderBy', 'id');
-        $allowedSorts = ['id', 'title', 'category', 'published_at', 'status', 'created_at', 'updated_at'];
 
-        $query = News::query()
-            ->search($globalSearch)
-            ->orderBy(in_array($orderBy, $allowedSorts, true) ? $orderBy : 'id', $orderDirection === 'asc' ? 'asc' : 'desc');
-
-        $data = $perPage
-            ? $query->paginate($perPage, ['*'], 'page', $page)
-            : $query->get();
-
-        return response()->json($data);
+        return response()->json($newsApi->paginate($page, $perPage, $globalSearch));
     }
 }

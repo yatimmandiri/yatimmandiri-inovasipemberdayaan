@@ -14,14 +14,15 @@ use Spatie\Sluggable\Attributes\Sluggable;
     'title',
     'slug',
     'category',
-    'excerpt',
-    'content',
-    'featured_image',
+    'description',
+    'youtube_url',
+    'youtube_id',
+    'thumbnail_url',
     'published_at',
     'status',
 ])]
 #[Sluggable(from: 'title', to: 'slug')]
-class News extends Model
+class Video extends Model
 {
     use LogsActivity, SoftDeletes;
 
@@ -48,7 +49,8 @@ class News extends Model
             $query->where(function (Builder $query) use ($search) {
                 $query->where('title', 'like', "%{$search}%")
                     ->orWhere('category', 'like', "%{$search}%")
-                    ->orWhere('content', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('youtube_url', 'like', "%{$search}%");
             });
         });
     }
