@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Throwable;
 
 class NewsApiService
 {
@@ -51,13 +52,25 @@ class NewsApiService
 
     private function fetch(array $params = []): array
     {
-        $key = 'external-news:' . md5(json_encode($params));
+        $url = config('services.news_api.posts_url');
 
-        return Cache::remember($key, 3600, function () use ($params) {
+        if (! is_string($url) || blank($url)) {
+            report('News API posts URL is not configured.');
+
+            return [];
+        }
+
+        $key = 'external-news:'.md5($url.json_encode($params));
+
+        if (Cache::has($key)) {
+            return Cache::get($key, []);
+        }
+
+        try {
             $response = Http::timeout(10)
                 ->retry(2, 300)
                 ->acceptJson()
-                ->get(config(env('NEWS_API_POSTS_URL')), $params);
+                ->get($url, $params);
 
             if (! $response->successful()) {
                 report("News API failed with status {$response->status()}");
@@ -65,8 +78,15 @@ class NewsApiService
                 return [];
             }
 
-            return $response->json() ?: [];
-        });
+            $payload = $response->json() ?: [];
+            Cache::put($key, $payload, 3600);
+
+            return $payload;
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return [];
+        }
     }
 
     private function items(array $payload): array
@@ -112,13 +132,54 @@ class NewsApiService
 
     private function image(array $item): ?string
     {
-        $ogImage = data_get($item, 'yoast_head_json.og_image.0.url');
+        $candidates = [
+            data_get($item, 'featured_image'),
+            data_get($item, 'thumbnail'),
+            data_get($item, 'image'),
+            data_get($item, 'better_featured_image.source_url'),
+            data_get($item, '_embedded.wp:featuredmedia.0.source_url'),
+            data_get($item, 'yoast_head_json.og_image.0.url'),
+        ];
 
-        return data_get($item, 'featured_image')
-            ?? data_get($item, 'thumbnail')
-            ?? data_get($item, 'image')
-            ?? data_get($item, 'better_featured_image.source_url')
-            ?? data_get($item, '_embedded.wp:featuredmedia.0.source_url')
-            ?? $ogImage;
+        foreach ($candidates as $candidate) {
+            $url = $this->imageUrl($candidate);
+
+            if ($url) {
+                return $url;
+            }
+        }
+
+        return null;
+    }
+
+    private function imageUrl(mixed $value): ?string
+    {
+        if (is_string($value) && filled($value)) {
+            return $value;
+        }
+
+        if (! is_array($value)) {
+            return null;
+        }
+
+        $nested = data_get($value, 'url')
+            ?? data_get($value, 'source_url')
+            ?? data_get($value, 'src')
+            ?? data_get($value, 'sizes.full')
+            ?? data_get($value, 'sizes.medium');
+
+        if (is_string($nested) && filled($nested)) {
+            return $nested;
+        }
+
+        foreach ($value as $item) {
+            $url = $this->imageUrl($item);
+
+            if ($url) {
+                return $url;
+            }
+        }
+
+        return null;
     }
 }
