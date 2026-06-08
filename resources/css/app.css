@@ -111,6 +111,30 @@
    Layer Components Css
 ======================================== */
 @layer components {
+    .program-swiper .swiper-pagination-bullet {
+        width: 10px;
+        height: 10px;
+    }
+
+    .program-swiper .swiper-pagination-bullet-active {
+        background: #10b981;
+    }
+
+    .program-swiper .swiper-button-prev,
+    .program-swiper .swiper-button-next {
+        color: #10b981;
+        width: 42px;
+        height: 42px;
+        border-radius: 9999px;
+        background: white;
+        box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+    }
+
+    .program-swiper .swiper-button-prev::after,
+    .program-swiper .swiper-button-next::after {
+        font-size: 18px;
+        font-weight: 700;
+    }
 }
 
 /* ========================================

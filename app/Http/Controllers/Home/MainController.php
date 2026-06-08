@@ -12,7 +12,7 @@ class MainController extends Controller
     public function index()
     {
         $sliders = Slider::with(['category.programs'])->get();
-        $categories = Category::with(['programs'])->get();
+        $categories = Category::with(['programs'])->active()->recommended()->get();
         $mitras = Mitra::get();
 
         $data = [
