@@ -1,3 +1,4 @@
+import { ButtonIconComponent } from '@/components/partials/button-component';
 import {
     Dialog,
     DialogPanel,
@@ -8,7 +9,8 @@ import {
     TransitionChild,
 } from '@headlessui/react';
 import { ChevronDown, X } from 'lucide-react';
-import { createContext, Fragment, ReactNode, useContext } from 'react';
+import { createContext, Fragment, ReactNode, useContext, useMemo } from 'react';
+import { BsFacebook, BsInstagram, BsTiktok, BsYoutube } from 'react-icons/bs';
 
 export const SidebarContext = createContext({});
 
@@ -38,8 +40,39 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
         },
     ];
 
+    const socials = useMemo(
+        () => [
+            {
+                id: 1,
+                name: 'Facebook',
+                url: 'https://www.facebook.com/grahayatimmandiri',
+                icon: BsFacebook,
+            },
+            {
+                id: 2,
+                name: 'Instagram',
+                url: 'https://www.instagram.com/grahayatimmandiri',
+                icon: BsInstagram,
+            },
+            {
+                id: 5,
+                name: 'Tiktok',
+                url: 'https://www.tiktok.com/@grahayatimmandiri',
+                icon: BsTiktok,
+            },
+            {
+                id: 6,
+                name: 'Youtube',
+                url: 'https://www.youtube.com/channel/UCG1z6v37-8jz7O7H89q6-0Q',
+                icon: BsYoutube,
+            },
+        ],
+        [],
+    );
+
     const contextValue = {
         menus,
+        socials,
     };
 
     return (
@@ -96,7 +129,7 @@ export const NavigationSidebarComponent = ({
     open,
     onClose,
 }: NavigationSidebarComponentProps) => {
-    const { menus }: any = UseSidebar();
+    const { menus, socials }: any = UseSidebar();
     return (
         <Transition show={open} as={Fragment}>
             <Dialog
@@ -222,15 +255,44 @@ export const NavigationSidebarComponent = ({
                                         </div>
 
                                         {/* Footer CTA */}
-                                        <div className="border-t border-white/10 p-6">
-                                            <div className="grid gap-3">
-                                                <button className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium text-white transition hover:bg-white/10">
-                                                    Login
-                                                </button>
-
-                                                <button className="rounded-2xl bg-primary px-5 py-4 text-sm font-semibold text-white shadow-lg transition hover:opacity-90">
-                                                    Donasi Sekarang
-                                                </button>
+                                        <div className="border-t bg-gray-50 px-5 py-6">
+                                            <div className="space-y-5">
+                                                <div className="space-y-4">
+                                                    <p className="text-center text-sm font-semibold text-gray-700">
+                                                        Temukan & Ikuti Kami
+                                                    </p>
+                                                    <div className="flex flex-wrap justify-center gap-3">
+                                                        {socials?.map(
+                                                            (social: any) => (
+                                                                <a
+                                                                    key={
+                                                                        social.id
+                                                                    }
+                                                                    href={
+                                                                        social.url
+                                                                    }
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="transition-transform hover:scale-105"
+                                                                >
+                                                                    <ButtonIconComponent
+                                                                        icons={
+                                                                            social.icon
+                                                                        }
+                                                                        pill
+                                                                    />
+                                                                </a>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <p className="text-center text-xs leading-5 text-gray-500">
+                                                    Copyright ©{' '}
+                                                    {new Date().getFullYear()}{' '}
+                                                    <span className="font-semibold">
+                                                        Yayasan Yatim Mandiri
+                                                    </span>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>

@@ -1,3 +1,4 @@
+import { AboutSection } from '@/components/sections/home/about-section';
 import { SliderSection } from '@/components/sections/home/slider-section';
 import { usePage } from '@inertiajs/react';
 import { Fragment } from 'react';
@@ -8,6 +9,7 @@ export default function HomePage() {
     return (
         <Fragment>
             <SliderSection />
+            <AboutSection />
             {/* <AboutSection />
             <BeritaSection /> */}
             {/*
