@@ -1,4 +1,5 @@
 import { AboutSection } from '@/components/sections/home/about-section';
+import { BeritaSection } from '@/components/sections/home/berita-section';
 import { CategorySection } from '@/components/sections/home/category-section';
 import { ImpactSection } from '@/components/sections/home/impact-section';
 import { MitraSection } from '@/components/sections/home/mitra-section';
@@ -7,7 +8,7 @@ import { usePage } from '@inertiajs/react';
 import { Fragment } from 'react';
 
 export default function HomePage() {
-    const { categories, testimonials, mitras } = usePage<any>().props;
+    const { categories, testimonials, mitras, news } = usePage<any>().props;
 
     return (
         <Fragment>
@@ -16,8 +17,8 @@ export default function HomePage() {
             <ImpactSection />
             <CategorySection data={categories} />
             <MitraSection data={mitras} />
+            <BeritaSection />
             {/*
-            <BeritaSection news={news} />
             <TestimonialSection testimonials={testimonials} /> */}
         </Fragment>
     );

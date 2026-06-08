@@ -74,7 +74,7 @@ const CategoryItemSection = ({ item, index }: { item: any; index: number }) => {
                     className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
 
                 <div className="absolute top-5 left-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/90 backdrop-blur">
                     <Building2 className="h-7 w-7 text-emerald-600" />
