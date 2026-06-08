@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Home;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company\Category;
+use App\Models\Company\Mitra;
 use App\Models\Company\Slider;
 
 class MainController extends Controller
@@ -12,11 +13,13 @@ class MainController extends Controller
     {
         $sliders = Slider::with(['category.programs'])->get();
         $categories = Category::with(['programs'])->get();
+        $mitras = Mitra::get();
 
         $data = [
             'pageTitle' => 'Home',
             'sliders' => $sliders,
             'categories' => $categories,
+            'mitras' => $mitras,
             'meta' => [
                 'title' => 'Home',
                 'description' => 'Welcome to the Home page.',
