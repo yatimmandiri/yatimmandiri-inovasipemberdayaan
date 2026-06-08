@@ -72,4 +72,18 @@ class MainController extends Controller
 
         return inertia('home/programs/index', $data);
     }
+
+    public function contact()
+    {
+        $data = [
+            'pageTitle' => 'Contact Us',
+            'meta' => [
+                'title' => 'Contact Us',
+                'description' => 'Contact information and form on the Contact.',
+                'keywords' => 'contact, information, form',
+            ],
+        ];
+
+        return inertia('home/contact', $data);
+    }
 }

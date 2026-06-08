@@ -102,39 +102,6 @@ export const SliderItemSection = ({ item, index }: SliderItemSectionProps) => {
 export const SliderSection = () => {
     const { sliders } = usePage<any>().props;
 
-    console.log(sliders);
-
-    const items = [
-        {
-            title: 'Inovasi untuk Pemberdayaan Umat',
-            image: 'https://picsum.photos/1920/1080?random=11',
-            description:
-                'Menghadirkan solusi digital, pendidikan, dan sosial untuk menciptakan dampak nyata bagi masyarakat.',
-            buttonText: 'Lihat Program',
-        },
-        {
-            title: 'Membangun Kemandirian Bersama',
-            image: 'https://picsum.photos/1920/1080?random=12',
-            description:
-                'Program pemberdayaan ekonomi dan pelatihan untuk mendukung masyarakat menjadi lebih mandiri.',
-            buttonText: 'Pelajari Selengkapnya',
-        },
-        {
-            title: 'Teknologi untuk Kebaikan',
-            image: 'https://picsum.photos/1920/1080?random=13',
-            description:
-                'Memanfaatkan teknologi dan inovasi untuk memperluas manfaat pendidikan, donasi, dan layanan sosial.',
-            buttonText: 'Mulai Sekarang',
-        },
-        {
-            title: 'Kolaborasi Menciptakan Perubahan',
-            image: 'https://picsum.photos/1920/1080?random=14',
-            description:
-                'Bersama komunitas, relawan, dan mitra untuk menghadirkan perubahan yang berkelanjutan.',
-            buttonText: 'Gabung Bersama Kami',
-        },
-    ];
-
     return (
         <section className="relative overflow-hidden">
             <Swiper
