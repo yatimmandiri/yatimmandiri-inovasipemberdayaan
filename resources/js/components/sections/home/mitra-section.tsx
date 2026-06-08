@@ -1,50 +1,7 @@
 import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-export const MitraSection = () => {
-    const partners = [
-        {
-            name: 'Telkomsel',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-        {
-            name: 'Google',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-        {
-            name: 'Microsoft',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-        {
-            name: 'Amazon Web Services',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-        {
-            name: 'Shopee',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-        {
-            name: 'Tokopedia',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-        {
-            name: 'Tokopedia2',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-        {
-            name: 'Tokopedia3',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-        {
-            name: 'Tokopedia4',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-        {
-            name: 'Tokopedia5',
-            logo: 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp',
-        },
-    ];
-
+export const MitraSection = ({ data }: { data: any }) => {
     return (
         <section className="bg-slate-50 py-20">
             <div className="relative container mx-auto max-w-7xl px-6">
@@ -95,8 +52,8 @@ export const MitraSection = () => {
                         },
                     }}
                 >
-                    {partners.map((item) => (
-                        <SwiperSlide key={item.name}>
+                    {data?.map((item: any, i: number) => (
+                        <SwiperSlide key={i}>
                             <MitraItemSection item={item} />
                         </SwiperSlide>
                     ))}
@@ -110,7 +67,11 @@ export const MitraItemSection = ({ item }: { item: any }) => {
     return (
         <div className="flex h-32 items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
             <img
-                src={item.logo}
+                src={
+                    item.logo
+                        ? `/storage/${item.logo}`
+                        : 'https://img.maxsi.id/assets/logo-telkomsel-baru.DYhv_uL8_Zecqio.webp'
+                }
                 alt={item.name}
                 className="max-h-14 w-auto object-contain grayscale transition-all duration-300 hover:grayscale-0"
             />
