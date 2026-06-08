@@ -62,11 +62,7 @@ export const TestimonialItemComponent = ({
     );
 };
 
-export const TestimonialSection = ({
-    testimonials = [],
-}: {
-    testimonials?: TestimonialItem[];
-}) => {
+export const TestimonialSection = ({ data }: { data?: any }) => {
     const fallbackTestimonials: TestimonialItem[] = [
         {
             id: 1,
@@ -101,7 +97,6 @@ export const TestimonialSection = ({
                 'Bantuan pendidikan dan mentoring membuat saya lebih percaya diri untuk meraih cita-cita.',
         },
     ];
-    const items = testimonials.length > 0 ? testimonials : fallbackTestimonials;
 
     return (
         <section
@@ -148,8 +143,8 @@ export const TestimonialSection = ({
                     }}
                     className="testimonial-swiper pb-14!"
                 >
-                    {items.map((item, index) => (
-                        <SwiperSlide key={item.id || index} className="h-auto">
+                    {data?.map((item: any, i: number) => (
+                        <SwiperSlide key={i} className="h-auto">
                             <TestimonialItemComponent
                                 name={item.name}
                                 role={item.position || 'Penerima Manfaat'}
@@ -158,7 +153,7 @@ export const TestimonialSection = ({
                                         ? item.photo
                                         : item.photo
                                           ? `/storage/${item.photo}`
-                                          : `https://i.pravatar.cc/300?img=${index + 20}`
+                                          : `https://picsum.photos/1920/1080?random=${i}`
                                 }
                                 message={item.description}
                                 rating={item.rating || 5}

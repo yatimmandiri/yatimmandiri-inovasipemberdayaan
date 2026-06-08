@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Company\Slider;
-use App\Models\Core\Permission;
 use Illuminate\Database\Seeder;
 
 class SliderSeeder extends Seeder
@@ -13,14 +12,6 @@ class SliderSeeder extends Seeder
      */
     public function run(): void
     {
-        collect([
-            ['name' => 'view-slider', 'guard_name' => 'web'],
-            ['name' => 'create-slider', 'guard_name' => 'web'],
-            ['name' => 'update-slider', 'guard_name' => 'web'],
-            ['name' => 'delete-slider', 'guard_name' => 'web'],
-            ['name' => 'data-slider', 'guard_name' => 'web'],
-        ])->each(fn($permission) => Permission::create($permission)->assignRole(['Administrators', 'Editors']));
-
         collect([
             [
                 'title' => 'Panen Harapan, Menuai Kesejahteraan',

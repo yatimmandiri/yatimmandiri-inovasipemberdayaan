@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Company\Program;
-use App\Models\Core\Permission;
 use Illuminate\Database\Seeder;
 
 class ProgramSeeder extends Seeder
@@ -13,14 +12,6 @@ class ProgramSeeder extends Seeder
      */
     public function run(): void
     {
-        collect([
-            ['name' => 'view-program', 'guard_name' => 'web'],
-            ['name' => 'create-program', 'guard_name' => 'web'],
-            ['name' => 'update-program', 'guard_name' => 'web'],
-            ['name' => 'delete-program', 'guard_name' => 'web'],
-            ['name' => 'data-program', 'guard_name' => 'web'],
-        ])->each(fn($permission) => Permission::create($permission)->assignRole(['Administrators', 'Editors']));
-
         collect([
             [
                 'name' => 'Agro Produktif Nusantara',

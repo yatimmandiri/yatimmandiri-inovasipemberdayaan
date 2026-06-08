@@ -3,20 +3,20 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import {
-	NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
-	isValidUrl,
+    NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
+    isValidUrl,
 } from "@/lib/tiptap-utils";
 import { cn } from "@/lib/utils";
 import {
-	type CommandProps,
-	Node,
-	type NodeViewProps,
-	NodeViewWrapper,
-	ReactNodeViewRenderer,
-	mergeAttributes,
+    type CommandProps,
+    Node,
+    type NodeViewProps,
+    NodeViewWrapper,
+    ReactNodeViewRenderer,
+    mergeAttributes,
 } from "@tiptap/react";
 import { Image, Link, Loader2, Upload, X } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { useState } from "react";
 
 export interface ImagePlaceholderOptions {
 	HTMLAttributes: Record<string, any>;
@@ -91,7 +91,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
 		error,
 	} = useImageUpload({
 		onUpload: (imageUrl) => {
-			editor.chain().focus().setImage({ 
+			editor.chain().focus().setImage({
 				src: imageUrl,
 				alt: altText || fileInputRef.current?.files?.[0]?.name
 			}).run();
@@ -134,7 +134,7 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
 		}
 	};
 
-	const handleInsertEmbed = (e: FormEvent) => {
+	const handleInsertEmbed = (e: any) => {
 		e.preventDefault();
 		const valid = isValidUrl(url);
 		if (!valid) {

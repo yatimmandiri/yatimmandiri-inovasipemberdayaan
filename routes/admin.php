@@ -3,7 +3,9 @@
 use App\Http\Controllers\Admin\Company\CategoryController;
 use App\Http\Controllers\Admin\Company\MitraController;
 use App\Http\Controllers\Admin\Company\ProgramController;
+use App\Http\Controllers\Admin\Company\ReviewController;
 use App\Http\Controllers\Admin\Company\SliderController;
+use App\Http\Controllers\Admin\Company\TestimonialController;
 use App\Http\Controllers\Admin\Core\PermissionController;
 use App\Http\Controllers\Admin\Core\Region\DistrictController;
 use App\Http\Controllers\Admin\Core\Region\ProvinceController;
@@ -76,5 +78,11 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
 
         Route::get('mitras/data', [MitraController::class, 'getData'])->name('mitras.data');
         Route::resource('mitras', MitraController::class);
+
+        Route::get('reviews/data', [ReviewController::class, 'getData'])->name('reviews.data');
+        Route::resource('reviews', ReviewController::class);
+
+        Route::get('testimonials/data', [TestimonialController::class, 'getData'])->name('testimonials.data');
+        Route::resource('testimonials', TestimonialController::class);
     });
 });

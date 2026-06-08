@@ -142,3 +142,73 @@ Breadcrumbs::for(
     fn(BreadcrumbTrail $trail) =>
     $trail->parent('admin.companies.programs.index')->push('Program Data', route('admin.companies.programs.data'))
 );
+
+// Testimonial Index
+Breadcrumbs::for(
+    'admin.companies.testimonials.index',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.dashboard')->push('Testimonial Companies', route('admin.companies.testimonials.index'))
+);
+
+// Testimonial Create
+Breadcrumbs::for(
+    'admin.companies.testimonials.create',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.testimonials.index')->push('Create', route('admin.companies.testimonials.create'))
+);
+
+// Testimonial Show
+Breadcrumbs::for(
+    'admin.companies.testimonials.show',
+    fn(BreadcrumbTrail $trail, $testimonial) =>
+    $trail->parent('admin.companies.testimonials.index')->push($testimonial->name, route('admin.companies.testimonials.show', $testimonial))
+);
+
+// Testimonial Edit
+Breadcrumbs::for(
+    'admin.companies.testimonials.edit',
+    fn(BreadcrumbTrail $trail, $testimonial) =>
+    $trail->parent('admin.companies.testimonials.show', $testimonial)->push('Edit', route('admin.companies.testimonials.edit', $testimonial))
+);
+
+// Testimonial Data
+Breadcrumbs::for(
+    'admin.companies.testimonials.data',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.testimonials.index')->push('Testimonial Companies Data', route('admin.companies.testimonials.data'))
+);
+
+// Review Index
+Breadcrumbs::for(
+    'admin.companies.reviews.index',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.dashboard')->push('Review Companies', route('admin.companies.reviews.index'))
+);
+
+// Review Create
+Breadcrumbs::for(
+    'admin.companies.reviews.create',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.reviews.index')->push('Create', route('admin.companies.reviews.create'))
+);
+
+// Review Show
+Breadcrumbs::for(
+    'admin.companies.reviews.show',
+    fn(BreadcrumbTrail $trail, $review) =>
+    $trail->parent('admin.companies.reviews.index')->push($review->name, route('admin.companies.reviews.show', $review))
+);
+
+// Review Edit
+Breadcrumbs::for(
+    'admin.companies.reviews.edit',
+    fn(BreadcrumbTrail $trail, $review) =>
+    $trail->parent('admin.companies.reviews.show', $review)->push('Edit', route('admin.companies.reviews.edit', $review))
+);
+
+// Review Data
+Breadcrumbs::for(
+    'admin.companies.reviews.data',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.reviews.index')->push('Review Companies Data', route('admin.companies.reviews.data'))
+);
