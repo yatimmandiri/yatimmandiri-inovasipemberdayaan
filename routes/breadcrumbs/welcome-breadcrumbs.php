@@ -14,3 +14,7 @@ Breadcrumbs::for('home.about', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('home.contact', function (BreadcrumbTrail $trail) {
     $trail->push('Contact Us', route('home.contact'));
 });
+
+Breadcrumbs::for('home.berita', function (BreadcrumbTrail $trail) {
+    $trail->push('Berita', route('home.berita'));
+});
