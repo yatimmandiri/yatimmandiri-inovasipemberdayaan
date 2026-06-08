@@ -1,7 +1,9 @@
 import categories from '@/routes/admin/companies/categories';
 import mitras from '@/routes/admin/companies/mitras';
 import programs from '@/routes/admin/companies/programs';
+import reviews from '@/routes/admin/companies/reviews';
 import sliders from '@/routes/admin/companies/sliders';
+import testimonials from '@/routes/admin/companies/testimonials';
 import permissions from '@/routes/admin/core/permissions';
 import districts from '@/routes/admin/core/regions/districts';
 import provinces from '@/routes/admin/core/regions/provinces';
@@ -132,6 +134,18 @@ export const NavigationList = [
                         title: 'Mitra',
                         href: mitras.index().url,
                         permission: 'view-mitra',
+                        icon: ChevronRight,
+                    },
+                    {
+                        title: 'Reviews',
+                        href: reviews.index().url,
+                        permission: 'view-review',
+                        icon: ChevronRight,
+                    },
+                    {
+                        title: 'Testimonials',
+                        href: testimonials.index().url,
+                        permission: 'view-testimonial',
                         icon: ChevronRight,
                     },
                 ],

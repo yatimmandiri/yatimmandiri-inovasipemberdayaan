@@ -11,19 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('programs', function (Blueprint $table) {
+        Schema::create('testimonials', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug');
-            $table->text('excerpt')->nullable();
-            $table->text('description')->nullable();
-            $table->string('featured_image')->nullable();
-            $table->text('benefits')->nullable();
-            $table->boolean('status')->default(true);
-            $table->boolean('recommended')->default(false);
+            $table->string('position');
+            $table->text('description');
+            $table->string('photo')->nullable();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -32,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('programs');
+        Schema::dropIfExists('testimonials');
     }
 };

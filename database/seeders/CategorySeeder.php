@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Company\Category;
-use App\Models\Core\Permission;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -13,14 +12,6 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        collect([
-            ['name' => 'view-category', 'guard_name' => 'web'],
-            ['name' => 'create-category', 'guard_name' => 'web'],
-            ['name' => 'update-category', 'guard_name' => 'web'],
-            ['name' => 'delete-category', 'guard_name' => 'web'],
-            ['name' => 'data-category', 'guard_name' => 'web'],
-        ])->each(fn($permission) => Permission::create($permission)->assignRole(['Administrators', 'Editors']));
-
         collect([
             [
                 'name' => 'Pertanian dan Perkebunan',

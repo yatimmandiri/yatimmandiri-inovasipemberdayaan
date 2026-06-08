@@ -1,6 +1,6 @@
 import { PopoverClose } from "@radix-ui/react-popover";
 import { Trash2, X } from "lucide-react";
-import { ComponentPropsWithoutRef, FormEvent, forwardRef, useEffect, useState } from "react";
+import { ComponentPropsWithoutRef, forwardRef, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ const LinkToolbar = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
     const { editor } = useToolbar();
     const [link, setLink] = useState("");
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = (e: any) => {
       e.preventDefault();
       const url = getUrlFromString(link);
       if (url) editor?.chain().focus().setLink({ href: url }).run();
