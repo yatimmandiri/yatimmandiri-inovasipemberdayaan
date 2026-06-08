@@ -60,18 +60,18 @@ export const BeritaSection = ({ news = [] }: { news?: NewsItem[] | any }) => {
     const extraArticles = secondary.slice(2);
 
     return (
-        <section id="berita" className="bg-white py-24">
-            <div className="mx-auto max-w-7xl px-6">
-                <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <section id="berita" className="bg-white py-16 md:py-20">
+            <div className="mx-auto max-w-6xl px-6">
+                <div className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                     <div className="max-w-3xl">
                         <span className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-5 py-2 text-sm font-bold text-orange-600">
                             <Newspaper className="h-4 w-4" />
                             Berita & Artikel
                         </span>
-                        <h2 className="mt-6 text-4xl leading-tight font-black tracking-tight text-slate-950 md:text-5xl">
+                        <h2 className="mt-6 text-3xl leading-tight font-black tracking-tight text-slate-950 md:text-4xl">
                             Cerita Terbaru dari Program Pemberdayaan
                         </h2>
-                        <p className="mt-5 text-lg leading-relaxed text-slate-600">
+                        <p className="mt-4 text-base leading-relaxed text-slate-600">
                             Ikuti perkembangan kegiatan, kabar kolaborasi, dan
                             kisah dampak yang tumbuh bersama masyarakat.
                         </p>
@@ -85,9 +85,9 @@ export const BeritaSection = ({ news = [] }: { news?: NewsItem[] | any }) => {
                     </a>
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
+                <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr]">
                     {featured && <FeaturedNewsCard item={featured} />}
-                    <div className="grid gap-6">
+                    <div className="grid gap-5">
                         {compactArticles.map((item) => (
                             <CompactNewsCard key={item.id} item={item} />
                         ))}
@@ -95,7 +95,7 @@ export const BeritaSection = ({ news = [] }: { news?: NewsItem[] | any }) => {
                 </div>
 
                 {extraArticles.length > 0 && (
-                    <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                         {extraArticles.map((item) => (
                             <StackedNewsCard key={item.id} item={item} />
                         ))}
@@ -110,24 +110,24 @@ const FeaturedNewsCard = ({ item }: { item: NewsItem }) => {
     const image = getNewsImage(item, 70);
 
     return (
-        <article className="group relative min-h-[460px] overflow-hidden rounded-3xl bg-slate-950 text-white shadow-sm">
+        <article className="group relative min-h-[340px] overflow-hidden rounded-2xl bg-slate-950 text-white shadow-sm md:min-h-[390px]">
             <img
                 src={image}
                 alt={item.title}
                 className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/45 to-transparent" />
-            <div className="relative flex min-h-[460px] flex-col justify-end p-8 md:p-10">
+            <div className="relative flex min-h-[340px] flex-col justify-end p-6 md:min-h-[390px] md:p-7">
                 <NewsMeta item={item} tone="dark" />
-                <h3 className="mt-5 max-w-2xl text-3xl leading-tight font-black tracking-tight md:text-4xl">
+                <h3 className="mt-4 max-w-2xl text-2xl leading-tight font-black tracking-tight md:text-3xl">
                     {item.title}
                 </h3>
-                <p className="mt-5 line-clamp-3 max-w-2xl text-base leading-relaxed text-white/80">
+                <p className="mt-4 line-clamp-3 max-w-2xl text-sm leading-relaxed text-white/80">
                     {item.excerpt || item.content}
                 </p>
                 <a
                     href={`/berita/${item.slug}`}
-                    className="mt-8 inline-flex w-fit items-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-bold text-slate-950 transition hover:gap-4 hover:bg-orange-50"
+                    className="mt-6 inline-flex w-fit items-center gap-3 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:gap-4 hover:bg-orange-50"
                 >
                     Baca Selengkapnya
                     <ArrowRight className="h-4 w-4" />
@@ -141,27 +141,27 @@ const CompactNewsCard = ({ item }: { item: NewsItem }) => {
     const image = getNewsImage(item, 80);
 
     return (
-        <article className="group grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl sm:grid-cols-[220px_1fr]">
-            <div className="h-56 overflow-hidden bg-slate-100 sm:h-full">
+        <article className="group grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl sm:grid-cols-[180px_1fr]">
+            <div className="h-44 overflow-hidden bg-slate-100 sm:h-full">
                 <img
                     src={image}
                     alt={item.title}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 />
             </div>
-            <div className="flex flex-col justify-between p-6">
+            <div className="flex flex-col justify-between p-5">
                 <div>
                     <NewsMeta item={item} />
-                    <h3 className="mt-4 text-2xl leading-tight font-black text-slate-950">
+                    <h3 className="mt-3 text-xl leading-tight font-black text-slate-950">
                         {item.title}
                     </h3>
-                    <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-slate-600">
+                    <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-slate-600">
                         {item.excerpt || item.content}
                     </p>
                 </div>
                 <a
                     href={`/berita/${item.slug}`}
-                    className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-orange-600 transition hover:gap-3"
+                    className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-orange-600 transition hover:gap-3"
                 >
                     Baca Artikel
                     <ArrowRight className="h-4 w-4" />
@@ -175,25 +175,25 @@ const StackedNewsCard = ({ item }: { item: NewsItem }) => {
     const image = getNewsImage(item, 95);
 
     return (
-        <article className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-            <div className="h-52 overflow-hidden bg-slate-100">
+        <article className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+            <div className="h-44 overflow-hidden bg-slate-100">
                 <img
                     src={image}
                     alt={item.title}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 />
             </div>
-            <div className="p-6">
+            <div className="p-5">
                 <NewsMeta item={item} />
-                <h3 className="mt-4 text-xl leading-tight font-black text-slate-950">
+                <h3 className="mt-3 text-lg leading-tight font-black text-slate-950">
                     {item.title}
                 </h3>
-                <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-slate-600">
+                <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-slate-600">
                     {item.excerpt || item.content}
                 </p>
                 <a
                     href={`/berita/${item.slug}`}
-                    className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-orange-600 transition hover:gap-3"
+                    className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-orange-600 transition hover:gap-3"
                 >
                     Baca Artikel
                     <ArrowRight className="h-4 w-4" />

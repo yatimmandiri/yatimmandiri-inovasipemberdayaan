@@ -1,4 +1,12 @@
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { ArrowRight, PlayCircle } from 'lucide-react';
+import { useState } from 'react';
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -11,6 +19,14 @@ type SliderItemSectionProps = {
     image: string;
     description: string;
     buttonText: string;
+    video: ProgramVideo;
+    onPlayVideo: (video: ProgramVideo) => void;
+};
+
+type ProgramVideo = {
+    title: string;
+    description: string;
+    embedUrl: string;
 };
 
 export const SliderItemSection = ({
@@ -18,6 +34,8 @@ export const SliderItemSection = ({
     image,
     description,
     buttonText,
+    video,
+    onPlayVideo,
 }: SliderItemSectionProps) => {
     return (
         <div className="relative min-h-162.5 overflow-hidden sm:min-h-180 lg:h-195">
@@ -65,7 +83,11 @@ export const SliderItemSection = ({
                                 />
                             </button>
 
-                            <button className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20 sm:w-auto sm:px-6 sm:py-4 sm:text-base">
+                            <button
+                                type="button"
+                                onClick={() => onPlayVideo(video)}
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20 sm:w-auto sm:px-6 sm:py-4 sm:text-base"
+                            >
                                 <PlayCircle size={20} />
                                 Video Program
                             </button>
@@ -121,6 +143,10 @@ export const SliderItemSection = ({
 };
 
 export const SliderSection = () => {
+    const [selectedVideo, setSelectedVideo] = useState<ProgramVideo | null>(
+        null,
+    );
+
     const items = [
         {
             title: 'Inovasi untuk Pemberdayaan Umat',
@@ -128,6 +154,13 @@ export const SliderSection = () => {
             description:
                 'Menghadirkan solusi digital, pendidikan, dan sosial untuk menciptakan dampak nyata bagi masyarakat.',
             buttonText: 'Lihat Program',
+            video: {
+                title: 'Video Program Inovasi Pemberdayaan',
+                description:
+                    'Gambaran umum program pemberdayaan masyarakat berbasis inovasi dan kolaborasi.',
+                embedUrl:
+                    'https://www.youtube.com/embed/ysz5S6PUM-U?rel=0&modestbranding=1',
+            },
         },
         {
             title: 'Membangun Kemandirian Bersama',
@@ -135,6 +168,13 @@ export const SliderSection = () => {
             description:
                 'Program pemberdayaan ekonomi dan pelatihan untuk mendukung masyarakat menjadi lebih mandiri.',
             buttonText: 'Pelajari Selengkapnya',
+            video: {
+                title: 'Video Program Kemandirian Ekonomi',
+                description:
+                    'Contoh cerita pelatihan, pendampingan usaha, dan penguatan ekonomi keluarga.',
+                embedUrl:
+                    'https://www.youtube.com/embed/aqz-KE-bpKQ?rel=0&modestbranding=1',
+            },
         },
         {
             title: 'Teknologi untuk Kebaikan',
@@ -142,6 +182,13 @@ export const SliderSection = () => {
             description:
                 'Memanfaatkan teknologi dan inovasi untuk memperluas manfaat pendidikan, donasi, dan layanan sosial.',
             buttonText: 'Mulai Sekarang',
+            video: {
+                title: 'Video Program Teknologi untuk Kebaikan',
+                description:
+                    'Inspirasi pemanfaatan teknologi untuk memperluas dampak sosial dan edukasi.',
+                embedUrl:
+                    'https://www.youtube.com/embed/jNQXAC9IVRw?rel=0&modestbranding=1',
+            },
         },
         {
             title: 'Kolaborasi Menciptakan Perubahan',
@@ -149,6 +196,13 @@ export const SliderSection = () => {
             description:
                 'Bersama komunitas, relawan, dan mitra untuk menghadirkan perubahan yang berkelanjutan.',
             buttonText: 'Gabung Bersama Kami',
+            video: {
+                title: 'Video Kolaborasi Program Sosial',
+                description:
+                    'Cerita kolaborasi mitra, komunitas, dan relawan dalam membangun dampak berkelanjutan.',
+                embedUrl:
+                    'https://www.youtube.com/embed/M7lc1UVf-VE?rel=0&modestbranding=1',
+            },
         },
     ];
 
@@ -176,10 +230,42 @@ export const SliderSection = () => {
                             image={item.image}
                             description={item.description}
                             buttonText={item.buttonText}
+                            video={item.video}
+                            onPlayVideo={setSelectedVideo}
                         />
                     </SwiperSlide>
                 ))}
             </Swiper>
+
+            <Dialog
+                open={Boolean(selectedVideo)}
+                onOpenChange={(open) => !open && setSelectedVideo(null)}
+            >
+                <DialogContent className="border-white/10 bg-slate-950 p-0 text-white shadow-2xl sm:max-w-4xl">
+                    {selectedVideo && (
+                        <div className="overflow-hidden rounded-lg">
+                            <DialogHeader className="px-5 pt-5 pb-4 text-left sm:px-6">
+                                <DialogTitle className="text-xl font-black text-white sm:text-2xl">
+                                    {selectedVideo.title}
+                                </DialogTitle>
+                                <DialogDescription className="text-sm leading-relaxed text-white/70">
+                                    {selectedVideo.description}
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="aspect-video w-full bg-black">
+                                <iframe
+                                    src={selectedVideo.embedUrl}
+                                    title={selectedVideo.title}
+                                    className="h-full w-full"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                />
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </section>
     );
 };

@@ -26,7 +26,7 @@ export const HomeHeaderComponent = () => {
             <header
                 className={`fixed top-0 left-0 z-50 w-full transition-all duration-300 ${
                     isScrolled
-                        ? 'border-b border-white/10 bg-slate-950/80 shadow-2xl backdrop-blur-xl'
+                        ? 'border-b border-white/10 bg-slate-950 shadow-2xl'
                         : 'bg-transparent'
                 }`}
             >
