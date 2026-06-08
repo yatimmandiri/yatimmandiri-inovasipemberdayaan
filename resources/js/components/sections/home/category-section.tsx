@@ -3,6 +3,8 @@ import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 export const CategorySection = ({ data }: { data: any[] }) => {
+    const items = Array.isArray(data) ? data : [];
+
     return (
         <section
             id="program"
@@ -48,51 +50,61 @@ export const CategorySection = ({ data }: { data: any[] }) => {
                     }}
                     className="program-swiper pb-14!"
                 >
-                    {data?.map((item, index) => (
+                    {items.map((item, index) => (
                         <SwiperSlide key={item.id || index}>
-                            <CategoryItemSection item={item} index={index} />
+                            <ProgramItemSection item={item} index={index} />
                         </SwiperSlide>
                     ))}
                 </Swiper>
+
+                {items.length === 0 && (
+                    <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+                        <p className="text-lg font-bold text-slate-900">
+                            Belum ada program unggulan
+                        </p>
+                        <p className="mt-2 text-slate-600">
+                            Tandai program sebagai recommended dari dashboard
+                            admin untuk menampilkannya di sini.
+                        </p>
+                    </div>
+                )}
             </div>
         </section>
     );
 };
 
-const CategoryItemSection = ({ item, index }: { item: any; index: number }) => {
+const ProgramItemSection = ({ item, index }: { item: any; index: number }) => {
     const benefits = item.benefits ? item.benefits.split(';').slice(0, 3) : [];
 
     return (
-        <div className="group flex h-full min-h-155 flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-emerald-300 hover:shadow-2xl">
-            <div className="relative h-64 overflow-hidden">
+        <a
+            href={`/program/${item.slug}`}
+            className="group flex h-full min-h-140 flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+        >
+            <div className="relative h-56 overflow-hidden">
                 <img
-                    src={
-                        item.featured_image ||
-                        `https://picsum.photos/1000/720?random=${index}`
-                    }
+                    src={getImage(item.featured_image, index)}
                     alt={item.name}
                     className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                 />
 
-                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/65 to-transparent" />
 
-                <div className="absolute top-5 left-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/90 backdrop-blur">
+                <div className="absolute top-5 left-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/90">
                     <Building2 className="h-7 w-7 text-emerald-600" />
                 </div>
             </div>
-            <div className="flex flex-1 flex-col p-8">
-                <div className="mb-4 flex items-center justify-between">
-                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                        {item.programs?.length || 0} Program
-                    </span>
-                </div>
-                <h3 className="mb-4 line-clamp-2 text-2xl font-bold text-slate-900">
+            <div className="flex flex-1 flex-col p-6">
+                <span className="w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+                    {item.category?.name || 'Program'}
+                </span>
+                <h3 className="mt-4 text-2xl font-black text-slate-950">
                     {item.name}
                 </h3>
-                <p className="line-clamp-3 text-sm leading-relaxed text-slate-600">
-                    {item.description}
+                <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600">
+                    {item.excerpt || item.description}
                 </p>
-                <ul className="mt-6 space-y-3">
+                <ul className="mt-5 space-y-2">
                     {benefits.map((benefit: string) => (
                         <li
                             key={benefit}
@@ -103,16 +115,21 @@ const CategoryItemSection = ({ item, index }: { item: any; index: number }) => {
                         </li>
                     ))}
                 </ul>
-                <div className="mt-auto pt-8">
-                    <button
-                        type="button"
-                        className="inline-flex items-center gap-2 font-medium text-emerald-600 transition-all hover:gap-3"
-                    >
-                        Pelajari Selengkapnya
-                        <ArrowRight className="h-4 w-4" />
-                    </button>
-                </div>
+                <span className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-bold text-emerald-600 transition group-hover:gap-3">
+                    Pelajari Selengkapnya
+                    <ArrowRight className="h-4 w-4" />
+                </span>
             </div>
-        </div>
+        </a>
     );
+};
+
+const getImage = (path: string | null | undefined, index: number) => {
+    if (!path) {
+        return `https://picsum.photos/1000/720?random=${index + 40}`;
+    }
+
+    return path.startsWith('http') || path.startsWith('/')
+        ? path
+        : `/storage/${path}`;
 };
