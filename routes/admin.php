@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\Company\CategoryController;
+use App\Http\Controllers\Admin\Company\MitraController;
+use App\Http\Controllers\Admin\Company\ProgramController;
+use App\Http\Controllers\Admin\Company\SliderController;
 use App\Http\Controllers\Admin\Core\PermissionController;
 use App\Http\Controllers\Admin\Core\Region\DistrictController;
 use App\Http\Controllers\Admin\Core\Region\ProvinceController;
@@ -8,13 +12,8 @@ use App\Http\Controllers\Admin\Core\Region\VillageController;
 use App\Http\Controllers\Admin\Core\RoleController;
 use App\Http\Controllers\Admin\Core\UserController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\NewsController;
-use App\Http\Controllers\Admin\ProgramCategoryController;
-use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\Settings\LogActivityController;
 use App\Http\Controllers\Admin\Settings\SiteSettingsController;
-use App\Http\Controllers\Admin\SponsorshipInquiryController;
-use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,26 +32,6 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
         Route::get('activities/data', [LogActivityController::class, 'getData'])->name('activities.data');
         Route::get('activities', [LogActivityController::class, 'index'])->name('activities.index');
     });
-
-    Route::put('programs/{program}/status', [ProgramController::class, 'status'])->name('programs.status');
-    Route::get('programs/data', [ProgramController::class, 'getData'])->name('programs.data');
-    Route::resource('programs', ProgramController::class);
-
-    Route::put('program-categories/{programCategory}/status', [ProgramCategoryController::class, 'status'])->name('program-categories.status');
-    Route::get('program-categories/data', [ProgramCategoryController::class, 'getData'])->name('program-categories.data');
-    Route::resource('program-categories', ProgramCategoryController::class);
-
-    Route::put('testimonials/{testimonial}/status', [TestimonialController::class, 'status'])->name('testimonials.status');
-    Route::get('testimonials/data', [TestimonialController::class, 'getData'])->name('testimonials.data');
-    Route::resource('testimonials', TestimonialController::class);
-
-    Route::put('news/{news}/status', [NewsController::class, 'status'])->name('news.status');
-    Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');
-    Route::resource('news', NewsController::class);
-
-    Route::put('sponsorship-inquiries/{sponsorshipInquiry}/status', [SponsorshipInquiryController::class, 'status'])->name('sponsorship-inquiries.status');
-    Route::get('sponsorship-inquiries/data', [SponsorshipInquiryController::class, 'getData'])->name('sponsorship-inquiries.data');
-    Route::resource('sponsorship-inquiries', SponsorshipInquiryController::class);
 
     Route::prefix('core')->as('core.')->group(function () {
         Route::get('permissions/data', [PermissionController::class, 'getData'])->name('permissions.data');
@@ -79,5 +58,23 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
             Route::get('villages/data', [VillageController::class, 'getData'])->name('villages.data');
             Route::resource('villages', VillageController::class);
         });
+    });
+
+    Route::prefix('companies')->as('companies.')->group(function () {
+        Route::put('categories/{category}/recommended', [CategoryController::class, 'recommended'])->name('categories.recommended');
+        Route::put('categories/{category}/status', [CategoryController::class, 'status'])->name('categories.status');
+        Route::get('categories/data', [CategoryController::class, 'getData'])->name('categories.data');
+        Route::resource('categories', CategoryController::class);
+
+        Route::put('programs/{program}/recommended', [ProgramController::class, 'recommended'])->name('programs.recommended');
+        Route::put('programs/{program}/status', [ProgramController::class, 'status'])->name('programs.status');
+        Route::get('programs/data', [ProgramController::class, 'getData'])->name('programs.data');
+        Route::resource('programs', ProgramController::class);
+
+        Route::get('sliders/data', [SliderController::class, 'getData'])->name('sliders.data');
+        Route::resource('sliders', SliderController::class);
+
+        Route::get('mitras/data', [MitraController::class, 'getData'])->name('mitras.data');
+        Route::resource('mitras', MitraController::class);
     });
 });
