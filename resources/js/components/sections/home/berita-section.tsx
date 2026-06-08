@@ -5,6 +5,7 @@ type NewsItem = {
     id: number;
     title: string;
     slug: string;
+    url?: string;
     category?: string;
     excerpt?: string;
     content: string;
@@ -16,6 +17,7 @@ const fallbackArticles: NewsItem[] = [
     {
         id: 1,
         slug: 'pelatihan-digital-marketing-untuk-umkm',
+        url: '/berita/pelatihan-digital-marketing-untuk-umkm',
         title: 'Pelatihan Digital Marketing untuk UMKM',
         category: 'Pelatihan',
         published_at: '2026-06-03',
@@ -28,6 +30,7 @@ const fallbackArticles: NewsItem[] = [
     {
         id: 2,
         slug: 'penyaluran-bantuan-pendidikan',
+        url: '/berita/penyaluran-bantuan-pendidikan',
         title: 'Penyaluran Bantuan Pendidikan',
         category: 'Pendidikan',
         published_at: '2026-05-28',
@@ -41,6 +44,7 @@ const fallbackArticles: NewsItem[] = [
         id: 3,
         slug: 'workshop-pengembangan-komunitas',
         title: 'Workshop Pengembangan Komunitas',
+        url: '/berita/workshop-pengembangan-komunitas',
         category: 'Komunitas',
         published_at: '2026-05-20',
         featured_image: 'https://picsum.photos/900/640?random=54',
@@ -126,7 +130,7 @@ const FeaturedNewsCard = ({ item }: { item: NewsItem }) => {
                     {item.excerpt || item.content}
                 </p>
                 <a
-                    href={`/berita/${item.slug}`}
+                    href={item.url}
                     className="mt-6 inline-flex w-fit items-center gap-3 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:gap-4 hover:bg-orange-50"
                 >
                     Baca Selengkapnya
@@ -160,7 +164,8 @@ const CompactNewsCard = ({ item }: { item: NewsItem }) => {
                     </p>
                 </div>
                 <a
-                    href={`/berita/${item.slug}`}
+                    href={item.url}
+                    target="_blank"
                     className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-orange-600 transition hover:gap-3"
                 >
                     Baca Artikel
@@ -192,7 +197,8 @@ const StackedNewsCard = ({ item }: { item: NewsItem }) => {
                     {item.excerpt || item.content}
                 </p>
                 <a
-                    href={`/berita/${item.slug}`}
+                    href={item.url}
+                    target="_blank"
                     className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-orange-600 transition hover:gap-3"
                 >
                     Baca Artikel

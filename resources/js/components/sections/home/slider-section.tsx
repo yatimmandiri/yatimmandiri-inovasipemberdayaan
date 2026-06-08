@@ -241,10 +241,10 @@ export const SliderSection = () => {
                 open={Boolean(selectedVideo)}
                 onOpenChange={(open) => !open && setSelectedVideo(null)}
             >
-                <DialogContent className="border-white/10 bg-slate-950 p-0 text-white shadow-2xl sm:max-w-4xl">
+                <DialogContent className="max-h-[92vh] overflow-y-auto rounded-3xl border-white/10 bg-slate-950 px-4 py-6 text-white shadow-2xl sm:max-w-4xl sm:px-6 sm:py-8">
                     {selectedVideo && (
-                        <div className="overflow-hidden rounded-lg">
-                            <DialogHeader className="px-5 pt-5 pb-4 text-left sm:px-6">
+                        <div className="mx-auto w-full overflow-hidden rounded-2xl bg-slate-900 shadow-xl">
+                            <DialogHeader className="px-5 pt-5 pb-4 text-left sm:px-6 sm:pt-6">
                                 <DialogTitle className="text-xl font-black text-white sm:text-2xl">
                                     {selectedVideo.title}
                                 </DialogTitle>
@@ -253,7 +253,7 @@ export const SliderSection = () => {
                                 </DialogDescription>
                             </DialogHeader>
 
-                            <div className="aspect-video w-full bg-black">
+                            <div className="aspect-video w-full overflow-hidden rounded-b-2xl bg-black">
                                 <iframe
                                     src={selectedVideo.embedUrl}
                                     title={selectedVideo.title}

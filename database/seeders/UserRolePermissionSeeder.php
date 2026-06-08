@@ -97,7 +97,7 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'create-sponsorship-inquiry', 'guard_name' => 'web'],
             ['name' => 'update-sponsorship-inquiry', 'guard_name' => 'web'],
             ['name' => 'delete-sponsorship-inquiry', 'guard_name' => 'web'],
-            ['name' => 'data-sponsorship-inquiry', 'guard_name' => 'web'],
+            ['name' => 'data-sponsorship-inquiry', 'guard_name' => 'web'], 
         ])->each(fn ($permission) => Permission::firstOrCreate($permission)->assignRole('Administrators'));
 
         User::firstOrCreate(
