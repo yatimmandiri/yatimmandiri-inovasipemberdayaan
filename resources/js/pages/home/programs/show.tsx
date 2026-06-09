@@ -1,6 +1,6 @@
 import SROISection from '@/components/sections/home/sroi-section';
 import { usePage } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, CheckCircle2, MapPin } from 'lucide-react';
+import { ArrowRight, CheckCircle2, MapPin } from 'lucide-react';
 
 export default function ProgramShowPage() {
     const { program, relatedPrograms } = usePage<any>().props;
@@ -12,13 +12,6 @@ export default function ProgramShowPage() {
         <main className="bg-white">
             <section className="bg-slate-950 py-20 text-white">
                 <div className="mx-auto max-w-6xl px-6">
-                    <a
-                        href="/program"
-                        className="inline-flex items-center gap-3 text-sm font-bold text-emerald-300 transition hover:gap-4"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        Kembali ke Program
-                    </a>
                     <div className="mt-10 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
                         <div>
                             <span className="rounded-full bg-emerald-500/15 px-4 py-2 text-sm font-bold text-emerald-300">
