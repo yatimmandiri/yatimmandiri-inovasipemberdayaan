@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company\Category;
 use App\Models\Company\Mitra;
 use App\Models\Company\Slider;
+use App\Models\Company\Testimonial;
 
 class MainController extends Controller
 {
@@ -14,12 +15,14 @@ class MainController extends Controller
         $sliders = Slider::with(['category.programs'])->get();
         $categories = Category::with(['programs'])->active()->recommended()->get();
         $mitras = Mitra::get();
+        $testimonials = Testimonial::get();
 
         $data = [
             'pageTitle' => 'Home',
             'sliders' => $sliders,
             'categories' => $categories,
             'mitras' => $mitras,
+            'testimonials' => $testimonials,
             'meta' => [
                 'title' => 'Home',
                 'description' => 'Welcome to the Home page.',
