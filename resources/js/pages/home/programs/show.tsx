@@ -1,3 +1,4 @@
+import SROISection from '@/components/sections/home/sroi-section';
 import { usePage } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight, CheckCircle2, MapPin } from 'lucide-react';
 
@@ -33,7 +34,7 @@ export default function ProgramShowPage() {
                         <img
                             src={getImage(program.featured_image)}
                             alt={program.name}
-                            className="aspect-[4/3] rounded-3xl object-cover shadow-2xl"
+                            className="aspect-4/3 rounded-3xl object-cover shadow-2xl"
                         />
                     </div>
                 </div>
@@ -100,6 +101,8 @@ export default function ProgramShowPage() {
                     </aside>
                 </div>
             </section>
+
+            <SROISection />
 
             {relatedPrograms?.length > 0 && (
                 <section className="bg-slate-50 py-16">

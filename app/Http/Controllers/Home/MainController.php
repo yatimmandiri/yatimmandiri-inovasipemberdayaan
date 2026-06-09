@@ -132,7 +132,7 @@ class MainController extends Controller
 
     public function sponsorship()
     {
-        return inertia('home/sponsorship/index', [
+        $data =  [
             'pageTitle' => 'Sponsorship',
             'partnershipTypes' => [
                 'CSR',
@@ -146,7 +146,9 @@ class MainController extends Controller
                 'description' => 'Ajukan kerja sama dan sponsorship program pemberdayaan.',
                 'keywords' => 'sponsorship, kerja sama, partnership',
             ],
-        ]);
+        ];
+
+        return inertia('home/sponsorship/index', $data);
     }
 
     public function sponsorshipStore(Request $request)
