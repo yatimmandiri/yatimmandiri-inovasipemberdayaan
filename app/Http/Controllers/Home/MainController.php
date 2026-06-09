@@ -8,6 +8,7 @@ use App\Models\Company\Mitra;
 use App\Models\Company\Program;
 use App\Models\Company\Slider;
 use App\Models\Company\Testimonial;
+use Illuminate\Http\Request;
 
 class MainController extends Controller
 {
@@ -48,14 +49,10 @@ class MainController extends Controller
         return inertia('home/about/index', $data);
     }
 
-    public function berita(Request $request, NewsApiService $newsApi)
+    public function berita()
     {
-        $page = max((int) $request->input('page', 1), 1);
-        $news = $newsApi->paginate($page, 9, $request->input('search'));
-
         $data = [
             'pageTitle' => 'Berita',
-            'news' => $news,
             'meta' => [
                 'title' => 'Berita',
                 'description' => 'Latest news and articles on the Berita page.',
@@ -66,35 +63,10 @@ class MainController extends Controller
         return inertia('home/berita/index', $data);
     }
 
-    public function beritaDetail(string $slug, NewsApiService $newsApi)
-    {
-        $news = $newsApi->findBySlug($slug);
-
-        if (! $news) {
-            return redirect()->route('home.berita')->with('error', 'Berita tidak ditemukan.');
-        }
-
-        $data = [
-            'pageTitle' => $news['title'] ?? 'Detail Berita',
-            'news' => $news,
-            'relatedNews' => collect($newsApi->latest(4))
-                ->reject(fn ($item) => data_get($item, 'slug') === $slug)
-                ->take(3)
-                ->values(),
-            'meta' => [
-                'title' => $news['title'] ?? 'Detail Berita',
-                'description' => $news['excerpt'] ?? 'Detail berita dan artikel.',
-                'keywords' => 'berita, news, artikel',
-            ],
-        ];
-
-        return inertia('home/berita/show', $data);
-    }
-
     public function programs(Request $request)
     {
         $categories = Category::active()
-            ->withCount(['programs' => fn ($query) => $query->where('status', true)])
+            ->withCount(['programs' => fn($query) => $query->where('status', true)])
             ->orderBy('name')
             ->get(['id', 'name', 'slug']);
 
@@ -109,7 +81,7 @@ class MainController extends Controller
                 });
             })
             ->when($request->input('category'), function ($query, $category) {
-                $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('slug', $category));
+                $query->whereHas('category', fn($categoryQuery) => $categoryQuery->where('slug', $category));
             })
             ->latest()
             ->paginate(9)
@@ -179,28 +151,6 @@ class MainController extends Controller
 
     public function sponsorshipStore(Request $request)
     {
-        $validated = $request->validate([
-            'organization_name' => ['required', 'string', 'max:150'],
-            'contact_name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'max:150'],
-            'phone' => ['required', 'string', 'max:30'],
-            'partnership_type' => ['required', 'string', 'max:80'],
-            'budget_range' => ['nullable', 'string', 'max:80'],
-            'message' => ['required', 'string', 'max:2000'],
-            'preferred_contact' => ['nullable', Rule::in(['email', 'phone', 'whatsapp'])],
-        ]);
-
-        if (Schema::hasTable('sponsorship_inquiries')) {
-            /** @var class-string<\Illuminate\Database\Eloquent\Model>|null $model */
-            $model = class_exists(\App\Models\SponsorshipInquiry::class)
-                ? \App\Models\SponsorshipInquiry::class
-                : null;
-
-            if ($model) {
-                $model::query()->create($validated);
-            }
-        }
-
         return redirect()
             ->route('home.sponsorship')
             ->with('success', 'Pengajuan kerja sama berhasil dikirim. Tim kami akan menghubungi Anda.');
