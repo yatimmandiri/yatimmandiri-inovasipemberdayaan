@@ -19,7 +19,7 @@ export default function HomePage() {
             <ImpactSection />
             <CategorySection data={recommendedPrograms} />
             <MitraSection data={mitras} />
-            <BeritaSection news={news} />
+            <BeritaSection />
             <TestimonialSection data={testimonials} />
         </Fragment>
     );
