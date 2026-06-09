@@ -46,7 +46,7 @@ export const HomeHeaderComponent = () => {
                         {settings.logo ? (
                             <img
                                 src={logoUrl}
-                                className="h-11 w-11 rounded-2xl"
+                                className="h-14 w-20 rounded-2xl"
                                 alt="Logo"
                             />
                         ) : (
