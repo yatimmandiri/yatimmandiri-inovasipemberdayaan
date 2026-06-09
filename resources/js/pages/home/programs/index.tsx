@@ -1,19 +1,44 @@
 import { usePage } from '@inertiajs/react';
 import axios from 'axios';
-import { ArrowRight, Building2, Loader2, Search } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    ArrowRight,
+    Building2,
+    ChevronLeft,
+    ChevronRight,
+    Loader2,
+    Search,
+} from 'lucide-react';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+
+type PaginationState = {
+    currentPage: number;
+    lastPage: number;
+    total: number;
+    from: number | null;
+    to: number | null;
+};
 
 export default function ProgramsPage() {
-    const { programs, categories } = usePage<any>().props;
-    const [search, setSearch] = useState('');
-    const [category, setCategory] = useState('');
+    const {
+        programs,
+        categories,
+        selectedCategory = null,
+        perPage = 3,
+        filters = {},
+    } = usePage<any>().props;
+    const [search, setSearch] = useState(filters.search ?? '');
+    const [category, setCategory] = useState(
+        selectedCategory?.slug ?? filters.category ?? '',
+    );
     const [items, setItems] = useState(programs?.data ?? []);
     const [loading, setLoading] = useState(false);
 
-    const [pagination, setPagination] = useState({
+    const [pagination, setPagination] = useState<PaginationState>({
         currentPage: programs?.current_page ?? 1,
         lastPage: programs?.last_page ?? 1,
         total: programs?.total ?? 0,
+        from: programs?.from ?? null,
+        to: programs?.to ?? null,
     });
 
     const fetchPrograms = useCallback(
@@ -30,16 +55,17 @@ export default function ProgramsPage() {
                         search: searchValue,
                         category: categoryValue,
                         page,
+                        per_page: perPage,
                     },
                 });
-                console.log('API RESPONSE', response.data);
 
-                setItems(response.data.data);
-
+                setItems(response.data.data ?? []);
                 setPagination({
-                    currentPage: response.data.current_page,
-                    lastPage: response.data.last_page,
-                    total: response.data.total,
+                    currentPage: response.data.current_page ?? 1,
+                    lastPage: response.data.last_page ?? 1,
+                    total: response.data.total ?? 0,
+                    from: response.data.from ?? null,
+                    to: response.data.to ?? null,
                 });
             } catch (error) {
                 console.error(error);
@@ -47,7 +73,7 @@ export default function ProgramsPage() {
                 setLoading(false);
             }
         },
-        [],
+        [perPage],
     );
 
     const isFirstLoad = useRef(true);
@@ -58,15 +84,22 @@ export default function ProgramsPage() {
             return;
         }
 
-        const timeout = setTimeout(() => {
+        const timeout = window.setTimeout(() => {
             fetchPrograms(search, category, 1);
         }, 500);
 
-        return () => clearTimeout(timeout);
-    }, [search, category]);
-
+        return () => window.clearTimeout(timeout);
+    }, [search, category, fetchPrograms]);
 
     const handlePageChange = (page: number) => {
+        if (
+            page === pagination.currentPage ||
+            page < 1 ||
+            page > pagination.lastPage
+        ) {
+            return;
+        }
+
         fetchPrograms(search, category, page);
 
         window.scrollTo({
@@ -80,14 +113,19 @@ export default function ProgramsPage() {
             <section className="bg-slate-950 py-24 text-white">
                 <div className="mx-auto max-w-7xl px-6 text-center">
                     <span className="inline-flex rounded-full bg-emerald-500/15 px-4 py-2 text-sm font-bold text-emerald-300">
-                        Program Pemberdayaan
+                        {selectedCategory
+                            ? 'Kategori Program'
+                            : 'Program Pemberdayaan'}
                     </span>
                     <h1 className="mx-auto mt-6 max-w-4xl text-4xl leading-tight font-black md:text-6xl">
-                        Jelajahi Program yang Membangun Kemandirian
+                        {selectedCategory
+                            ? selectedCategory.name
+                            : 'Jelajahi Program yang Membangun Kemandirian'}
                     </h1>
                     <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/70">
-                        Temukan program berdasarkan kategori, kebutuhan
-                        kolaborasi, dan dampak pemberdayaan yang ingin dibangun.
+                        {selectedCategory?.excerpt ||
+                            selectedCategory?.description ||
+                            'Temukan program berdasarkan kategori, kebutuhan kolaborasi, dan dampak pemberdayaan yang ingin dibangun.'}
                     </p>
                 </div>
             </section>
@@ -103,18 +141,29 @@ export default function ProgramsPage() {
                             placeholder="Cari program..."
                         />
                     </div>
-                    <select
-                        value={category}
-                        onChange={(event) => setCategory(event.target.value)}
-                        className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold shadow-sm transition outline-none focus:border-emerald-400"
-                    >
-                        <option value="">Semua Kategori</option>
-                        {categories?.map((item: any) => (
-                            <option key={item.id} value={item.slug}>
-                                {item.name} ({item.programs_count || 0})
-                            </option>
-                        ))}
-                    </select>
+                    {selectedCategory ? (
+                        <a
+                            href="/program"
+                            className="inline-flex items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm font-bold text-emerald-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-100"
+                        >
+                            Lihat Semua Program
+                        </a>
+                    ) : (
+                        <select
+                            value={category}
+                            onChange={(event) =>
+                                setCategory(event.target.value)
+                            }
+                            className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold shadow-sm transition outline-none focus:border-emerald-400"
+                        >
+                            <option value="">Semua Kategori</option>
+                            {categories?.map((item: any) => (
+                                <option key={item.id} value={item.slug}>
+                                    {item.name} ({item.programs_count || 0})
+                                </option>
+                            ))}
+                        </select>
+                    )}
                 </div>
             </section>
 
@@ -138,46 +187,11 @@ export default function ProgramsPage() {
                         </div>
                     </div>
 
-                    {!loading && pagination.lastPage > 1 && (
-                        <div className="mt-12 flex flex-wrap items-center justify-center gap-2">
-                            <button
-                                disabled={pagination.currentPage === 1}
-                                onClick={() =>
-                                    handlePageChange(pagination.currentPage - 1)
-                                }
-                                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                Sebelumnya
-                            </button>
-
-                            {Array.from(
-                                { length: pagination.lastPage },
-                                (_, index) => index + 1,
-                            ).map((page) => (
-                                <button
-                                    key={page}
-                                    onClick={() => handlePageChange(page)}
-                                    className={`h-10 min-w-10 rounded-xl text-sm font-bold transition ${page === pagination.currentPage
-                                        ? 'bg-emerald-600 text-white'
-                                        : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                                        }`}
-                                >
-                                    {page}
-                                </button>
-                            ))}
-
-                            <button
-                                disabled={
-                                    pagination.currentPage === pagination.lastPage
-                                }
-                                onClick={() =>
-                                    handlePageChange(pagination.currentPage + 1)
-                                }
-                                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                Selanjutnya
-                            </button>
-                        </div>
+                    {!loading && items.length > 0 && (
+                        <ProgramPagination
+                            pagination={pagination}
+                            onPageChange={handlePageChange}
+                        />
                     )}
 
                     {!loading && items.length === 0 && (
@@ -195,6 +209,123 @@ export default function ProgramsPage() {
         </main>
     );
 }
+
+const ProgramPagination = ({
+    pagination,
+    onPageChange,
+}: {
+    pagination: PaginationState;
+    onPageChange: (page: number) => void;
+}) => {
+    if (pagination.lastPage <= 1) {
+        return (
+            <p className="mt-10 text-center text-sm font-semibold text-slate-500">
+                Menampilkan {pagination.total} program
+            </p>
+        );
+    }
+
+    return (
+        <div className="mt-12 flex flex-col items-center gap-5">
+            <p className="text-sm font-semibold text-slate-500">
+                Menampilkan {pagination.from ?? 0} - {pagination.to ?? 0} dari{' '}
+                {pagination.total} program
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-2">
+                <PaginationButton
+                    disabled={pagination.currentPage === 1}
+                    onClick={() => onPageChange(pagination.currentPage - 1)}
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                    Sebelumnya
+                </PaginationButton>
+
+                {buildPaginationPages(
+                    pagination.currentPage,
+                    pagination.lastPage,
+                ).map((page, index) =>
+                    page === 'ellipsis' ? (
+                        <span
+                            key={`ellipsis-${index}`}
+                            className="flex h-10 min-w-10 items-center justify-center rounded-xl text-sm font-bold text-slate-400"
+                        >
+                            ...
+                        </span>
+                    ) : (
+                        <button
+                            key={page}
+                            type="button"
+                            onClick={() => onPageChange(page)}
+                            aria-current={
+                                page === pagination.currentPage
+                                    ? 'page'
+                                    : undefined
+                            }
+                            className={`h-10 min-w-10 rounded-xl px-3 text-sm font-bold transition ${
+                                page === pagination.currentPage
+                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
+                                    : 'border border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700'
+                            }`}
+                        >
+                            {page}
+                        </button>
+                    ),
+                )}
+
+                <PaginationButton
+                    disabled={pagination.currentPage === pagination.lastPage}
+                    onClick={() => onPageChange(pagination.currentPage + 1)}
+                >
+                    Selanjutnya
+                    <ChevronRight className="h-4 w-4" />
+                </PaginationButton>
+            </div>
+        </div>
+    );
+};
+
+const PaginationButton = ({
+    disabled,
+    onClick,
+    children,
+}: {
+    disabled: boolean;
+    onClick: () => void;
+    children: ReactNode;
+}) => (
+    <button
+        type="button"
+        disabled={disabled}
+        onClick={onClick}
+        className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+        {children}
+    </button>
+);
+
+const buildPaginationPages = (currentPage: number, lastPage: number) => {
+    const pages: Array<number | 'ellipsis'> = [];
+    const delta = 1;
+
+    for (let page = 1; page <= lastPage; page++) {
+        const shouldShow =
+            page === 1 ||
+            page === lastPage ||
+            Math.abs(page - currentPage) <= delta;
+
+        if (!shouldShow) {
+            if (pages[pages.length - 1] !== 'ellipsis') {
+                pages.push('ellipsis');
+            }
+            continue;
+        }
+
+        pages.push(page);
+    }
+
+    return pages;
+};
 
 const ProgramCard = ({ item, index }: { item: any; index: number }) => {
     const benefits = item.benefits ? item.benefits.split(';').slice(0, 3) : [];

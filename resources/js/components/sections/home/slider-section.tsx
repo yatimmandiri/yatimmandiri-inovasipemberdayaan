@@ -14,12 +14,21 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 type SliderItemSectionProps = {
     item: any;
     index: number;
+    stats: HeroStats;
     onPlayVideo: (item: any) => void;
+};
+
+type HeroStats = {
+    beneficiaries?: number;
+    activePrograms?: number;
+    collaborationCities?: number;
+    activeVolunteers?: number;
 };
 
 export const SliderItemSection = ({
     item,
     index,
+    stats,
     onPlayVideo,
 }: SliderItemSectionProps) => {
     const featuredImage = getStorageImage(
@@ -72,45 +81,20 @@ export const SliderItemSection = ({
                             </button>
                         </div>
                         <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-12 sm:gap-4 lg:grid-cols-4">
-                            <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md">
-                                <h3 className="text-2xl font-bold sm:text-3xl">
-                                    10K+
-                                </h3>
+                            {getHeroStats(stats).map((stat) => (
+                                <div
+                                    key={stat.label}
+                                    className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md"
+                                >
+                                    <h3 className="text-2xl font-bold sm:text-3xl">
+                                        {formatStatNumber(stat.value)}
+                                    </h3>
 
-                                <p className="mt-1 text-xs text-gray-200 sm:text-sm">
-                                    Penerima Manfaat
-                                </p>
-                            </div>
-
-                            <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md">
-                                <h3 className="text-2xl font-bold sm:text-3xl">
-                                    15+
-                                </h3>
-
-                                <p className="mt-1 text-xs text-gray-200 sm:text-sm">
-                                    Program Aktif
-                                </p>
-                            </div>
-
-                            <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md">
-                                <h3 className="text-2xl font-bold sm:text-3xl">
-                                    34
-                                </h3>
-
-                                <p className="mt-1 text-xs text-gray-200 sm:text-sm">
-                                    Kota Kolaborasi
-                                </p>
-                            </div>
-
-                            <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md">
-                                <h3 className="text-2xl font-bold sm:text-3xl">
-                                    500+
-                                </h3>
-
-                                <p className="mt-1 text-xs text-gray-200 sm:text-sm">
-                                    Relawan Aktif
-                                </p>
-                            </div>
+                                    <p className="mt-1 text-xs text-gray-200 sm:text-sm">
+                                        {stat.label}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -120,7 +104,7 @@ export const SliderItemSection = ({
 };
 
 export const SliderSection = () => {
-    const { sliders } = usePage<any>().props;
+    const { sliders, heroStats } = usePage<any>().props;
     const [selectedSlider, setSelectedSlider] = useState<any | null>(null);
     const sliderItems =
         Array.isArray(sliders) && sliders.length > 0
@@ -161,6 +145,7 @@ export const SliderSection = () => {
                         <SliderItemSection
                             item={item}
                             index={i}
+                            stats={heroStats ?? {}}
                             onPlayVideo={setSelectedSlider}
                         />
                     </SwiperSlide>
@@ -199,6 +184,35 @@ export const SliderSection = () => {
             </Dialog>
         </section>
     );
+};
+
+const getHeroStats = (stats: HeroStats) => [
+    {
+        label: 'Penerima Manfaat',
+        value: stats.beneficiaries ?? 0,
+    },
+    {
+        label: 'Program Aktif',
+        value: stats.activePrograms ?? 0,
+    },
+    {
+        label: 'Kota Kolaborasi',
+        value: stats.collaborationCities ?? 0,
+    },
+    {
+        label: 'Relawan Aktif',
+        value: stats.activeVolunteers ?? 0,
+    },
+];
+
+const formatStatNumber = (value: number) => {
+    if (value >= 1000) {
+        const formatted = value / 1000;
+
+        return `${Number.isInteger(formatted) ? formatted : formatted.toFixed(1)}K`;
+    }
+
+    return value.toLocaleString('id-ID');
 };
 
 const getStorageImage = (path: string | null | undefined, fallback: string) => {

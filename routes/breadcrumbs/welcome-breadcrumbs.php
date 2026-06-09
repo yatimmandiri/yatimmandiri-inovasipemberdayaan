@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Company\Category;
+use App\Models\Company\Program;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
@@ -19,8 +21,12 @@ Breadcrumbs::for('home.programs.data', function (BreadcrumbTrail $trail) {
     $trail->parent('home.programs')->push('Data Program', route('home.programs.data'));
 });
 
-Breadcrumbs::for('home.programs.show', function (BreadcrumbTrail $trail, $program) {
-    $trail->parent('home.programs')->push($program->name, route('home.programs.show', $program));
+Breadcrumbs::for('home.programs.show', function (BreadcrumbTrail $trail, $slug) {
+    $category = Category::where('slug', $slug)->first();
+    $program = $category ? null : Program::where('slug', $slug)->first();
+    $label = $category?->name ?? $program?->name ?? 'Detail Program';
+
+    $trail->parent('home.programs')->push($label, route('home.programs.show', $slug));
 });
 
 Breadcrumbs::for('home.berita', function (BreadcrumbTrail $trail) {

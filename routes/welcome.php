@@ -7,7 +7,7 @@ Route::get('/', [MainController::class, 'index'])->name('home.index');
 Route::get('/about', [MainController::class, 'about'])->name('home.about');
 Route::get('/program', [MainController::class, 'programs'])->name('home.programs');
 Route::get('programs/data', [MainController::class, 'searchPrograms'])->name('home.programs.data');
-Route::get('/program/{program:slug}', [MainController::class, 'programDetail'])->name('home.programs.show');
+Route::get('/program/{slug}', [MainController::class, 'programDetail'])->name('home.programs.show');
 Route::get('/berita', [MainController::class, 'berita'])->name('home.berita');
 Route::get('/berita/{slug}', [MainController::class, 'beritaDetail'])->name('home.berita.show');
 Route::get('/sponsorship', [MainController::class, 'sponsorship'])->name('home.sponsorship');

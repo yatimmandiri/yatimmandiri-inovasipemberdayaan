@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Home;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company\Category;
+use App\Models\Company\Location;
 use App\Models\Company\Mitra;
 use App\Models\Company\Program;
 use App\Models\Company\Slider;
@@ -12,12 +13,28 @@ use Illuminate\Http\Request;
 
 class MainController extends Controller
 {
+    private const PROGRAMS_PER_PAGE = 9;
+
     public function index()
     {
         $sliders = Slider::with(['category.programs'])->get();
         $categories = Category::with(['programs'])->active()->recommended()->get();
         $mitras = Mitra::get();
         $testimonials = Testimonial::get();
+        $activeProgramQuery = Program::where('status', true);
+        $activeProgramLocationQuery = Location::whereHas(
+            'program',
+            fn($query) => $query->where('status', true)
+        );
+
+        $heroStats = [
+            'beneficiaries' => (clone $activeProgramLocationQuery)->count(),
+            'activePrograms' => (clone $activeProgramQuery)->count(),
+            'collaborationCities' => (clone $activeProgramLocationQuery)
+                ->distinct('regency_id')
+                ->count('regency_id'),
+            'activeVolunteers' => Mitra::count(),
+        ];
 
         $data = [
             'pageTitle' => 'Home',
@@ -25,6 +42,7 @@ class MainController extends Controller
             'categories' => $categories,
             'mitras' => $mitras,
             'testimonials' => $testimonials,
+            'heroStats' => $heroStats,
             'meta' => [
                 'title' => 'Home',
                 'description' => 'Welcome to the Home page.',
@@ -65,6 +83,8 @@ class MainController extends Controller
 
     public function programs()
     {
+        $perPage = self::PROGRAMS_PER_PAGE;
+
         $categories = Category::active()
             ->withCount([
                 'programs' => fn($query) => $query->where('status', true)
@@ -75,12 +95,17 @@ class MainController extends Controller
         $programs = Program::with('category')
             ->where('status', true)
             ->latest()
-            ->paginate(9);
+            ->paginate($perPage);
 
         return inertia('home/programs/index', [
             'pageTitle' => 'Program',
             'programs' => $programs,
             'categories' => $categories,
+            'perPage' => $perPage,
+            'filters' => [
+                'search' => '',
+                'category' => '',
+            ],
             'meta' => [
                 'title' => 'Program',
                 'description' => 'Daftar program pemberdayaan berkelanjutan.',
@@ -93,6 +118,8 @@ class MainController extends Controller
     {
         $search = $request->input('search');
         $category = $request->input('category');
+        $perPage = (int) $request->input('per_page', self::PROGRAMS_PER_PAGE);
+        $perPage = max(1, min($perPage, 24));
 
         $programs = Program::with('category')
             ->where('status', true)
@@ -110,13 +137,23 @@ class MainController extends Controller
                 });
             })
             ->latest()
-            ->paginate(9);
+            ->paginate($perPage);
 
         return response()->json($programs);
     }
 
-    public function programDetail(Program $program)
+    public function programDetail(Request $request, string $slug)
     {
+        $category = Category::active()
+            ->where('slug', $slug)
+            ->first();
+
+        if ($category) {
+            return $this->programCategory($request, $category);
+        }
+
+        $program = Program::where('slug', $slug)->firstOrFail();
+
         abort_unless($program->status, 404);
 
         $program->load(['category', 'locations']);
@@ -141,6 +178,51 @@ class MainController extends Controller
         ];
 
         return inertia('home/programs/show', $data);
+    }
+
+    private function programCategory(Request $request, Category $category)
+    {
+        $perPage = self::PROGRAMS_PER_PAGE;
+        $search = $request->input('search');
+
+        $categories = Category::active()
+            ->withCount([
+                'programs' => fn($query) => $query->where('status', true)
+            ])
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug']);
+
+        $programs = Program::with('category')
+            ->where('status', true)
+            ->where('category_id', $category->id)
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('excerpt', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return inertia('home/programs/index', [
+            'pageTitle' => $category->name,
+            'programs' => $programs,
+            'categories' => $categories,
+            'selectedCategory' => $category,
+            'perPage' => $perPage,
+            'filters' => [
+                'search' => $search,
+                'category' => $category->slug,
+            ],
+            'meta' => [
+                'title' => $category->name,
+                'description' => $category->excerpt ?? 'Daftar program pemberdayaan berdasarkan kategori.',
+                'keywords' => 'program, kategori program, pemberdayaan, inovasi',
+            ],
+        ]);
     }
 
     public function sponsorship()
