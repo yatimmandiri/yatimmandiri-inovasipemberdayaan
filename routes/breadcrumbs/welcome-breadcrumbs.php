@@ -15,6 +15,10 @@ Breadcrumbs::for('home.programs', function (BreadcrumbTrail $trail) {
     $trail->parent('home.index')->push('Program', route('home.programs'));
 });
 
+Breadcrumbs::for('home.programs.data', function (BreadcrumbTrail $trail) {
+    $trail->parent('home.programs')->push('Data Program', route('home.programs.data'));
+});
+
 Breadcrumbs::for('home.programs.show', function (BreadcrumbTrail $trail, $program) {
     $trail->parent('home.programs')->push($program->name, route('home.programs.show', $program));
 });

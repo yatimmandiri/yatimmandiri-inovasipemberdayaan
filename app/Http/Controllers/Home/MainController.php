@@ -63,16 +63,40 @@ class MainController extends Controller
         return inertia('home/berita/index', $data);
     }
 
-    public function programs(Request $request)
+    public function programs()
     {
         $categories = Category::active()
-            ->withCount(['programs' => fn($query) => $query->where('status', true)])
+            ->withCount([
+                'programs' => fn($query) => $query->where('status', true)
+            ])
             ->orderBy('name')
             ->get(['id', 'name', 'slug']);
 
         $programs = Program::with('category')
             ->where('status', true)
-            ->when($request->input('search'), function ($query, $search) {
+            ->latest()
+            ->paginate(9);
+
+        return inertia('home/programs/index', [
+            'pageTitle' => 'Program',
+            'programs' => $programs,
+            'categories' => $categories,
+            'meta' => [
+                'title' => 'Program',
+                'description' => 'Daftar program pemberdayaan berkelanjutan.',
+                'keywords' => 'program, pemberdayaan, inovasi',
+            ],
+        ]);
+    }
+
+    public function searchPrograms(Request $request)
+    {
+        $search = $request->input('search');
+        $category = $request->input('category');
+
+        $programs = Program::with('category')
+            ->where('status', true)
+            ->when($search, function ($query) use ($search) {
                 $query->where(function ($subQuery) use ($search) {
                     $subQuery
                         ->where('name', 'like', "%{$search}%")
@@ -80,26 +104,15 @@ class MainController extends Controller
                         ->orWhere('description', 'like', "%{$search}%");
                 });
             })
-            ->when($request->input('category'), function ($query, $category) {
-                $query->whereHas('category', fn($categoryQuery) => $categoryQuery->where('slug', $category));
+            ->when($category, function ($query) use ($category) {
+                $query->whereHas('category', function ($categoryQuery) use ($category) {
+                    $categoryQuery->where('slug', $category);
+                });
             })
             ->latest()
-            ->paginate(9)
-            ->withQueryString();
+            ->paginate(9);
 
-        $data = [
-            'pageTitle' => 'Program',
-            'programs' => $programs,
-            'categories' => $categories,
-            'filters' => $request->only(['search', 'category']),
-            'meta' => [
-                'title' => 'Program',
-                'description' => 'Daftar program pemberdayaan berkelanjutan.',
-                'keywords' => 'program, pemberdayaan, inovasi',
-            ],
-        ];
-
-        return inertia('home/programs/index', $data);
+        return response()->json($programs);
     }
 
     public function programDetail(Program $program)
