@@ -8,35 +8,22 @@ use App\Models\Company\Mitra;
 use App\Models\Company\Program;
 use App\Models\Company\Slider;
 use App\Models\Company\Testimonial;
-use App\Services\NewsApiService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Validation\Rule;
 
 class MainController extends Controller
 {
-    public function index(NewsApiService $newsApi)
+    public function index()
     {
-        $sliders = Slider::with([
-            'category.programs' => fn ($query) => $query->where('status', true),
-        ])->latest()->get();
-
-        $recommendedPrograms = Category::where('status', true)
-            ->where('recommended', true)
-            ->latest()
-            ->take(5)
-            ->get();
-
-        $mitras = Mitra::latest()->get();
-        $testimonials = Testimonial::with('categories')->latest()->take(8)->get();
+        $sliders = Slider::with(['category.programs'])->get();
+        $categories = Category::with(['programs'])->active()->recommended()->get();
+        $mitras = Mitra::get();
+        $testimonials = Testimonial::get();
 
         $data = [
             'pageTitle' => 'Home',
             'sliders' => $sliders,
-            'recommendedPrograms' => $recommendedPrograms,
+            'categories' => $categories,
             'mitras' => $mitras,
             'testimonials' => $testimonials,
-            'news' => $newsApi->latest(6),
             'meta' => [
                 'title' => 'Home',
                 'description' => 'Welcome to the Home page.',

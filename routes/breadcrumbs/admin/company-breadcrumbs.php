@@ -35,7 +35,7 @@ Breadcrumbs::for(
 Breadcrumbs::for(
     'admin.companies.categories.data',
     fn(BreadcrumbTrail $trail) =>
-    $trail->parent('admin.companies.categories.index')->push('categories Data', route('admin.companies.categories.data'))
+    $trail->parent('admin.companies.categories.index')->push('Categories Data', route('admin.companies.categories.data'))
 );
 
 // Mitra Index
@@ -147,7 +147,7 @@ Breadcrumbs::for(
 Breadcrumbs::for(
     'admin.companies.testimonials.index',
     fn(BreadcrumbTrail $trail) =>
-    $trail->parent('admin.dashboard')->push('Testimonial Companies', route('admin.companies.testimonials.index'))
+    $trail->parent('admin.dashboard')->push('Testimonial', route('admin.companies.testimonials.index'))
 );
 
 // Testimonial Create
@@ -182,7 +182,7 @@ Breadcrumbs::for(
 Breadcrumbs::for(
     'admin.companies.reviews.index',
     fn(BreadcrumbTrail $trail) =>
-    $trail->parent('admin.dashboard')->push('Review Companies', route('admin.companies.reviews.index'))
+    $trail->parent('admin.dashboard')->push('Review', route('admin.companies.reviews.index'))
 );
 
 // Review Create
@@ -210,5 +210,5 @@ Breadcrumbs::for(
 Breadcrumbs::for(
     'admin.companies.reviews.data',
     fn(BreadcrumbTrail $trail) =>
-    $trail->parent('admin.companies.reviews.index')->push('Review Companies Data', route('admin.companies.reviews.data'))
+    $trail->parent('admin.companies.reviews.index')->push('Review Data', route('admin.companies.reviews.data'))
 );

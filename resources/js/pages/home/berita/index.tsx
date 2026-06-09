@@ -1,4 +1,5 @@
 import { BeritaSection } from '@/components/sections/home/berita-section';
+import { BlogSection } from '@/components/sections/home/blog-section';
 
 export default function BeritaPage() {
     return (
@@ -15,6 +16,7 @@ export default function BeritaPage() {
                 </div>
             </section>
             <BeritaSection />
+            <BlogSection />
         </div>
     );
 }

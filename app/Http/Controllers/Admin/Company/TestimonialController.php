@@ -176,7 +176,7 @@ class TestimonialController extends Controller
 
     public function getData(Request $request)
     {
-        $this->authorize('data-testimonial-company', Testimonial::class);
+        $this->authorize('data-testimonial', Testimonial::class);
 
         $perPage = $request->input('perPage', null);
         $page = $request->input('page', null);
