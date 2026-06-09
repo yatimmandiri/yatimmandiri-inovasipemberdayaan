@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import { Menu } from 'lucide-react';
 import { Fragment, useEffect, useState } from 'react';
 import {
@@ -8,6 +9,16 @@ import {
 export const HomeHeaderComponent = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const { settings } = usePage<any>().props;
+
+    const logoUrl = (() => {
+        if (settings.logo?.startsWith('http')) {
+            return settings.logo;
+        }
+
+        return `/storage/${settings.logo}`;
+    })();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -31,19 +42,29 @@ export const HomeHeaderComponent = () => {
                 }`}
             >
                 <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-                    {/* Logo */}
                     <a href="/" className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary font-black text-white shadow-lg">
-                            E
-                        </div>
+                        {settings.logo ? (
+                            <img
+                                src={logoUrl}
+                                className="h-11 w-11 rounded-2xl"
+                                alt="Logo"
+                            />
+                        ) : (
+                            <Fragment>
+                                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary font-black text-white shadow-lg">
+                                    E
+                                </div>
+                                <div className="text-white">
+                                    <h1 className="text-lg font-black">
+                                        Growth YM
+                                    </h1>
 
-                        <div className="text-white">
-                            <h1 className="text-lg font-black">Growth YM</h1>
-
-                            <p className="text-xs text-white/60">
-                                Inovasi & Pemberdayaan
-                            </p>
-                        </div>
+                                    <p className="text-xs text-white/60">
+                                        Inovasi & Pemberdayaan
+                                    </p>
+                                </div>
+                            </Fragment>
+                        )}
                     </a>
 
                     {/* Desktop Navigation */}
