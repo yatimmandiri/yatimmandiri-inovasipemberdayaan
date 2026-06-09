@@ -27,7 +27,7 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
             href: '/program',
         },
         {
-            label: 'Berita',
+            label: 'Artikel',
             href: '/berita',
         },
         {

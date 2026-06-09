@@ -1,5 +1,5 @@
 import { AboutSection } from '@/components/sections/home/about-section';
-import { BeritaSection } from '@/components/sections/home/berita-section';
+import { KabarSection } from '@/components/sections/home/berita-section';
 import { CategorySection } from '@/components/sections/home/category-section';
 import { ImpactSection } from '@/components/sections/home/impact-section';
 import { MitraSection } from '@/components/sections/home/mitra-section';
@@ -18,7 +18,7 @@ export default function HomePage() {
             <ImpactSection />
             <CategorySection data={categories} />
             <MitraSection data={mitras} />
-            <BeritaSection />
+            <KabarSection />
             <TestimonialSection data={testimonials} />
         </Fragment>
     );
