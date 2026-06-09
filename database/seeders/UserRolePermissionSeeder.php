@@ -108,7 +108,7 @@ class UserRolePermissionSeeder extends Seeder
             'name' => 'Administrator',
             'email' => 'scrum@yatimmandiri.org',
             'email_verified_at' => now(),
-            'password' => Hash::make(uniqid()),
+            'password' => Hash::make('password'),
         ])->assignRole('Administrators');
 
         Province::query()->update([

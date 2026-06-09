@@ -5,39 +5,34 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Link, usePage } from '@inertiajs/react';
 import { ArrowRight, PlayCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 type SliderItemSectionProps = {
-    title: string;
-    image: string;
-    description: string;
-    buttonText: string;
-    video: ProgramVideo;
-    onPlayVideo: (video: ProgramVideo) => void;
-};
-
-type ProgramVideo = {
-    title: string;
-    description: string;
-    embedUrl: string;
+    item: any;
+    index: number;
+    onPlayVideo: (item: any) => void;
 };
 
 export const SliderItemSection = ({
-    title,
-    image,
-    description,
-    buttonText,
-    video,
+    item,
+    index,
     onPlayVideo,
 }: SliderItemSectionProps) => {
+    const featuredImage = getStorageImage(
+        item.featured_image,
+        `https://picsum.photos/1920/1080?random=${index + 11}`,
+    );
+    const hasVideo = Boolean(getVideoEmbedUrl(item.video_url));
+
     return (
         <div className="relative min-h-162.5 overflow-hidden sm:min-h-180 lg:h-195">
             <img
-                src={image}
-                alt={title}
+                src={featuredImage}
+                alt={item.title}
                 className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-linear-to-r from-black/85 via-black/60 to-black/30" />
@@ -50,25 +45,27 @@ export const SliderItemSection = ({
                             Inovasi & Pemberdayaan
                         </div>
                         <h1 className="text-3xl leading-tight font-black sm:text-5xl md:text-6xl lg:text-7xl">
-                            {title}
+                            {item.title}
                         </h1>
                         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-gray-200 sm:mt-6 sm:text-base md:text-lg lg:text-xl">
-                            {description}
+                            {item.subtitle}
                         </p>
                         <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
-                            <button className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:scale-[1.02] hover:bg-gray-100 sm:w-auto sm:px-6 sm:py-4 sm:text-base">
-                                {buttonText}
-
+                            <Link
+                                href={item.url || '/program'}
+                                className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:scale-[1.02] hover:bg-gray-100 sm:w-auto sm:px-6 sm:py-4 sm:text-base"
+                            >
+                                <span>Pelajari Selengkapnya</span>
                                 <ArrowRight
                                     size={18}
                                     className="transition group-hover:translate-x-1"
                                 />
-                            </button>
-
+                            </Link>
                             <button
                                 type="button"
-                                onClick={() => onPlayVideo(video)}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20 sm:w-auto sm:px-6 sm:py-4 sm:text-base"
+                                onClick={() => onPlayVideo(item)}
+                                disabled={!hasVideo}
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-6 sm:py-4 sm:text-base"
                             >
                                 <PlayCircle size={20} />
                                 Video Program
@@ -123,68 +120,24 @@ export const SliderItemSection = ({
 };
 
 export const SliderSection = () => {
-    const [selectedVideo, setSelectedVideo] = useState<ProgramVideo | null>(
-        null,
-    );
+    const { sliders } = usePage<any>().props;
+    const [selectedSlider, setSelectedSlider] = useState<any | null>(null);
+    const sliderItems =
+        Array.isArray(sliders) && sliders.length > 0
+            ? sliders
+            : [
+                  {
+                      title: 'Inovasi untuk Pemberdayaan Umat',
+                      subtitle:
+                          'Menghadirkan solusi digital, pendidikan, dan sosial untuk menciptakan dampak nyata bagi masyarakat.',
+                      url: '/program',
+                      video_url: 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+                  },
+              ];
 
-    const items = [
-        {
-            title: 'Inovasi untuk Pemberdayaan Umat',
-            image: 'https://picsum.photos/1920/1080?random=11',
-            description:
-                'Menghadirkan solusi digital, pendidikan, dan sosial untuk menciptakan dampak nyata bagi masyarakat.',
-            buttonText: 'Lihat Program',
-            video: {
-                title: 'Video Program Inovasi Pemberdayaan',
-                description:
-                    'Gambaran umum program pemberdayaan masyarakat berbasis inovasi dan kolaborasi.',
-                embedUrl:
-                    'https://www.youtube.com/embed/ysz5S6PUM-U?rel=0&modestbranding=1',
-            },
-        },
-        {
-            title: 'Membangun Kemandirian Bersama',
-            image: 'https://picsum.photos/1920/1080?random=12',
-            description:
-                'Program pemberdayaan ekonomi dan pelatihan untuk mendukung masyarakat menjadi lebih mandiri.',
-            buttonText: 'Pelajari Selengkapnya',
-            video: {
-                title: 'Video Program Kemandirian Ekonomi',
-                description:
-                    'Contoh cerita pelatihan, pendampingan usaha, dan penguatan ekonomi keluarga.',
-                embedUrl:
-                    'https://www.youtube.com/embed/aqz-KE-bpKQ?rel=0&modestbranding=1',
-            },
-        },
-        {
-            title: 'Teknologi untuk Kebaikan',
-            image: 'https://picsum.photos/1920/1080?random=13',
-            description:
-                'Memanfaatkan teknologi dan inovasi untuk memperluas manfaat pendidikan, donasi, dan layanan sosial.',
-            buttonText: 'Mulai Sekarang',
-            video: {
-                title: 'Video Program Teknologi untuk Kebaikan',
-                description:
-                    'Inspirasi pemanfaatan teknologi untuk memperluas dampak sosial dan edukasi.',
-                embedUrl:
-                    'https://www.youtube.com/embed/jNQXAC9IVRw?rel=0&modestbranding=1',
-            },
-        },
-        {
-            title: 'Kolaborasi Menciptakan Perubahan',
-            image: 'https://picsum.photos/1920/1080?random=14',
-            description:
-                'Bersama komunitas, relawan, dan mitra untuk menghadirkan perubahan yang berkelanjutan.',
-            buttonText: 'Gabung Bersama Kami',
-            video: {
-                title: 'Video Kolaborasi Program Sosial',
-                description:
-                    'Cerita kolaborasi mitra, komunitas, dan relawan dalam membangun dampak berkelanjutan.',
-                embedUrl:
-                    'https://www.youtube.com/embed/M7lc1UVf-VE?rel=0&modestbranding=1',
-            },
-        },
-    ];
+    const selectedVideoUrl = selectedSlider
+        ? getVideoEmbedUrl(selectedSlider.video_url)
+        : null;
 
     return (
         <section className="relative overflow-hidden">
@@ -203,40 +156,38 @@ export const SliderSection = () => {
                 slidesPerView={1}
                 className="hero-swiper"
             >
-                {items.map((item, index) => (
-                    <SwiperSlide key={index}>
+                {sliderItems.map((item: any, i: number) => (
+                    <SwiperSlide key={i}>
                         <SliderItemSection
-                            title={item.title}
-                            image={item.image}
-                            description={item.description}
-                            buttonText={item.buttonText}
-                            video={item.video}
-                            onPlayVideo={setSelectedVideo}
+                            item={item}
+                            index={i}
+                            onPlayVideo={setSelectedSlider}
                         />
                     </SwiperSlide>
                 ))}
             </Swiper>
 
             <Dialog
-                open={Boolean(selectedVideo)}
-                onOpenChange={(open) => !open && setSelectedVideo(null)}
+                open={Boolean(selectedVideoUrl)}
+                onOpenChange={(open) => !open && setSelectedSlider(null)}
             >
-                <DialogContent className="max-h-[92vh] overflow-y-auto rounded-3xl border-white/10 bg-slate-950 px-4 py-6 text-white shadow-2xl sm:max-w-4xl sm:px-6 sm:py-8">
-                    {selectedVideo && (
-                        <div className="mx-auto w-full overflow-hidden rounded-2xl bg-slate-900 shadow-xl">
-                            <DialogHeader className="px-5 pt-5 pb-4 text-left sm:px-6 sm:pt-6">
+                <DialogContent className="border-white/10 bg-slate-950 p-0 text-white shadow-2xl sm:max-w-4xl">
+                    {selectedSlider && selectedVideoUrl && (
+                        <div className="overflow-hidden rounded-lg">
+                            <DialogHeader className="px-5 pt-5 pb-4 text-left sm:px-6">
                                 <DialogTitle className="text-xl font-black text-white sm:text-2xl">
-                                    {selectedVideo.title}
+                                    {selectedSlider.title}
                                 </DialogTitle>
                                 <DialogDescription className="text-sm leading-relaxed text-white/70">
-                                    {selectedVideo.description}
+                                    {selectedSlider.subtitle ||
+                                        'Video program pemberdayaan.'}
                                 </DialogDescription>
                             </DialogHeader>
 
                             <div className="aspect-video w-full overflow-hidden rounded-b-2xl bg-black">
                                 <iframe
-                                    src={selectedVideo.embedUrl}
-                                    title={selectedVideo.title}
+                                    src={selectedVideoUrl}
+                                    title={selectedSlider.title}
                                     className="h-full w-full"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowFullScreen
@@ -248,4 +199,36 @@ export const SliderSection = () => {
             </Dialog>
         </section>
     );
+};
+
+const getStorageImage = (path: string | null | undefined, fallback: string) => {
+    if (!path) {
+        return fallback;
+    }
+
+    if (path.startsWith('http') || path.startsWith('/')) {
+        return path;
+    }
+
+    return `/storage/${path}`;
+};
+
+const getVideoEmbedUrl = (url: string | null | undefined) => {
+    if (!url) {
+        return null;
+    }
+
+    if (url.includes('/embed/')) {
+        return url;
+    }
+
+    const youtubeMatch = url.match(
+        /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&?/]+)/,
+    );
+
+    if (youtubeMatch?.[1]) {
+        return `https://www.youtube.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1`;
+    }
+
+    return url;
 };

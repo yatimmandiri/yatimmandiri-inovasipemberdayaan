@@ -6,37 +6,27 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
-use Spatie\Sluggable\Attributes\Sluggable;
 
 #[Fillable([
-    'name',
-    'slug',
-    'excerpt',
-    'description',
-    'featured_image',
-    'status',
-    'recommended',
-    'benefits',
-    'category_id',
+    'pic',
+    'address',
+    'phone',
+    'province_id',
+    'regency_id',
+    'district_id',
+    'village_id',
+    'program_id',
 ])]
 
-#[Sluggable(from: 'name', to: 'slug')]
-
-class Program extends Model
+class ProgramLocation extends Model
 {
     use LogsActivity;
 
-    public function category(): BelongsTo
+    public function program(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'category_id');
-    }
-
-    public function locations(): HasMany
-    {
-        return $this->hasMany(ProgramLocation::class, 'program_id');
+        return $this->belongsTo(Program::class, 'program_id');
     }
 
     public function scopeSearch(Builder $query, ?string $search)
