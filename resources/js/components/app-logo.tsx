@@ -29,7 +29,7 @@ export default function AppLogo() {
             </div>
             <div className="ml-1 grid flex-1 text-left text-sm">
                 <span className="mb-0.5 truncate leading-tight font-semibold">
-                    Laravel Starter Kit
+                    Yatim Mandiri
                 </span>
             </div>
         </>
