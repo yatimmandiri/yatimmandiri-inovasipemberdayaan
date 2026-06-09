@@ -1,23 +1,37 @@
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Link, usePage } from '@inertiajs/react';
 import { ArrowRight, PlayCircle } from 'lucide-react';
+import { useState } from 'react';
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 type SliderItemSectionProps = {
     item: any;
     index: number;
+    onPlayVideo: (item: any) => void;
 };
 
-export const SliderItemSection = ({ item, index }: SliderItemSectionProps) => {
+export const SliderItemSection = ({
+    item,
+    index,
+    onPlayVideo,
+}: SliderItemSectionProps) => {
+    const featuredImage = getStorageImage(
+        item.featured_image,
+        `https://picsum.photos/1920/1080?random=${index + 11}`,
+    );
+    const hasVideo = Boolean(getVideoEmbedUrl(item.video_url));
+
     return (
         <div className="relative min-h-162.5 overflow-hidden sm:min-h-180 lg:h-195">
-            s{' '}
             <img
-                src={
-                    item.featured_image
-                        ? `/storage/${item.featured_image}`
-                        : `https://picsum.photos/1920/1080?random=${index}`
-                }
+                src={featuredImage}
                 alt={item.title}
                 className="absolute inset-0 h-full w-full object-cover"
             />
@@ -37,16 +51,22 @@ export const SliderItemSection = ({ item, index }: SliderItemSectionProps) => {
                             {item.subtitle}
                         </p>
                         <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
-                            <Link href={item.url ?? '#'}>
-                                <button className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:scale-[1.02] hover:bg-gray-100 sm:w-auto sm:px-6 sm:py-4 sm:text-base">
-                                    <span>Pelajari Selengkapnya</span>
-                                    <ArrowRight
-                                        size={18}
-                                        className="transition group-hover:translate-x-1"
-                                    />
-                                </button>
+                            <Link
+                                href={item.url || '/program'}
+                                className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-black transition hover:scale-[1.02] hover:bg-gray-100 sm:w-auto sm:px-6 sm:py-4 sm:text-base"
+                            >
+                                <span>Pelajari Selengkapnya</span>
+                                <ArrowRight
+                                    size={18}
+                                    className="transition group-hover:translate-x-1"
+                                />
                             </Link>
-                            <button className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20 sm:w-auto sm:px-6 sm:py-4 sm:text-base">
+                            <button
+                                type="button"
+                                onClick={() => onPlayVideo(item)}
+                                disabled={!hasVideo}
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-6 sm:py-4 sm:text-base"
+                            >
                                 <PlayCircle size={20} />
                                 Video Program
                             </button>
@@ -64,7 +84,7 @@ export const SliderItemSection = ({ item, index }: SliderItemSectionProps) => {
 
                             <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md">
                                 <h3 className="text-2xl font-bold sm:text-3xl">
-                                    {item.category?.programs?.length}
+                                    15+
                                 </h3>
 
                                 <p className="mt-1 text-xs text-gray-200 sm:text-sm">
@@ -101,6 +121,23 @@ export const SliderItemSection = ({ item, index }: SliderItemSectionProps) => {
 
 export const SliderSection = () => {
     const { sliders } = usePage<any>().props;
+    const [selectedSlider, setSelectedSlider] = useState<any | null>(null);
+    const sliderItems =
+        Array.isArray(sliders) && sliders.length > 0
+            ? sliders
+            : [
+                  {
+                      title: 'Inovasi untuk Pemberdayaan Umat',
+                      subtitle:
+                          'Menghadirkan solusi digital, pendidikan, dan sosial untuk menciptakan dampak nyata bagi masyarakat.',
+                      url: '/program',
+                      video_url: 'https://www.youtube.com/watch?v=ysz5S6PUM-U',
+                  },
+              ];
+
+    const selectedVideoUrl = selectedSlider
+        ? getVideoEmbedUrl(selectedSlider.video_url)
+        : null;
 
     return (
         <section className="relative overflow-hidden">
@@ -119,12 +156,79 @@ export const SliderSection = () => {
                 slidesPerView={1}
                 className="hero-swiper"
             >
-                {sliders.map((item: any, i: number) => (
+                {sliderItems.map((item: any, i: number) => (
                     <SwiperSlide key={i}>
-                        <SliderItemSection item={item} index={i} />
+                        <SliderItemSection
+                            item={item}
+                            index={i}
+                            onPlayVideo={setSelectedSlider}
+                        />
                     </SwiperSlide>
                 ))}
             </Swiper>
+
+            <Dialog
+                open={Boolean(selectedVideoUrl)}
+                onOpenChange={(open) => !open && setSelectedSlider(null)}
+            >
+                <DialogContent className="border-white/10 bg-slate-950 p-0 text-white shadow-2xl sm:max-w-4xl">
+                    {selectedSlider && selectedVideoUrl && (
+                        <div className="overflow-hidden rounded-lg">
+                            <DialogHeader className="px-5 pt-5 pb-4 text-left sm:px-6">
+                                <DialogTitle className="text-xl font-black text-white sm:text-2xl">
+                                    {selectedSlider.title}
+                                </DialogTitle>
+                                <DialogDescription className="text-sm leading-relaxed text-white/70">
+                                    {selectedSlider.subtitle ||
+                                        'Video program pemberdayaan.'}
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="aspect-video w-full overflow-hidden rounded-b-2xl bg-black">
+                                <iframe
+                                    src={selectedVideoUrl}
+                                    title={selectedSlider.title}
+                                    className="h-full w-full"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                />
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </section>
     );
+};
+
+const getStorageImage = (path: string | null | undefined, fallback: string) => {
+    if (!path) {
+        return fallback;
+    }
+
+    if (path.startsWith('http') || path.startsWith('/')) {
+        return path;
+    }
+
+    return `/storage/${path}`;
+};
+
+const getVideoEmbedUrl = (url: string | null | undefined) => {
+    if (!url) {
+        return null;
+    }
+
+    if (url.includes('/embed/')) {
+        return url;
+    }
+
+    const youtubeMatch = url.match(
+        /(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([^&?/]+)/,
+    );
+
+    if (youtubeMatch?.[1]) {
+        return `https://www.youtube.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1`;
+    }
+
+    return url;
 };

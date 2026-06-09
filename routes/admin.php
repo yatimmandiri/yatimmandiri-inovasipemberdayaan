@@ -14,8 +14,10 @@ use App\Http\Controllers\Admin\Core\Region\VillageController;
 use App\Http\Controllers\Admin\Core\RoleController;
 use App\Http\Controllers\Admin\Core\UserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\Settings\LogActivityController;
 use App\Http\Controllers\Admin\Settings\SiteSettingsController;
+use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -85,4 +87,7 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
         Route::get('testimonials/data', [TestimonialController::class, 'getData'])->name('testimonials.data');
         Route::resource('testimonials', TestimonialController::class);
     });
+
+    Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');
+    Route::resource('news', NewsController::class)->only(['index']);
 });

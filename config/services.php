@@ -40,4 +40,8 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
+
+    'news_api' => [
+        'posts_url' => env('NEWS_API_POSTS_URL', 'https://yatimmandiri.org/news/wp-json/ymapi/v2/posts'),
+    ],
 ];

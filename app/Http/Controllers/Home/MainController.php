@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Home;
 use App\Http\Controllers\Controller;
 use App\Models\Company\Category;
 use App\Models\Company\Mitra;
+use App\Models\Company\Program;
 use App\Models\Company\Slider;
 use App\Models\Company\Testimonial;
+use Illuminate\Http\Request;
 
 class MainController extends Controller
 {
@@ -61,11 +63,35 @@ class MainController extends Controller
         return inertia('home/berita/index', $data);
     }
 
-    public function programs()
+    public function programs(Request $request)
     {
+        $categories = Category::active()
+            ->withCount(['programs' => fn($query) => $query->where('status', true)])
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug']);
+
+        $programs = Program::with('category')
+            ->where('status', true)
+            ->when($request->input('search'), function ($query, $search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('excerpt', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->input('category'), function ($query, $category) {
+                $query->whereHas('category', fn($categoryQuery) => $categoryQuery->where('slug', $category));
+            })
+            ->latest()
+            ->paginate(9)
+            ->withQueryString();
 
         $data = [
             'pageTitle' => 'Program',
+            'programs' => $programs,
+            'categories' => $categories,
+            'filters' => $request->only(['search', 'category']),
             'meta' => [
                 'title' => 'Program',
                 'description' => 'Daftar program pemberdayaan berkelanjutan.',
@@ -74,6 +100,60 @@ class MainController extends Controller
         ];
 
         return inertia('home/programs/index', $data);
+    }
+
+    public function programDetail(Program $program)
+    {
+        abort_unless($program->status, 404);
+
+        $program->load(['category', 'locations']);
+
+        $relatedPrograms = Program::with('category')
+            ->where('status', true)
+            ->whereKeyNot($program->id)
+            ->where('category_id', $program->category_id)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        $data = [
+            'pageTitle' => $program->name,
+            'program' => $program,
+            'relatedPrograms' => $relatedPrograms,
+            'meta' => [
+                'title' => $program->name,
+                'description' => $program->excerpt ?? 'Detail program pemberdayaan.',
+                'keywords' => 'program, pemberdayaan, inovasi',
+            ],
+        ];
+
+        return inertia('home/programs/show', $data);
+    }
+
+    public function sponsorship()
+    {
+        return inertia('home/sponsorship/index', [
+            'pageTitle' => 'Sponsorship',
+            'partnershipTypes' => [
+                'CSR',
+                'Program Collaboration',
+                'Event Sponsorship',
+                'Media Partner',
+                'Community Partnership',
+            ],
+            'meta' => [
+                'title' => 'Sponsorship',
+                'description' => 'Ajukan kerja sama dan sponsorship program pemberdayaan.',
+                'keywords' => 'sponsorship, kerja sama, partnership',
+            ],
+        ]);
+    }
+
+    public function sponsorshipStore(Request $request)
+    {
+        return redirect()
+            ->route('home.sponsorship')
+            ->with('success', 'Pengajuan kerja sama berhasil dikirim. Tim kami akan menghubungi Anda.');
     }
 
     public function contact()

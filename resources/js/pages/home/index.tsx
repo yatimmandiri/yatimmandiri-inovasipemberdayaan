@@ -9,14 +9,15 @@ import { usePage } from '@inertiajs/react';
 import { Fragment } from 'react';
 
 export default function HomePage() {
-    const { categories, testimonials, mitras, news } = usePage<any>().props;
+    const { recommendedPrograms, testimonials, mitras, news } =
+        usePage<any>().props;
 
     return (
         <Fragment>
             <SliderSection />
             <AboutSection />
             <ImpactSection />
-            <CategorySection data={categories} />
+            <CategorySection data={recommendedPrograms} />
             <MitraSection data={mitras} />
             <KabarSection />
             <TestimonialSection data={testimonials} />
