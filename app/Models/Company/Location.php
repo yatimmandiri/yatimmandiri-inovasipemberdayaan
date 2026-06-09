@@ -20,7 +20,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'program_id',
 ])]
 
-class ProgramLocation extends Model
+class Location extends Model
 {
     use LogsActivity;
 

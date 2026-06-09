@@ -2,6 +2,7 @@
 
 namespace App\Models\Company;
 
+use App\Models\Company\Location;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -36,7 +37,7 @@ class Program extends Model
 
     public function locations(): HasMany
     {
-        return $this->hasMany(ProgramLocation::class, 'program_id');
+        return $this->hasMany(Location::class, 'program_id');
     }
 
     public function scopeSearch(Builder $query, ?string $search)

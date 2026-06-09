@@ -102,6 +102,16 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'update-testimonial'],
             ['name' => 'delete-testimonial'],
             ['name' => 'data-testimonial'],
+            ['name' => 'view-location'],
+            ['name' => 'create-location'],
+            ['name' => 'update-location'],
+            ['name' => 'delete-location'],
+            ['name' => 'data-location'],
+            ['name' => 'view-product'],
+            ['name' => 'create-product'],
+            ['name' => 'update-product'],
+            ['name' => 'delete-product'],
+            ['name' => 'data-product'],
         ])->each(fn($permission) => Permission::create($permission)->assignRole(['Administrators', 'Editors']));
 
         User::create([
