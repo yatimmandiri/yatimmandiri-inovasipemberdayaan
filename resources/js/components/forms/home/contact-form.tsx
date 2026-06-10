@@ -68,7 +68,7 @@ export const ContactForm = () => {
                 <TextAreaComponent
                     label="Message"
                     name="message"
-                    placeholder="write message ..."
+                    placeholder="Write Message ..."
                     value={data.message}
                     handleOnChange={(value: string) =>
                         setData('message', value)
