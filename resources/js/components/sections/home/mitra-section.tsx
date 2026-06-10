@@ -73,7 +73,7 @@ export const MitraSection = ({ data }: { data: Mitra[] }) => {
     );
 };
 
-const MitraItemSection = ({ item }: { item: Mitra }) => {
+export const MitraItemSection = ({ item }: { item: Mitra }) => {
     return (
         <div className="group flex h-32 items-center justify-center rounded-3xl border border-slate-200/70 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
             <img

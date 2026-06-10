@@ -1,4 +1,5 @@
-import { MapPin, Phone, Mail, Clock3, Send } from 'lucide-react';
+import { ContactForm } from '@/components/forms/home/contact-form';
+import { Clock3, Mail, MapPin, Phone } from 'lucide-react';
 import { Fragment } from 'react';
 import { BsFacebook, BsInstagram, BsYoutube } from 'react-icons/bs';
 
@@ -69,18 +70,16 @@ export const ContactSection = () => {
             <section className="bg-slate-50 py-16">
                 <div className="container mx-auto max-w-7xl px-6">
                     <div className="grid gap-10 lg:grid-cols-2">
-                        {/* Form */}
                         <div className="rounded-3xl bg-white p-6 shadow-sm md:p-8">
                             <h2 className="text-2xl font-bold text-slate-900">
                                 Kirim Pesan
                             </h2>
-
                             <p className="mt-2 text-slate-600">
                                 Isi formulir berikut dan tim kami akan segera
                                 menghubungi Anda.
                             </p>
-
-                            <form className="mt-6 space-y-4">
+                            <ContactForm />
+                            {/* <form className="mt-6 space-y-4">
                                 <div>
                                     <label className="mb-2 block text-sm font-medium">
                                         Nama Lengkap
@@ -136,7 +135,7 @@ export const ContactSection = () => {
                                     <Send size={18} />
                                     Kirim Pesan
                                 </button>
-                            </form>
+                            </form> */}
                         </div>
 
                         {/* Office */}

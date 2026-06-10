@@ -10,49 +10,7 @@ type TestimonialItemProps = {
     rating?: number;
 };
 
-const TestimonialItem = ({
-    name,
-    role,
-    image,
-    message,
-    rating = 5,
-}: TestimonialItemProps) => {
-    return (
-        <div className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
-            <div className="mb-4 flex items-center justify-between">
-                <div className="flex gap-1">
-                    {Array.from({ length: rating }).map((_, index) => (
-                        <Star
-                            key={index}
-                            className="size-4 fill-yellow-400 text-yellow-400"
-                        />
-                    ))}
-                </div>
-
-                <Quote className="size-8 text-orange-100" />
-            </div>
-            <p className="flex-1 text-sm leading-relaxed text-slate-600">
-                "{message}"
-            </p>
-            <div className="mt-5 flex items-center gap-3 border-t border-slate-100 pt-4">
-                <img
-                    src={image}
-                    alt={name}
-                    loading="lazy"
-                    className="h-12 w-12 rounded-full object-cover ring-2 ring-slate-100"
-                />
-                <div>
-                    <h4 className="text-sm font-semibold text-slate-900">
-                        {name}
-                    </h4>
-                    <p className="text-xs text-slate-500">{role}</p>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export const TestimonialSection = ({ data = [] }: { data?: any[] }) => {
+export const TestimonialSection = ({ data }: { data: any }) => {
     return (
         <section
             id="testimonials"
@@ -97,8 +55,8 @@ export const TestimonialSection = ({ data = [] }: { data?: any[] }) => {
                     }}
                     className="pb-10"
                 >
-                    {data.map((item, index) => (
-                        <SwiperSlide key={item.id ?? index} className="h-auto">
+                    {data.map((item: any, i: number) => (
+                        <SwiperSlide key={i} className="h-auto">
                             <TestimonialItem
                                 name={item.name}
                                 role={item.position || 'Penerima Manfaat'}
@@ -119,5 +77,46 @@ export const TestimonialSection = ({ data = [] }: { data?: any[] }) => {
                 </Swiper>
             </div>
         </section>
+    );
+};
+
+export const TestimonialItem = ({
+    name,
+    role,
+    image,
+    message,
+    rating = 5,
+}: TestimonialItemProps) => {
+    return (
+        <div className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
+            <div className="mb-4 flex items-center justify-between">
+                <div className="flex gap-1">
+                    {Array.from({ length: rating }).map((_, index) => (
+                        <Star
+                            key={index}
+                            className="size-4 fill-yellow-400 text-yellow-400"
+                        />
+                    ))}
+                </div>
+                <Quote className="size-8 text-orange-100" />
+            </div>
+            <p className="flex-1 text-sm leading-relaxed text-slate-600">
+                "{message}"
+            </p>
+            <div className="mt-5 flex items-center gap-3 border-t border-slate-100 pt-4">
+                <img
+                    src={image}
+                    alt={name}
+                    loading="lazy"
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-slate-100"
+                />
+                <div className="flex flex-col space-y-4">
+                    <h4 className="text-sm font-semibold text-slate-900">
+                        {name}
+                    </h4>
+                    <p className="text-xs text-slate-500">{role}</p>
+                </div>
+            </div>
+        </div>
     );
 };

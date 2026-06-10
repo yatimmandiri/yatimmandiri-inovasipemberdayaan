@@ -1,9 +1,10 @@
 import { CallToActionSection } from '@/components/sections/home/call-to-action-section';
 import { ContactSection } from '@/components/sections/home/contact-section';
+import { Fragment } from 'react';
 
 export default function ContactPage() {
     return (
-        <div className="bg-white">
+        <Fragment>
             <section className="bg-linear-to-br from-emerald-700 via-emerald-600 to-emerald-500 py-20 text-white">
                 <div className="container mx-auto max-w-7xl px-6 pt-8 text-center md:pt-8">
                     <span className="inline-flex rounded-full bg-white/20 px-4 py-2 text-sm font-medium backdrop-blur">
@@ -20,6 +21,6 @@ export default function ContactPage() {
             </section>
             <ContactSection />
             <CallToActionSection />
-        </div>
+        </Fragment>
     );
 }
