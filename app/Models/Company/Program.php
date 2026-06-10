@@ -40,6 +40,11 @@ class Program extends Model
         return $this->hasMany(Location::class, 'program_id');
     }
 
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'program_id');
+    }
+
     public function scopeSearch(Builder $query, ?string $search)
     {
         return $query->when($search, function ($q, $search) {
