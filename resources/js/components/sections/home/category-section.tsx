@@ -16,12 +16,10 @@ export const CategorySection = ({ data }: { data: any }) => {
                         Kategori Program
                     </span>
                 </div>
-
                 <div className="mx-auto mb-16 max-w-3xl text-center">
                     <h2 className="text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
                         Kategori Program Pemberdayaan
                     </h2>
-
                     <p className="mt-5 text-lg leading-relaxed text-slate-600">
                         Berbagai kategori program pemberdayaan yang dirancang
                         untuk meningkatkan kualitas hidup masyarakat melalui
@@ -35,7 +33,7 @@ export const CategorySection = ({ data }: { data: any }) => {
                         delay: 5000,
                         disableOnInteraction: false,
                     }}
-                    spaceBetween={24}
+                    spaceBetween={10}
                     breakpoints={{
                         0: {
                             slidesPerView: 1,
@@ -111,7 +109,6 @@ export const CategoryItemSection = ({
                                     className="flex items-start gap-3"
                                 >
                                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
-
                                     <span className="text-sm text-slate-600">
                                         {benefit}
                                     </span>

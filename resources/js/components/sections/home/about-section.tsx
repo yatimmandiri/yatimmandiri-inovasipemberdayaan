@@ -42,7 +42,7 @@ export const AboutSection = () => {
     ];
 
     return (
-        <div id="about" className="bg-white py-24">
+        <section id="about" className="bg-white py-24">
             <div className="container mx-auto max-w-7xl px-6">
                 <div className="grid items-center gap-16 lg:grid-cols-2">
                     <div className="relative">
@@ -53,7 +53,6 @@ export const AboutSection = () => {
                                 className="h-full w-full object-cover shadow-xl"
                             />
                         </div>
-
                         <div className="absolute -right-6 -bottom-6 z-20 rounded-2xl bg-orange-500 p-6 text-white shadow-lg">
                             <div className="text-3xl font-bold">10K+</div>
                             <div className="text-sm opacity-90">
@@ -111,11 +110,9 @@ export const AboutSection = () => {
                                 <div className="mb-4 inline-flex rounded-xl bg-orange-500/10 p-3 text-orange-500">
                                     <Icon className="size-8" />
                                 </div>
-
                                 <h3 className="mb-3 text-xl font-semibold text-slate-900">
                                     {item.title}
                                 </h3>
-
                                 <p className="leading-relaxed text-slate-600">
                                     {item.description}
                                 </p>
@@ -124,6 +121,6 @@ export const AboutSection = () => {
                     })}
                 </div>
             </div>
-        </div>
+        </section>
     );
 };

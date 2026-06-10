@@ -84,7 +84,7 @@ export const ImpactItemSection = ({ item }: { item: any }) => {
             key={item.label}
             className="group h-full rounded-3xl border border-slate-200/70 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-orange-200 hover:shadow-xl"
         >
-            <div className="space-y-5">
+            <div className="flex flex-col space-y-5">
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-100 text-orange-500 transition-all duration-300 group-hover:bg-orange-500 group-hover:text-white">
                     <Icon className="size-8" />
                 </div>
