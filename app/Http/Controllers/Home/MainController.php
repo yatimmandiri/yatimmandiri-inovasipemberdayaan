@@ -95,7 +95,6 @@ class MainController extends Controller
     {
         $categories = Category::active()
             ->withCount(['programs' => fn($query) => $query->where('status', true)])
-            ->orderBy('name')
             ->get();
 
         $data = [

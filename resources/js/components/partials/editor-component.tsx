@@ -258,12 +258,9 @@ export const EditorComponent = ({
                     editor={editor}
                     className={cn(
                         'cursor-text',
-
-                        '[&_.ProseMirror]:min-h-[500px]',
+                        '[&_.ProseMirror]:min-h-125',
                         '[&_.ProseMirror]:w-full',
                         '[&_.ProseMirror]:focus:outline-none',
-
-                        // placeholder
                         '[&_.is-editor-empty:first-child::before]:pointer-events-none',
                         '[&_.is-editor-empty:first-child::before]:float-left',
                         '[&_.is-editor-empty:first-child::before]:h-0',

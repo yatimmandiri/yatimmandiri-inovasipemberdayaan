@@ -3,6 +3,7 @@ import {
     NilaiNilaiSection,
     ProfileSection,
     TimelineSection,
+    TujuanSection,
     VisiMisiSection,
 } from '@/components/sections/home/sejarah-section';
 import { Fragment } from 'react';
@@ -17,9 +18,6 @@ export default function AboutPage() {
                 </div>
                 <div className="relative container mx-auto max-w-7xl px-6">
                     <div className="mx-auto max-w-4xl text-center">
-                        <span className="inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-semibold backdrop-blur">
-                            Tentang Kami
-                        </span>
                         <h1 className="mt-8 text-5xl font-bold md:text-7xl">
                             Membangun
                             <b className="block text-emerald-200">
@@ -35,6 +33,7 @@ export default function AboutPage() {
                 </div>
             </section>
             <ProfileSection />
+            <TujuanSection />
             <TimelineSection />
             <VisiMisiSection />
             <NilaiNilaiSection />

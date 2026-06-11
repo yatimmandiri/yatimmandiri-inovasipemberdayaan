@@ -1,5 +1,6 @@
 import { getStorageUrl } from '@/utils/copyText';
 import { Link } from '@inertiajs/react';
+import parse from 'html-react-parser';
 import { ArrowRight, Building2, CheckCircle2 } from 'lucide-react';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -97,9 +98,9 @@ export const CategoryItemSection = ({
                         <h3 className="mt-4 text-2xl leading-tight font-bold text-slate-900 transition-colors group-hover:text-emerald-600">
                             {item.name}
                         </h3>
-                        <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-slate-600">
-                            {item.excerpt || item.description}
-                        </p>
+                        <div className="mt-4 line-clamp-3 text-sm leading-relaxed text-slate-600">
+                            {parse(item.excerpt || item.description || '')}
+                        </div>
                     </div>
                     {benefits.length > 0 && (
                         <ul className="mt-6 space-y-3">

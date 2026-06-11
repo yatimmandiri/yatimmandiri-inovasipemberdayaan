@@ -1,4 +1,14 @@
-import { Handshake, Leaf, Lightbulb, ShieldCheck } from 'lucide-react';
+import {
+    Globe,
+    GraduationCap,
+    Handshake,
+    Leaf,
+    Lightbulb,
+    ShieldCheck,
+    Sprout,
+    Target,
+    TrendingUp,
+} from 'lucide-react';
 
 export const TimelineSection = () => {
     const timeline = [
@@ -87,27 +97,39 @@ export const ProfileSection = () => {
                             className="w-full rounded-3xl shadow-2xl"
                         />
                     </div>
-
-                    <div>
-                        <span className="font-semibold text-emerald-600">
-                            Siapa Kami
-                        </span>
-
+                    <div className="flex flex-col space-y-1">
                         <h2 className="mt-4 text-4xl font-bold text-slate-900">
-                            Menggerakkan Perubahan Melalui Pemberdayaan
+                            Tentang Kami
                         </h2>
-
                         <p className="mt-6 leading-relaxed text-slate-600">
-                            Kami hadir untuk membantu masyarakat mengembangkan
-                            potensi yang dimiliki melalui program-program
-                            pemberdayaan yang inovatif, berkelanjutan, dan
-                            berdampak nyata.
+                            Inovasi Pemberdayaan Yatim Mandiri merupakan
+                            platform inovasi sosial dan pemberdayaan masyarakat
+                            yang diinisiasi oleh Yatim Mandiri sebagai upaya
+                            menghadirkan program pemberdayaan yang lebih
+                            adaptif, berkelanjutan, dan berdampak luas bagi
+                            masyarakat, khususnya keluarga yatim dan dhuafa
                         </p>
-
-                        <p className="mt-4 leading-relaxed text-slate-600">
-                            Dengan pendekatan kolaboratif, kami percaya setiap
-                            individu memiliki kesempatan untuk tumbuh menjadi
-                            lebih mandiri dan sejahtera.
+                        <p className="mt-2 leading-relaxed text-slate-600">
+                            Berangkat dari pengalaman panjang dalam menjalankan
+                            berbagai program pemberdayaan, Yatim Mandiri percaya
+                            bahwa tantangan sosial dan ekonomi masa depan
+                            membutuhkan pendekatan yang lebih kreatif,
+                            kolaboratif, dan berbasis solusi nyata. Karena itu,
+                            Inovasi Pemberdayaan hadir sebagai ruang
+                            pengembangan ide, kolaborasi, serta inkubasi program
+                            yang mampu menjawab kebutuhan masyarakat secara
+                            lebih relevan dan berkelanjutan.
+                        </p>
+                        <p className="mt-2 leading-relaxed text-slate-600">
+                            Melalui program ini, setiap inovasi tidak hanya
+                            berhenti sebagai gagasan, tetapi dikembangkan
+                            menjadi aksi nyata yang dapat diterapkan langsung di
+                            masyarakat. Dengan mengusung semangat transformasi
+                            digital, ekonomi hijau, dan Sustainable Development
+                            Goals (SDGs), Inovasi Pemberdayaan menjadi langkah
+                            nyata Yatim Mandiri dalam membangun ekosistem
+                            pemberdayaan yang mandiri, produktif, dan berdaya
+                            saing menuju Indonesia Emas 2045.
                         </p>
                     </div>
                 </div>
@@ -123,11 +145,11 @@ export const VisiMisiSection = () => {
                 <div className="grid gap-8 lg:grid-cols-2">
                     <div className="rounded-3xl bg-linear-to-br from-emerald-600 to-emerald-500 p-10 text-white shadow-xl">
                         <h3 className="text-3xl font-bold">Visi</h3>
-
                         <p className="mt-6 text-lg leading-relaxed">
-                            Menjadi lembaga pemberdayaan masyarakat yang
-                            inovatif, profesional, dan berkelanjutan dalam
-                            menciptakan dampak sosial yang luas.
+                            Menjadi platform inovasi pemberdayaan masyarakat
+                            yang melahirkan solusi berkelanjutan untuk
+                            menciptakan komunitas yang mandiri, produktif, dan
+                            berdaya saing
                         </p>
                     </div>
 
@@ -137,10 +159,26 @@ export const VisiMisiSection = () => {
                         </h3>
 
                         <ul className="mt-6 space-y-4 text-slate-600">
-                            <li>✓ Mengembangkan potensi lokal.</li>
-                            <li>✓ Memberdayakan masyarakat dan UMKM.</li>
-                            <li>✓ Membangun kolaborasi lintas sektor.</li>
-                            <li>✓ Menciptakan dampak berkelanjutan.</li>
+                            <li>
+                                ✓ Mengembangkan program pemberdayaan yang
+                                inovatif dan berkelanjutan.
+                            </li>
+                            <li>
+                                ✓ Mendorong lahirnya solusi sosial berbasis
+                                kebutuhan masyarakat.
+                            </li>
+                            <li>
+                                ✓ Menguatkan kapasitas amil dan komunitas dalam
+                                membangun kemandirian ekonomi.
+                            </li>
+                            <li>
+                                ✓ Menghubungkan berbagai stakeholder dalam
+                                kolaborasi sosial yang berdampak.
+                            </li>
+                            <li>
+                                ✓ Mengimplementasikan inovasi terbaik menjadi
+                                program nyata di masyarakat.
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -204,6 +242,98 @@ export const NilaiNilaiSection = () => {
 
                                 <p className="mt-4 text-sm text-slate-600">
                                     {item.description}
+                                </p>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+export const TujuanSection = () => {
+    const goals = [
+        {
+            icon: Lightbulb,
+            title: 'Inovasi Berdampak',
+            description:
+                'Mengembangkan inovasi program pemberdayaan masyarakat yang berdampak nyata dan berkelanjutan.',
+        },
+        {
+            icon: TrendingUp,
+            title: 'Penguatan Ekonomi',
+            description:
+                'Mendorong lahirnya solusi kreatif untuk memperkuat ekonomi keluarga yatim dan dhuafa.',
+        },
+        {
+            icon: GraduationCap,
+            title: 'Peningkatan Kapasitas Amil',
+            description:
+                'Meningkatkan kapasitas, kompetensi, dan kreativitas amil dalam membangun program pemberdayaan.',
+        },
+        {
+            icon: Handshake,
+            title: 'Kolaborasi Multisektor',
+            description:
+                'Menjadi ruang kolaborasi antara lembaga sosial, CSR, pemerintah, akademisi, dan masyarakat.',
+        },
+        {
+            icon: Sprout,
+            title: 'Potensi Lokal & Ekonomi Hijau',
+            description:
+                'Menghadirkan model pemberdayaan berbasis potensi lokal, digitalisasi, dan ekonomi hijau.',
+        },
+        {
+            icon: Globe,
+            title: 'Mendukung SDGs',
+            description:
+                'Berkontribusi pada pencapaian Sustainable Development Goals (SDGs) dan Indonesia Emas 2045.',
+        },
+        {
+            icon: Target,
+            title: 'Membangun Kemandirian',
+            description:
+                'Menciptakan program pemberdayaan yang tidak hanya membantu, tetapi membangun kemandirian masyarakat.',
+        },
+    ];
+
+    return (
+        <section className="relative overflow-hidden bg-white py-24">
+            <div className="container mx-auto max-w-7xl px-6">
+                <div className="mx-auto max-w-3xl text-center">
+                    <span className="rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
+                        Tujuan Program
+                    </span>
+                    <h2 className="mt-6 text-4xl font-bold text-slate-900 md:text-5xl">
+                        Menghadirkan Inovasi untuk Dampak yang Lebih Luas
+                    </h2>
+                    <p className="mt-6 text-lg leading-relaxed text-slate-600">
+                        Inovasi Pemberdayaan Yatim Mandiri hadir sebagai wadah
+                        pengembangan solusi kreatif dan kolaboratif untuk
+                        memperkuat kemandirian masyarakat serta menciptakan
+                        dampak sosial yang berkelanjutan.
+                    </p>
+                </div>
+                <div className="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+                    {goals.map((goal, index) => {
+                        const Icon = goal.icon;
+
+                        return (
+                            <div
+                                key={index}
+                                className="group rounded-3xl border border-slate-200 bg-white p-8 transition-all duration-300 hover:-translate-y-2 hover:border-emerald-200 hover:shadow-xl"
+                            >
+                                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 transition-all group-hover:bg-emerald-600">
+                                    <Icon className="h-8 w-8 text-emerald-600 group-hover:text-white" />
+                                </div>
+
+                                <h3 className="mt-6 text-xl font-bold text-slate-900">
+                                    {goal.title}
+                                </h3>
+
+                                <p className="mt-4 leading-relaxed text-slate-600">
+                                    {goal.description}
                                 </p>
                             </div>
                         );

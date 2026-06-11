@@ -9,10 +9,10 @@
 /* ========================================
    PLUGINS
 ======================================== */
-@plugin 'tailwind-scrollbar-hide';
 @plugin 'tailwindcss-animate';
 @plugin '@tailwindcss/typography';
 @plugin '@tailwindcss/aspect-ratio';
+@plugin 'tailwind-scrollbar-hide';
 
 /* ===============================
    Swiper JS

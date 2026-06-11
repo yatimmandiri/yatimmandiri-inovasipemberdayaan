@@ -71,11 +71,12 @@ export const AboutSection = () => {
                             </b>
                         </h2>
                         <p className="mt-6 text-lg leading-relaxed text-slate-600">
-                            Inovasi Pemberdayaan hadir sebagai wadah kolaborasi
-                            untuk mengembangkan program-program yang berfokus
-                            pada peningkatan kualitas hidup masyarakat melalui
-                            pendidikan, ekonomi, teknologi, dan pengembangan
-                            sumber daya manusia.
+                            Inovasi Pemberdayaan Yatim Mandiri merupakan
+                            platform inovasi sosial dan pemberdayaan masyarakat
+                            yang diinisiasi oleh Yatim Mandiri untuk
+                            menghadirkan program-program yang lebih adaptif,
+                            berkelanjutan, dan berdampak luas bagi masyarakat,
+                            khususnya keluarga yatim dan dhuafa.
                         </p>
                         <div className="mt-8 flex w-full flex-col gap-4 md:flex-row">
                             <Link href="/about">
