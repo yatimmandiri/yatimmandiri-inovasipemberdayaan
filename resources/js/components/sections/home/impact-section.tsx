@@ -3,18 +3,10 @@ import {
     GraduationCap,
     MapPinned,
     Users,
-    type LucideIcon,
 } from 'lucide-react';
 
-interface ImpactItem {
-    icon: LucideIcon;
-    value: string;
-    label: string;
-    description: string;
-}
-
 export const ImpactSection = () => {
-    const impacts: ImpactItem[] = [
+    const impacts = [
         {
             icon: Users,
             value: '150.000+',

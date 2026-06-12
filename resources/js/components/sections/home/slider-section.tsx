@@ -1,34 +1,31 @@
 import { getStorageUrl } from '@/utils/copyText';
 import { Link } from '@inertiajs/react';
 import { ArrowRight } from 'lucide-react';
-import { Fragment } from 'react';
 import { Autoplay, EffectFade, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-export const SliderSection = ({ data }: { data: any[] }) => {
+export const SliderSection = ({ data }: { data: any }) => {
     return (
-        <Fragment>
-            <section className="relative overflow-hidden">
-                <Swiper
-                    modules={[Pagination, Autoplay, EffectFade]}
-                    effect="fade"
-                    loop
-                    speed={1000}
-                    autoplay={{
-                        delay: 5000,
-                        disableOnInteraction: false,
-                    }}
-                    slidesPerView={1}
-                    className="hero-swiper"
-                >
-                    {data?.map((item: any, index: number) => (
-                        <SwiperSlide key={index}>
-                            <SliderItemSection item={item} />
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
-            </section>
-        </Fragment>
+        <section className="relative overflow-hidden">
+            <Swiper
+                modules={[Pagination, Autoplay, EffectFade]}
+                effect="fade"
+                loop
+                speed={1000}
+                autoplay={{
+                    delay: 5000,
+                    disableOnInteraction: false,
+                }}
+                slidesPerView={1}
+                className="hero-swiper"
+            >
+                {data?.map((item: any, index: number) => (
+                    <SwiperSlide key={index}>
+                        <SliderItemSection item={item} />
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+        </section>
     );
 };
 

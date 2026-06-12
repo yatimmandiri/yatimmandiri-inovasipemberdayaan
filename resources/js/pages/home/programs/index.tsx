@@ -1,10 +1,9 @@
-import { usePage } from '@inertiajs/react';
+import { getStorageUrl } from '@/utils/copyText';
+import { Link, usePage } from '@inertiajs/react';
 import { Fragment } from 'react';
 
 export default function ProgramPage() {
-    const { programs, categories } = usePage<any>().props;
-
-    console.log(programs, categories);
+    const { programs } = usePage<any>().props;
 
     return (
         <Fragment>
@@ -22,53 +21,44 @@ export default function ProgramPage() {
                     </p>
                 </div>
             </section>
-
-            {/* <section className="bg-slate-50 py-10">
-                <div className="mx-auto grid max-w-7xl grid-cols-1 gap-2 px-6 md:grid-cols-[1fr_260px]">
-                    <InputTextComponent
-                        type="search"
-                        name="search"
-                        placeholder="Cari Program"
-                        addonLeft={SearchIcon}
-                        group={true}
-                        handleOnChange={(value: string) => {
-                            setFilterValue({ ...filterValue, search: value });
-                        }}
-                    />
-                    <SelectComponent
-                        name="category"
-                        placeholder="Semua Kategori"
-                        data={categories?.map((item: any) => ({
-                            value: item.slug,
-                            label: `${item.name} (${item.programs_count || 0})`,
-                        }))}
-                        handleOnChange={(value: string) => {
-                            setFilterValue({ ...filterValue, category: value });
-                        }}
-                    />
-                </div>
-            </section> */}
-
-            {/* <section className="py-16">
+            <section className="bg-slate-50 py-20">
                 <div className="mx-auto max-w-7xl px-6">
-                    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                        {data?.map((item: any, i: number) => (
-                            <ProgramItemSection key={i} item={item} />
+                    <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+                        {programs?.map((program: any) => (
+                            <div
+                                key={program.id}
+                                className="group overflow-hidden rounded-3xl bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                            >
+                                <div className="aspect-16/10 overflow-hidden">
+                                    <img
+                                        src={getStorageUrl(
+                                            program.featured_image,
+                                        )}
+                                        alt={program.name}
+                                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                    />
+                                </div>
+                                <div className="p-6">
+                                    <h3 className="text-xl font-bold text-slate-900">
+                                        {program.name}
+                                    </h3>
+                                    <p className="mt-3 line-clamp-3 text-slate-600">
+                                        {program.excerpt}
+                                    </p>
+                                    <div className="mt-6">
+                                        <Link
+                                            href={`/programs/${program.slug}`}
+                                            className="inline-flex items-center gap-2 font-semibold text-emerald-600"
+                                        >
+                                            Lihat Detail →
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
                         ))}
                     </div>
-
-                    {items.length === 0 && (
-                        <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
-                            <p className="text-lg font-bold text-slate-900">
-                                Program tidak ditemukan
-                            </p>
-                            <p className="mt-2 text-slate-600">
-                                Coba ubah kata kunci atau kategori pencarian.
-                            </p>
-                        </div>
-                    )}
                 </div>
-            </section> */}
+            </section>
         </Fragment>
     );
 }

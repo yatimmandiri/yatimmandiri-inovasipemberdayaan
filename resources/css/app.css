@@ -180,6 +180,10 @@
         font-size: 18px;
         font-weight: 700;
     }
+
+    .description {
+        @apply prose prose-sm -mt-3 text-justify text-sm leading-5 prose-headings:font-extrabold prose-p:leading-6;
+    }
 }
 
 /* ========================================

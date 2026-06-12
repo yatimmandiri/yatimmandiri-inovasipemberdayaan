@@ -1,13 +1,7 @@
 import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-interface Mitra {
-    id?: number;
-    name: string;
-    logo?: string;
-}
-
-export const MitraSection = ({ data }: { data: Mitra[] }) => {
+export const MitraSection = ({ data }: { data: any }) => {
     return (
         <section className="bg-slate-50 py-24">
             <div className="relative container mx-auto max-w-7xl px-6">
@@ -62,8 +56,8 @@ export const MitraSection = ({ data }: { data: Mitra[] }) => {
                         },
                     }}
                 >
-                    {data?.map((item, index) => (
-                        <SwiperSlide key={item.id ?? `${item.name}-${index}`}>
+                    {data?.map((item: any, i: number) => (
+                        <SwiperSlide key={i}>
                             <MitraItemSection item={item} />
                         </SwiperSlide>
                     ))}
@@ -73,7 +67,7 @@ export const MitraSection = ({ data }: { data: Mitra[] }) => {
     );
 };
 
-export const MitraItemSection = ({ item }: { item: Mitra }) => {
+export const MitraItemSection = ({ item }: { item: any }) => {
     return (
         <div className="group flex h-32 items-center justify-center rounded-3xl border border-slate-200/70 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
             <img

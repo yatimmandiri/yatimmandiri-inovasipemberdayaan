@@ -2,14 +2,6 @@ import { Quote, Star } from 'lucide-react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-type TestimonialItemProps = {
-    name: string;
-    role: string;
-    image: string;
-    message: string;
-    rating?: number;
-};
-
 export const TestimonialSection = ({ data }: { data: any }) => {
     return (
         <section
@@ -86,7 +78,13 @@ export const TestimonialItem = ({
     image,
     message,
     rating = 5,
-}: TestimonialItemProps) => {
+}: {
+    name: string;
+    role: string;
+    image: string;
+    message: string;
+    rating?: number;
+}) => {
     return (
         <div className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
             <div className="mb-4 flex items-center justify-between">

@@ -99,7 +99,7 @@ export const CategoryItemSection = ({
                             {item.name}
                         </h3>
                         <div className="mt-4 line-clamp-3 text-sm leading-relaxed text-slate-600">
-                            {parse(item.excerpt || item.description || '')}
+                            {parse(item.description || '')}
                         </div>
                     </div>
                     {benefits.length > 0 && (

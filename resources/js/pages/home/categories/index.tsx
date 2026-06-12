@@ -4,9 +4,13 @@ import { Fragment } from 'react';
 
 export default function CategoriesPage() {
     const { categories } = usePage<any>().props;
+
     return (
         <Fragment>
-            <section className="relative overflow-hidden bg-linear-to-br from-emerald-700 via-emerald-600 to-emerald-500 py-24 text-white">
+            <section
+                id="hero"
+                className="relative overflow-hidden bg-linear-to-br from-emerald-700 via-emerald-600 to-emerald-500 py-24 text-white"
+            >
                 <div className="absolute top-0 left-0 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
                 <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
                 <div className="relative z-10 container mx-auto max-w-7xl px-6">
@@ -26,8 +30,6 @@ export default function CategoriesPage() {
                     </div>
                 </div>
             </section>
-
-            {/* Categories */}
             <section className="py-20">
                 <div className="container mx-auto max-w-7xl px-6">
                     <div className="mb-14 text-center">

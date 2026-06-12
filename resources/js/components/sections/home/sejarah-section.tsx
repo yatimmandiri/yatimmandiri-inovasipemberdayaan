@@ -1,12 +1,9 @@
 import {
-    Globe,
     GraduationCap,
     Handshake,
     Leaf,
     Lightbulb,
     ShieldCheck,
-    Sprout,
-    Target,
     TrendingUp,
 } from 'lucide-react';
 
@@ -277,24 +274,6 @@ export const TujuanSection = () => {
             title: 'Kolaborasi Multisektor',
             description:
                 'Menjadi ruang kolaborasi antara lembaga sosial, CSR, pemerintah, akademisi, dan masyarakat.',
-        },
-        {
-            icon: Sprout,
-            title: 'Potensi Lokal & Ekonomi Hijau',
-            description:
-                'Menghadirkan model pemberdayaan berbasis potensi lokal, digitalisasi, dan ekonomi hijau.',
-        },
-        {
-            icon: Globe,
-            title: 'Mendukung SDGs',
-            description:
-                'Berkontribusi pada pencapaian Sustainable Development Goals (SDGs) dan Indonesia Emas 2045.',
-        },
-        {
-            icon: Target,
-            title: 'Membangun Kemandirian',
-            description:
-                'Menciptakan program pemberdayaan yang tidak hanya membantu, tetapi membangun kemandirian masyarakat.',
         },
     ];
 

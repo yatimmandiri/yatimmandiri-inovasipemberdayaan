@@ -15,34 +15,34 @@ class CategorySeeder extends Seeder
         collect([
             [
                 'name' => 'Pertanian dan Perkebunan',
-                'description' => 'Program pemberdayaan di sektor pertanian dan perkebunan yang bertujuan meningkatkan produktivitas lahan, kualitas hasil panen, serta pendapatan petani melalui penerapan teknologi, pelatihan, dan pendampingan berkelanjutan.',
+                'description' => 'Program Pertanian dan Perkebunan berfokus pada pemberdayaan masyarakat melalui pengembangan sektor agrikultur yang produktif dan berkelanjutan. Melalui pelatihan, pendampingan, serta penerapan praktik pertanian yang baik, program ini membantu meningkatkan hasil produksi, kualitas panen, dan kesejahteraan petani sehingga mampu menciptakan kemandirian ekonomi bagi keluarga dan komunitas.',
                 'benefits' => 'Pelatihan Budidaya; Pendampingan Petani; Peningkatan Produktivitas; Penguatan Ketahanan Pangan'
             ],
             [
                 'name' => 'Peternakan',
-                'description' => 'Program pengembangan usaha peternakan untuk meningkatkan kapasitas peternak dalam pengelolaan ternak, produksi hasil peternakan, dan pengembangan usaha yang berkelanjutan.',
+                'description' => 'Program Peternakan bertujuan meningkatkan kapasitas masyarakat dalam mengelola usaha peternakan yang produktif dan berkelanjutan. Melalui penyediaan pelatihan, pendampingan, dan penguatan manajemen usaha, program ini membantu peternak meningkatkan hasil produksi, memperluas peluang usaha, serta memperkuat ketahanan ekonomi keluarga dan masyarakat.',
                 'benefits' => 'Pelatihan Peternakan; Pendampingan Usaha Ternak; Peningkatan Produksi; Penguatan Ekonomi Peternak'
             ],
             [
                 'name' => 'Pemberdayaan Masyarakat',
-                'description' => 'Program penguatan kapasitas masyarakat melalui berbagai kegiatan sosial, ekonomi, dan lingkungan untuk menciptakan kemandirian, kesejahteraan, dan pembangunan berbasis potensi lokal.',
+                'description' => 'Program Pemberdayaan Masyarakat dirancang untuk meningkatkan kapasitas individu dan kelompok dalam mengembangkan potensi yang dimiliki secara mandiri. Melalui berbagai kegiatan pelatihan, pendampingan, dan penguatan kelembagaan komunitas, program ini mendorong terciptanya masyarakat yang lebih berdaya, mandiri, serta mampu berkontribusi dalam pembangunan sosial dan ekonomi di lingkungannya.',
                 'benefits' => 'Pengembangan Kapasitas Masyarakat; Pelatihan Keterampilan; Penguatan Kelompok Komunitas; Pendampingan Berkelanjutan'
             ],
             [
                 'name' => 'UMKM Bangkit',
-                'description' => 'Program pengembangan usaha mikro, kecil, dan menengah (UMKM) melalui pelatihan, pendampingan, serta akses pemasaran guna meningkatkan daya saing dan keberlanjutan usaha.',
+                'description' => 'Program UMKM Bangkit hadir untuk mendukung pertumbuhan usaha mikro, kecil, dan menengah melalui penguatan kapasitas pelaku usaha, pengembangan produk, serta peningkatan akses pasar. Dengan pendampingan yang berkelanjutan, program ini membantu UMKM menjadi lebih kompetitif, inovatif, dan mampu berkembang secara berkelanjutan sehingga memberikan dampak ekonomi yang lebih luas bagi masyarakat.',
                 'benefits' => 'Pelatihan Manajemen Usaha; Pengembangan Produk; Digital Marketing; Pendampingan UMKM'
             ],
             [
                 'name' => 'Pendidikan dan Pelatihan',
-                'description' => 'Program peningkatan kompetensi dan keterampilan masyarakat melalui pendidikan nonformal, pelatihan kerja, serta pengembangan kapasitas sumber daya manusia untuk mendukung kemandirian ekonomi.',
+                'description' => 'Program Pendidikan dan Pelatihan berfokus pada peningkatan kualitas sumber daya manusia melalui pengembangan pengetahuan, keterampilan, dan kompetensi yang relevan dengan kebutuhan masyarakat. Melalui berbagai pelatihan dan pendampingan, program ini membuka peluang yang lebih besar bagi peserta untuk meningkatkan produktivitas, memperoleh pekerjaan, maupun mengembangkan usaha secara mandiri.',
                 'benefits' => 'Pelatihan Keterampilan; Sertifikasi Kompetensi; Pengembangan SDM; Peningkatan Peluang Kerja'
             ],
-            [
-                'name' => 'Produk Unggulan',
-                'description' => 'Program pengembangan produk unggulan daerah dan komunitas untuk meningkatkan kualitas, nilai tambah, serta akses pasar sehingga mampu bersaing di tingkat regional maupun nasional.',
-                'benefits' => 'Pengembangan Produk; Peningkatan Kualitas; Branding dan Packaging; Akses Pasar yang Lebih Luas'
-            ]
+            // [
+            //     'name' => 'Produk Unggulan',
+            //     'description' => 'Program pengembangan produk unggulan daerah dan komunitas untuk meningkatkan kualitas, nilai tambah, serta akses pasar sehingga mampu bersaing di tingkat regional maupun nasional.',
+            //     'benefits' => 'Pengembangan Produk; Peningkatan Kualitas; Branding dan Packaging; Akses Pasar yang Lebih Luas'
+            // ]
         ])->each(fn($data) => Category::create($data));
     }
 }

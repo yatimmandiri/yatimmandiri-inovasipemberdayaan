@@ -1,20 +1,8 @@
 import { Link } from '@inertiajs/react';
-import {
-    HeartHandshake,
-    Lightbulb,
-    TrendingUp,
-    Users,
-    type LucideIcon,
-} from 'lucide-react';
-
-interface ValueItem {
-    icon: LucideIcon;
-    title: string;
-    description: string;
-}
+import { HeartHandshake, Lightbulb, TrendingUp, Users } from 'lucide-react';
 
 export const AboutSection = () => {
-    const values: ValueItem[] = [
+    const values = [
         {
             icon: Lightbulb,
             title: 'Inovasi Berkelanjutan',

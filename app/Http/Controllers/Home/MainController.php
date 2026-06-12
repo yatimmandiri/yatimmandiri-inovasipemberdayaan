@@ -96,10 +96,12 @@ class MainController extends Controller
         $categories = Category::active()
             ->withCount(['programs' => fn($query) => $query->where('status', true)])
             ->get();
+        $programs = Program::get();
 
         $data = [
             'pageTitle' => 'Program',
             'categories' => $categories,
+            'programs' => $programs,
             'meta' => [
                 'title' => 'Program',
                 'description' => 'Daftar program pemberdayaan berkelanjutan.',
@@ -132,8 +134,6 @@ class MainController extends Controller
 
     public function programDetail(Program $program)
     {
-        return $program;
-
         $program->load(['category', 'locations']);
 
         $relatedPrograms = Program::with(['category', 'locations'])
@@ -155,7 +155,7 @@ class MainController extends Controller
             ],
         ];
 
-        return inertia('home/programs/show', $data);
+        return inertia('home/programs/detail', $data);
     }
 
     public function articles()
