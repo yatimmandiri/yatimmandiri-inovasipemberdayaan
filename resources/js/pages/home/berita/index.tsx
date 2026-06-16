@@ -1,15 +1,19 @@
 import { BeritaSection } from '@/components/sections/home/berita-section';
 import { BlogSection } from '@/components/sections/home/blog-section';
+import { Fragment } from 'react';
 
 export default function BeritaPage() {
     return (
-        <div className="bg-white">
-            <section className="bg-linear-to-r from-orange-500 to-orange-500/80 py-20 text-white">
-                <div className="container mx-auto px-4 text-center">
-                    <h1 className="mb-4 text-4xl font-bold md:text-5xl">
+        <Fragment>
+            <section className="bg-slate-950 py-24 text-white">
+                <div className="mx-auto max-w-7xl px-6 text-center">
+                    <span className="inline-flex rounded-full bg-emerald-500/15 px-4 py-2 text-sm font-bold text-emerald-300">
+                        Program Pemberdayaan
+                    </span>
+                    <h1 className="mx-auto mt-6 max-w-4xl text-4xl leading-tight font-black md:text-6xl">
                         Berita & Artikel
                     </h1>
-                    <p className="mx-auto max-w-2xl text-lg text-white/90">
+                    <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/70">
                         Ikuti perkembangan program, kegiatan, dan berbagai
                         cerita inspiratif dari Inovasi Pemberdayaan.
                     </p>
@@ -17,6 +21,6 @@ export default function BeritaPage() {
             </section>
             <BeritaSection />
             <BlogSection />
-        </div>
+        </Fragment>
     );
 }

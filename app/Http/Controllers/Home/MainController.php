@@ -18,7 +18,7 @@ class MainController extends Controller
     public function index()
     {
         $sliders = Slider::with(['category.programs'])->get();
-        $categories = Category::with(['programs'])->active()->recommended()->get();
+        $categories = Category::with(['programs'])->active()->get();
         $mitras = Mitra::get();
         $testimonials = Testimonial::get();
         $activeProgramQuery = Program::where('status', true);
@@ -46,11 +46,53 @@ class MainController extends Controller
             'meta' => [
                 'title' => 'Home',
                 'description' => 'Welcome to the Home page.',
-                'keywords' => 'home, welcome',
+                'keywords' => 'Yatim Mandiri, Inovasi Pemberdayaan',
             ],
         ];
 
         return inertia('home/index', $data);
+    }
+
+    public function categories()
+    {
+        $categories = Category::with(['programs'])->active()->get();
+
+        $data = [
+            'pageTitle' => 'Categories',
+            'categories' => $categories,
+            'meta' => [
+                'title' => 'Program Categories',
+                'description' => 'Jelajahi berbagai kategori program Inovasi Pemberdayaan yang berfokus pada pengembangan ekonomi, pendidikan, lingkungan, UMKM, pemberdayaan perempuan, dan pembangunan masyarakat berkelanjutan.',
+                'keywords' => 'kategori program, inovasi pemberdayaan, pemberdayaan masyarakat, UMKM, pendidikan, lingkungan, pemberdayaan perempuan, ekonomi masyarakat, pembangunan berkelanjutan',
+            ],
+        ];
+
+        return inertia('home/categories/index', $data);
+    }
+
+    public function categoriesDetail(string $slug)
+    {
+        $category = Category::with(['programs'])->active()->where('slug', $slug)->firstOrFail();
+
+        $data = [
+            'pageTitle' => $category->name,
+            'category' => $category,
+            'meta' => [
+                'title' => $category->name . ' | Inovasi Pemberdayaan',
+                'description' => $category->excerpt
+                    ?: 'Pelajari lebih lanjut tentang program ' . $category->name . ' dalam mendukung pemberdayaan masyarakat yang mandiri, produktif, dan berkelanjutan.',
+                'keywords' => implode(', ', [
+                    $category->name,
+                    'Inovasi Pemberdayaan',
+                    'Program Pemberdayaan',
+                    'Pemberdayaan Masyarakat',
+                    'Inovasi Sosial',
+                    'Pembangunan Berkelanjutan',
+                ]),
+            ],
+        ];
+
+        return inertia('home/categories/detail', $data);
     }
 
     public function about()
@@ -67,98 +109,54 @@ class MainController extends Controller
         return inertia('home/about/index', $data);
     }
 
-    public function berita()
-    {
-        $data = [
-            'pageTitle' => 'Berita',
-            'meta' => [
-                'title' => 'Berita',
-                'description' => 'Latest news and articles on the Berita page.',
-                'keywords' => 'berita, news, articles',
-            ],
-        ];
-
-        return inertia('home/berita/index', $data);
-    }
-
     public function programs()
     {
         $perPage = self::PROGRAMS_PER_PAGE;
 
         $categories = Category::active()
-            ->withCount([
-                'programs' => fn($query) => $query->where('status', true)
-            ])
-            ->orderBy('name')
-            ->get(['id', 'name', 'slug']);
+            ->withCount(['programs' => fn($query) => $query->where('status', true)])
+            ->get();
+        $programs = Program::get();
 
-        $programs = Program::with('category')
-            ->where('status', true)
-            ->latest()
-            ->paginate($perPage);
-
-        return inertia('home/programs/index', [
+        $data = [
             'pageTitle' => 'Program',
-            'programs' => $programs,
             'categories' => $categories,
-            'perPage' => $perPage,
-            'filters' => [
-                'search' => '',
-                'category' => '',
-            ],
+            'programs' => $programs,
             'meta' => [
                 'title' => 'Program',
                 'description' => 'Daftar program pemberdayaan berkelanjutan.',
                 'keywords' => 'program, pemberdayaan, inovasi',
             ],
-        ]);
+        ];
+
+        return inertia('home/programs/index', $data);
     }
 
-    public function searchPrograms(Request $request)
+    public function programsData(Request $request)
     {
-        $search = $request->input('search');
-        $category = $request->input('category');
-        $perPage = (int) $request->input('per_page', self::PROGRAMS_PER_PAGE);
-        $perPage = max(1, min($perPage, 24));
+        $perPage = $request->input('perPage', null);
+        $page = $request->input('page', null);
+        $globalSearch = $request->input('globalSearch', '');
+        $orderBy = $request->input('orderBy', 'id');
+        $orderDirection = $request->input('orderDirection', 'desc');
 
-        $programs = Program::with('category')
-            ->where('status', true)
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery
-                        ->where('name', 'like', "%{$search}%")
-                        ->orWhere('excerpt', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%");
-                });
-            })
-            ->when($category, function ($query) use ($category) {
-                $query->whereHas('category', function ($categoryQuery) use ($category) {
-                    $categoryQuery->where('slug', $category);
-                });
-            })
+        $query = Category::query()
             ->latest()
-            ->paginate($perPage);
+            ->search($globalSearch)
+            ->orderBy($orderBy, $orderDirection);
 
-        return response()->json($programs);
+        $data = $perPage
+            ? $query->paginate($perPage, ['*'], 'page', $page)
+            : $query->get();
+
+        return response()->json($data);
     }
 
-    public function programDetail(Request $request, string $slug)
+    public function programDetail(Program $program)
     {
-        $category = Category::active()
-            ->where('slug', $slug)
-            ->first();
-
-        if ($category) {
-            return $this->programCategory($request, $category);
-        }
-
-        $program = Program::where('slug', $slug)->firstOrFail();
-
-        abort_unless($program->status, 404);
-
         $program->load(['category', 'locations']);
 
-        $relatedPrograms = Program::with('category')
+        $relatedPrograms = Program::with(['category', 'locations'])
             ->where('status', true)
             ->whereKeyNot($program->id)
             ->where('category_id', $program->category_id)
@@ -177,90 +175,48 @@ class MainController extends Controller
             ],
         ];
 
-        return inertia('home/programs/show', $data);
+        return inertia('home/programs/detail', $data);
     }
 
-    private function programCategory(Request $request, Category $category)
+    public function articles()
     {
-        $perPage = self::PROGRAMS_PER_PAGE;
-        $search = $request->input('search');
-
-        $categories = Category::active()
-            ->withCount([
-                'programs' => fn($query) => $query->where('status', true)
-            ])
-            ->orderBy('name')
-            ->get(['id', 'name', 'slug']);
-
-        $programs = Program::with('category')
-            ->where('status', true)
-            ->where('category_id', $category->id)
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery
-                        ->where('name', 'like', "%{$search}%")
-                        ->orWhere('excerpt', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%");
-                });
-            })
-            ->latest()
-            ->paginate($perPage)
-            ->withQueryString();
-
-        return inertia('home/programs/index', [
-            'pageTitle' => $category->name,
-            'programs' => $programs,
-            'categories' => $categories,
-            'selectedCategory' => $category,
-            'perPage' => $perPage,
-            'filters' => [
-                'search' => $search,
-                'category' => $category->slug,
-            ],
+        $data = [
+            'pageTitle' => 'Articles',
             'meta' => [
-                'title' => $category->name,
-                'description' => $category->excerpt ?? 'Daftar program pemberdayaan berdasarkan kategori.',
-                'keywords' => 'program, kategori program, pemberdayaan, inovasi',
-            ],
-        ]);
-    }
-
-    public function sponsorship()
-    {
-        $data =  [
-            'pageTitle' => 'Sponsorship',
-            'partnershipTypes' => [
-                'CSR',
-                'Program Collaboration',
-                'Event Sponsorship',
-                'Media Partner',
-                'Community Partnership',
-            ],
-            'meta' => [
-                'title' => 'Sponsorship',
-                'description' => 'Ajukan kerja sama dan sponsorship program pemberdayaan.',
-                'keywords' => 'sponsorship, kerja sama, partnership',
+                'title' => 'Articles',
+                'description' => 'Temukan artikel, berita, kisah inspiratif, dan informasi terbaru mengenai program pemberdayaan masyarakat, inovasi sosial, serta dampak yang dihasilkan oleh Inovasi Pemberdayaan.',
+                'keywords' => 'artikel, berita, inovasi pemberdayaan, pemberdayaan masyarakat, inovasi sosial, program pemberdayaan, kisah inspiratif, dampak sosial, berita terbaru',
             ],
         ];
 
-        return inertia('home/sponsorship/index', $data);
+        return inertia('home/berita/index', $data);
     }
 
-    public function sponsorshipStore(Request $request)
+    public function partnership()
     {
-        return redirect()
-            ->route('home.sponsorship')
-            ->with('success', 'Pengajuan kerja sama berhasil dikirim. Tim kami akan menghubungi Anda.');
+        $programs = Program::select(['id', 'name'])->get();
+
+        $data = [
+            'pageTitle' => 'Partnerships',
+            'programs' => $programs,
+            'meta' => [
+                'title' => 'Partnerships',
+                'description' => 'Bangun kolaborasi bersama Inovasi Pemberdayaan melalui program pemberdayaan masyarakat, pengembangan UMKM, pendidikan, lingkungan, dan berbagai inisiatif sosial yang berkelanjutan.',
+                'keywords' => 'partnership, kemitraan, kerja sama, kolaborasi, inovasi pemberdayaan, pemberdayaan masyarakat, CSR, program sosial, UMKM, pendidikan, lingkungan',
+            ],
+        ];
+
+        return inertia('home/partnerships/index', $data);
     }
 
     public function contact()
     {
         $data = [
-            'pageTitle' => 'Contact Us',
+            'pageTitle' => 'Hubungi Kami',
             'meta' => [
-                'title' => 'Contact Us',
-                'description' => 'Contact information and form on the Contact.',
-                'keywords' => 'contact, information, form',
+                'title' => 'Hubungi Kami',
+                'description' => 'Hubungi tim Inovasi Pemberdayaan untuk mendapatkan informasi mengenai program pemberdayaan masyarakat, kemitraan, kolaborasi, maupun peluang kerja sama dalam menciptakan dampak sosial yang berkelanjutan.',
+                'keywords' => 'Inovasi Pemberdayaan, hubungi kami, kontak, program pemberdayaan, pemberdayaan masyarakat, kemitraan, kolaborasi, dampak sosial, inovasi sosial, pembangunan berkelanjutan',
             ],
         ];
 

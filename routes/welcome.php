@@ -3,13 +3,19 @@
 use App\Http\Controllers\Home\MainController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [MainController::class, 'index'])->name('home.index');
-Route::get('/about', [MainController::class, 'about'])->name('home.about');
-Route::get('/program', [MainController::class, 'programs'])->name('home.programs');
-Route::get('programs/data', [MainController::class, 'searchPrograms'])->name('home.programs.data');
-Route::get('/program/{slug}', [MainController::class, 'programDetail'])->name('home.programs.show');
-Route::get('/berita', [MainController::class, 'berita'])->name('home.berita');
-Route::get('/berita/{slug}', [MainController::class, 'beritaDetail'])->name('home.berita.show');
-Route::get('/sponsorship', [MainController::class, 'sponsorship'])->name('home.sponsorship');
-Route::post('/sponsorship', [MainController::class, 'sponsorshipStore'])->name('home.sponsorship.store');
-Route::get('/kontak', [MainController::class, 'contact'])->name('home.contact');
+Route::as('home.')->group(function () {
+    Route::get('/', [MainController::class, 'index'])->name('index');
+    Route::get('about', [MainController::class, 'about'])->name('about');
+
+    Route::get('categories/{category:slug}', [MainController::class, 'categoriesDetail'])->name('categories.detail');
+    Route::get('categories', [MainController::class, 'categories'])->name('categories');
+
+    Route::get('programs/{program:slug}', [MainController::class, 'programDetail'])->name('programs.detail');
+    Route::get('programs/data', [MainController::class, 'programsData'])->name('programs.data');
+    Route::get('programs', [MainController::class, 'programs'])->name('programs');
+
+    Route::get('articles', [MainController::class, 'articles'])->name('articles');
+    Route::get('partnerships', [MainController::class, 'partnership'])->name('partnerships');
+
+    Route::get('contact', [MainController::class, 'contact'])->name('contact');
+});

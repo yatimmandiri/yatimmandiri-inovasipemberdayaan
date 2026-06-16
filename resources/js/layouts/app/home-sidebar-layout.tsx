@@ -24,19 +24,19 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
         },
         {
             label: 'Program',
-            href: '/program',
+            href: '/programs',
         },
         {
             label: 'Artikel',
-            href: '/berita',
+            href: '/articles',
         },
         {
-            label: 'Sponsorship',
-            href: '/sponsorship',
+            label: 'Partnership',
+            href: '/partnerships',
         },
         {
             label: 'Kontak',
-            href: '/kontak',
+            href: '/contact',
         },
     ];
 

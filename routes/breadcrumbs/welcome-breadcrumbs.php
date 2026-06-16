@@ -13,32 +13,28 @@ Breadcrumbs::for('home.about', function (BreadcrumbTrail $trail) {
     $trail->parent('home.index')->push('Tentang Kami', route('home.about'));
 });
 
+Breadcrumbs::for('home.categories', function (BreadcrumbTrail $trail) {
+    $trail->parent('home.index')->push('Program', route('home.categories'));
+});
+
+Breadcrumbs::for('home.categories.detail', function (BreadcrumbTrail $trail, $slug) {
+    $trail->parent('home.categories')->push($slug, route('home.categories.detail', $slug));
+});
+
 Breadcrumbs::for('home.programs', function (BreadcrumbTrail $trail) {
     $trail->parent('home.index')->push('Program', route('home.programs'));
 });
 
-Breadcrumbs::for('home.programs.data', function (BreadcrumbTrail $trail) {
-    $trail->parent('home.programs')->push('Data Program', route('home.programs.data'));
+Breadcrumbs::for('home.programs.detail', function (BreadcrumbTrail $trail, $program) {
+    $trail->parent('home.programs')->push($program->name, route('home.programs.detail', $program));
 });
 
-Breadcrumbs::for('home.programs.show', function (BreadcrumbTrail $trail, $slug) {
-    $category = Category::where('slug', $slug)->first();
-    $program = $category ? null : Program::where('slug', $slug)->first();
-    $label = $category?->name ?? $program?->name ?? 'Detail Program';
-
-    $trail->parent('home.programs')->push($label, route('home.programs.show', $slug));
+Breadcrumbs::for('home.articles', function (BreadcrumbTrail $trail) {
+    $trail->parent('home.index')->push('Berita', route('home.articles'));
 });
 
-Breadcrumbs::for('home.berita', function (BreadcrumbTrail $trail) {
-    $trail->parent('home.index')->push('Berita', route('home.berita'));
-});
-
-Breadcrumbs::for('home.berita.show', function (BreadcrumbTrail $trail, $slug) {
-    $trail->parent('home.berita')->push('Detail Berita', route('home.berita.show', $slug));
-});
-
-Breadcrumbs::for('home.sponsorship', function (BreadcrumbTrail $trail) {
-    $trail->parent('home.index')->push('Sponsorship', route('home.sponsorship'));
+Breadcrumbs::for('home.partnerships', function (BreadcrumbTrail $trail) {
+    $trail->parent('home.index')->push('Partnership', route('home.partnerships'));
 });
 
 Breadcrumbs::for('home.contact', function (BreadcrumbTrail $trail) {

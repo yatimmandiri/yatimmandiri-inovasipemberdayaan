@@ -9,11 +9,11 @@ import { usePage } from '@inertiajs/react';
 import { Fragment } from 'react';
 
 export default function HomePage() {
-    const { categories, testimonials, mitras } = usePage<any>().props;
+    const { categories, testimonials, mitras, sliders } = usePage<any>().props;
 
     return (
         <Fragment>
-            <SliderSection />
+            <SliderSection data={sliders} />
             <AboutSection />
             <ImpactSection />
             <CategorySection data={categories} />

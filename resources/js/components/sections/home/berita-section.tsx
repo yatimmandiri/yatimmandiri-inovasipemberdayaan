@@ -126,7 +126,7 @@ export const KabarSection = () => {
                         href="https://yatimmandiri.org/news"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-3 rounded-full border border-orange-200 bg-white px-5 py-3 text-sm font-bold text-orange-600 transition hover:border-orange-500 hover:bg-orange-50"
+                        className="inline-flex w-fit items-center gap-3 rounded-full border border-orange-200 bg-white px-5 py-3 text-sm font-bold text-orange-600 transition hover:border-orange-500 hover:bg-orange-50"
                     >
                         Lihat Semua
                         <ArrowRight className="h-4 w-4" />
