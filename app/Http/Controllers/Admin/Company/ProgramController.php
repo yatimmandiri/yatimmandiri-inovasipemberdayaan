@@ -10,6 +10,7 @@ use App\Http\Requests\Company\UpdateProgramRequest;
 use App\Models\Company\Category;
 use App\Models\Company\Program;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ProgramController extends Controller
@@ -59,6 +60,7 @@ class ProgramController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'category_id' => $request->category_id,
+            'activities' => $request->benefits,
         ];
 
         if ($request->hasFile('featured_image')) {
@@ -122,7 +124,9 @@ class ProgramController extends Controller
     {
         $this->authorize('update', $program);
 
-        $data = $request->only(['name', 'description', 'category_id']);
+        $data = $request->only(['name', 'description', 'category_id', 'benefits']);
+        $data['activities'] = $request->benefits;
+        $data['excerpt'] = Str::limit($request->description, 100);
 
         $oldData = $program->replicate();
 

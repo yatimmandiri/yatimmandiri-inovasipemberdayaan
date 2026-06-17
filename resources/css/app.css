@@ -182,7 +182,7 @@
     }
 
     .description {
-        @apply prose prose-sm -mt-3 text-justify text-sm leading-5 prose-headings:font-extrabold prose-p:leading-6;
+        @apply prose prose-base -mt-3 text-justify leading-5 prose-headings:font-extrabold prose-p:text-sm prose-p:leading-6;
     }
 }
 

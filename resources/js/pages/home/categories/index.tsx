@@ -30,21 +30,28 @@ export default function CategoriesPage() {
                     </div>
                 </div>
             </section>
-            <section className="py-20">
+            <section className="relative bg-slate-50 py-24">
                 <div className="container mx-auto max-w-7xl px-6">
                     <div className="mb-14 text-center">
-                        <h2 className="text-3xl font-bold text-slate-900">
-                            Fokus Program Kami
+                        <span className="inline-flex rounded-full bg-emerald-100 px-4 py-1 text-xs font-semibold text-emerald-600">
+                            Program
+                        </span>
+                        <h2 className="mt-4 text-3xl font-bold text-slate-900 md:text-4xl">
+                            Kategori Program
                         </h2>
-                        <p className="mx-auto mt-4 max-w-3xl text-slate-600">
+                        <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 md:text-base">
                             Setiap program dirancang untuk menjawab kebutuhan
-                            masyarakat dan mendorong terciptanya dampak yang
-                            berkelanjutan.
+                            masyarakat dan menciptakan dampak yang berkelanjutan
+                            melalui pendekatan yang terukur dan terarah.
                         </p>
                     </div>
-                    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {categories?.map((item: any, i: number) => (
-                            <CategoryItemSection item={item} index={i} />
+                            <CategoryItemSection
+                                key={i}
+                                item={item}
+                                index={i}
+                            />
                         ))}
                     </div>
                 </div>

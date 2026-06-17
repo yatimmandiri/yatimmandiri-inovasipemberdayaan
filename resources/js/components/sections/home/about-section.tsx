@@ -102,7 +102,7 @@ export const AboutSection = () => {
                                 <h3 className="mb-3 text-xl font-semibold text-slate-900">
                                     {item.title}
                                 </h3>
-                                <p className="leading-relaxed text-slate-600">
+                                <p className="text-base leading-relaxed text-slate-600">
                                     {item.description}
                                 </p>
                             </div>

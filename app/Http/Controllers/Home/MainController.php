@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Home;
 use App\Http\Controllers\Controller;
 use App\Models\Company\Category;
 use App\Models\Company\Mitra;
+use App\Models\Company\Product;
 use App\Models\Company\Program;
+use App\Models\Company\Review;
 use App\Models\Company\Slider;
-use App\Models\Company\Testimonial;
 use Illuminate\Http\Request;
 
 class MainController extends Controller
@@ -17,14 +18,14 @@ class MainController extends Controller
         $sliders = Slider::with(['category.programs'])->get();
         $categories = Category::with(['programs'])->active()->get();
         $mitras = Mitra::get();
-        $testimonials = Testimonial::get();
+        $reviews = Review::get();
 
         $data = [
             'pageTitle' => 'Home',
             'sliders' => $sliders,
             'categories' => $categories,
             'mitras' => $mitras,
-            'testimonials' => $testimonials,
+            'reviews' => $reviews,
             'meta' => [
                 'title' => 'Home',
                 'description' => 'Welcome to the Home page.',
@@ -134,7 +135,7 @@ class MainController extends Controller
 
     public function programDetail(Program $program)
     {
-        $program->load(['category', 'locations']);
+        $program->load(['category', 'locations', 'products']);
 
         $relatedPrograms = Program::with(['category', 'locations'])
             ->where('status', true)
@@ -156,6 +157,55 @@ class MainController extends Controller
         ];
 
         return inertia('home/programs/detail', $data);
+    }
+
+    public function products()
+    {
+        $data = [
+            'pageTitle' => 'Products',
+            'meta' => [
+                'title' => 'Products',
+                'description' => 'Daftar produk pemberdayaan.',
+                'keywords' => 'produk, pemberdayaan, inovasi',
+            ],
+        ];
+
+        return inertia('home/products/index', $data);
+    }
+
+    public function productsData(Request $request)
+    {
+        $perPage = $request->input('perPage', null);
+        $page = $request->input('page', null);
+        $globalSearch = $request->input('globalSearch', '');
+        $orderBy = $request->input('orderBy', 'id');
+        $orderDirection = $request->input('orderDirection', 'desc');
+
+        $query = Product::query()
+            ->latest()
+            ->search($globalSearch)
+            ->orderBy($orderBy, $orderDirection);
+
+        $data = $perPage
+            ? $query->paginate($perPage, ['*'], 'page', $page)
+            : $query->get();
+
+        return response()->json($data);
+    }
+
+    public function productsDetail(Product $product)
+    {
+        $data = [
+            'pageTitle' => $product->name,
+            'product' => $product,
+            'meta' => [
+                'title' => $product->name,
+                'description' => $product->excerpt ?? 'Detail produk pemberdayaan.',
+                'keywords' => 'produk, pemberdayaan, inovasi',
+            ],
+        ];
+
+        return inertia('home/products/detail', $data);
     }
 
     public function articles()
