@@ -41,6 +41,42 @@ export default function ProductPage() {
         fetchData();
     }, [fetchData]);
 
+    const getPages = () => {
+        const current = initialize.page;
+        const total = initialize.lastPage;
+
+        const pages: (number | string)[] = [];
+
+        if (total <= 7) {
+            return Array.from({ length: total }, (_, i) => i + 1);
+        }
+
+        if (current <= 4) {
+            pages.push(1, 2, 3, 4, 5, '...', total);
+        } else if (current >= total - 3) {
+            pages.push(
+                1,
+                '...',
+                total - 4,
+                total - 3,
+                total - 2,
+                total - 1,
+                total,
+            );
+        } else {
+            pages.push(
+                1,
+                '...',
+                current - 1,
+                current,
+                current + 1,
+                '...',
+                total,
+            );
+        }
+
+        return pages;
+    };
     return (
         <Fragment>
             <section className="relative overflow-hidden py-32">
@@ -119,7 +155,7 @@ export default function ProductPage() {
                         </div>
                     )}
                     {initialize.lastPage > 1 && (
-                        <div className="mt-16 flex flex-wrap items-center justify-center gap-2">
+                        <div className="mt-12 flex items-center justify-center gap-1">
                             <button
                                 disabled={initialize.page === 1}
                                 onClick={() =>
@@ -128,32 +164,38 @@ export default function ProductPage() {
                                         page: prev.page - 1,
                                     }))
                                 }
-                                className="rounded-xl border px-4 py-2 disabled:opacity-50"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-sm hover:bg-slate-50 disabled:opacity-50"
                             >
-                                Sebelumnya
+                                ←
                             </button>
 
-                            {Array.from(
-                                { length: initialize.lastPage },
-                                (_, i) => i + 1,
-                            ).map((page) => (
-                                <button
-                                    key={page}
-                                    onClick={() =>
-                                        setInitialize((prev) => ({
-                                            ...prev,
-                                            page,
-                                        }))
-                                    }
-                                    className={`h-10 w-10 rounded-xl transition ${
-                                        initialize.page === page
-                                            ? 'bg-primary text-white'
-                                            : 'border border-slate-200 bg-white hover:border-primary'
-                                    }`}
-                                >
-                                    {page}
-                                </button>
-                            ))}
+                            {getPages().map((item, index) =>
+                                item === '...' ? (
+                                    <span
+                                        key={index}
+                                        className="px-2 text-sm text-slate-400"
+                                    >
+                                        ...
+                                    </span>
+                                ) : (
+                                    <button
+                                        key={`${item}-${index}`}
+                                        onClick={() =>
+                                            setInitialize((prev) => ({
+                                                ...prev,
+                                                page: item as number,
+                                            }))
+                                        }
+                                        className={`flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-medium transition ${
+                                            initialize.page === item
+                                                ? 'bg-primary text-white'
+                                                : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                                        }`}
+                                    >
+                                        {item}
+                                    </button>
+                                ),
+                            )}
 
                             <button
                                 disabled={
@@ -165,9 +207,9 @@ export default function ProductPage() {
                                         page: prev.page + 1,
                                     }))
                                 }
-                                className="rounded-xl border px-4 py-2 disabled:opacity-50"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-sm hover:bg-slate-50 disabled:opacity-50"
                             >
-                                Berikutnya
+                                →
                             </button>
                         </div>
                     )}
