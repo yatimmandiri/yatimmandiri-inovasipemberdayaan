@@ -140,7 +140,7 @@ export default function ProgramPage() {
                     </div>
 
                     {/* Empty State */}
-                    {initialize.data?.length === 0 && (
+                    {!initialize.isLoading && initialize.data?.length === 0 && (
                         <div className="rounded-3xl bg-white p-12 text-center shadow-sm">
                             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
                                 <svg
