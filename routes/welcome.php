@@ -10,8 +10,8 @@ Route::as('home.')->group(function () {
     Route::get('categories/{category:slug}', [MainController::class, 'categoriesDetail'])->name('categories.detail');
     Route::get('categories', [MainController::class, 'categories'])->name('categories');
 
-    Route::get('programs/{program:slug}', [MainController::class, 'programDetail'])->name('programs.detail');
     Route::get('programs/data', [MainController::class, 'programsData'])->name('programs.data');
+    Route::get('programs/{program:slug}', [MainController::class, 'programDetail'])->name('programs.detail');
     Route::get('programs', [MainController::class, 'programs'])->name('programs');
 
     Route::get('products/data', [MainController::class, 'productsData'])->name('products.data');

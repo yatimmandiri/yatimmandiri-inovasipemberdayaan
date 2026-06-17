@@ -77,6 +77,7 @@ export default function ProductPage() {
 
         return pages;
     };
+
     return (
         <Fragment>
             <section className="relative overflow-hidden py-32">

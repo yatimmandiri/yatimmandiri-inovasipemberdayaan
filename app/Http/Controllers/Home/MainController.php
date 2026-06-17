@@ -121,7 +121,7 @@ class MainController extends Controller
         $orderBy = $request->input('orderBy', 'id');
         $orderDirection = $request->input('orderDirection', 'desc');
 
-        $query = Category::query()
+        $query = Program::query()
             ->latest()
             ->search($globalSearch)
             ->orderBy($orderBy, $orderDirection);
