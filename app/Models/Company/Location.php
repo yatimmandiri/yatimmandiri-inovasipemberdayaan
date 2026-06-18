@@ -2,6 +2,10 @@
 
 namespace App\Models\Company;
 
+use App\Models\Core\Region\District;
+use App\Models\Core\Region\Province;
+use App\Models\Core\Region\Regency;
+use App\Models\Core\Region\Village;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +31,26 @@ class Location extends Model
     public function program(): BelongsTo
     {
         return $this->belongsTo(Program::class, 'program_id');
+    }
+
+    public function province(): BelongsTo
+    {
+        return $this->belongsTo(Province::class, 'province_id');
+    }
+
+    public function regency(): BelongsTo
+    {
+        return $this->belongsTo(Regency::class, 'regency_id');
+    }
+
+    public function district(): BelongsTo
+    {
+        return $this->belongsTo(District::class, 'district_id');
+    }
+
+    public function village(): BelongsTo
+    {
+        return $this->belongsTo(Village::class, 'village_id');
     }
 
     public function scopeSearch(Builder $query, ?string $search)
