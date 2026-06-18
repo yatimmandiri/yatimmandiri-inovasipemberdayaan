@@ -247,3 +247,38 @@ Breadcrumbs::for(
     fn(BreadcrumbTrail $trail) =>
     $trail->parent('admin.companies.locations.index')->push('Location Data', route('admin.companies.locations.data'))
 );
+
+// Products Index
+Breadcrumbs::for(
+    'admin.companies.products.index',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.dashboard')->push('Products', route('admin.companies.products.index'))
+);
+
+// Products Create
+Breadcrumbs::for(
+    'admin.companies.products.create',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.products.index')->push('Create', route('admin.companies.products.create'))
+);
+
+// Products Show
+Breadcrumbs::for(
+    'admin.companies.products.show',
+    fn(BreadcrumbTrail $trail, $products) =>
+    $trail->parent('admin.companies.products.index')->push($products->name, route('admin.companies.products.show', $products))
+);
+
+// Products Edit
+Breadcrumbs::for(
+    'admin.companies.products.edit',
+    fn(BreadcrumbTrail $trail, $products) =>
+    $trail->parent('admin.companies.products.show', $products)->push('Edit', route('admin.companies.products.edit', $products))
+);
+
+// Products Data
+Breadcrumbs::for(
+    'admin.companies.products.data',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.products.index')->push('Products Data', route('admin.companies.products.data'))
+);

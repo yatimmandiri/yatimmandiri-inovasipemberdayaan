@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Company\CategoryController;
 use App\Http\Controllers\Admin\Company\LocationController;
 use App\Http\Controllers\Admin\Company\MitraController;
+use App\Http\Controllers\Admin\Company\ProductController;
 use App\Http\Controllers\Admin\Company\ProgramController;
 use App\Http\Controllers\Admin\Company\ReviewController;
 use App\Http\Controllers\Admin\Company\SliderController;
@@ -77,6 +78,9 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
 
         Route::get('locations/data', [LocationController::class, 'getData'])->name('locations.data');
         Route::resource('locations', LocationController::class);
+
+        Route::get('products/data', [ProductController::class, 'getData'])->name('products.data');
+        Route::resource('products', ProductController::class);
 
         Route::get('sliders/data', [SliderController::class, 'getData'])->name('sliders.data');
         Route::resource('sliders', SliderController::class);
