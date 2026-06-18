@@ -66,8 +66,9 @@ export const ProductPilihanSection = ({ data }: { data?: any[] }) => {
 
 export const ProductItemSection = ({ item }: { item: any }) => {
     return (
-        <Link
-            href={item.url}
+        <a
+            href={item.link}
+            target="_blank"
             className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-2 hover:border-primary/20 hover:shadow-xl"
         >
             <div className="relative overflow-hidden">
@@ -110,6 +111,6 @@ export const ProductItemSection = ({ item }: { item: any }) => {
                     </div>
                 </div>
             </div>
-        </Link>
+        </a>
     );
 };
