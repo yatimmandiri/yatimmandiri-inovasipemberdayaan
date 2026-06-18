@@ -26,7 +26,7 @@ export const TestimonialForm = ({ dataId }: { dataId?: number }) => {
         saveBack: 'false',
         name: testimonial?.name || '',
         position: testimonial?.position || '',
-        categories_id: testimonial?.categories_id || '',
+        categories_id: testimonial?.category_id || '',
         description: testimonial?.description || '',
         photo: null,
     });
@@ -41,7 +41,7 @@ export const TestimonialForm = ({ dataId }: { dataId?: number }) => {
         e.preventDefault();
 
         if (dataId) {
-            post(testimonials.update(dataId), {
+            put(testimonials.update(dataId), {
                 forceFormData: true,
             });
         } else {
