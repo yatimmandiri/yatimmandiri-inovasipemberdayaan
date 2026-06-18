@@ -15,7 +15,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'position',
     'description',
     'photo',
-    'categories_id',
+    'category_id',
 ])]
 
 class Testimonial extends Model

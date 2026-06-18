@@ -140,7 +140,7 @@ class MainController extends Controller
 
     public function programDetail(Program $program)
     {
-        $program->load(['category', 'locations', 'products']);
+        $program->load(['category', 'locations.province', 'locations.regency', 'products']);
 
         $relatedPrograms = Program::with(['category', 'locations'])
             ->where('status', true)

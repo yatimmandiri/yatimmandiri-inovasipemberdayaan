@@ -55,7 +55,7 @@ class TestimonialController extends Controller
             'name' => $request->name,
             'position' => $request->position,
             'description' => $request->description,
-            'categories_id' => $request->categories_id,
+            'category_id' => $request->categories_id,
         ];
 
         if ($request->hasFile('photo')) {
@@ -127,6 +127,8 @@ class TestimonialController extends Controller
             'description',
             'categories_id',
         ]);
+
+        $data['category_id'] = $request->categories_id;
 
         $oldData = $testimonial->replicate();
 

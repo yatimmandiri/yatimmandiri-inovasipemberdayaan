@@ -1,3 +1,4 @@
+import { LocationSection } from '@/components/sections/home/location-section';
 import { ProductPilihanSection } from '@/components/sections/home/product-section';
 import { SROISection } from '@/components/sections/home/sroi-section';
 import { getStorageUrl } from '@/utils/copyText';
@@ -105,98 +106,9 @@ export default function ProgramDetailPage() {
                     </div>
                 </div>
             </section>
+            <LocationSection locations={program.locations} />
             <ProductPilihanSection data={program.products} />
             <SROISection />
-
-            {/* {relatedPrograms?.length > 0 && (
-                <section className="bg-slate-50 py-20">
-                    <div className="mx-auto max-w-7xl px-6">
-                        <div className="mb-10 flex items-end justify-between">
-                            <div>
-                                <span className="text-sm font-semibold tracking-wider text-emerald-600 uppercase">
-                                    Program Lainnya
-                                </span>
-
-                                <h2 className="mt-2 text-3xl font-black text-slate-950 md:text-4xl">
-                                    Program Terkait
-                                </h2>
-
-                                <p className="mt-3 max-w-2xl text-slate-600">
-                                    Temukan program lain yang memiliki tujuan
-                                    dan dampak pemberdayaan yang serupa.
-                                </p>
-                            </div>
-                        </div>
-
-                        <Swiper
-                            modules={[Navigation, Pagination, Autoplay]}
-                            navigation
-                            pagination={{
-                                clickable: true,
-                            }}
-                            autoplay={{
-                                delay: 5000,
-                                disableOnInteraction: false,
-                            }}
-                            spaceBetween={24}
-                            breakpoints={{
-                                0: {
-                                    slidesPerView: 1.1,
-                                },
-                                640: {
-                                    slidesPerView: 2,
-                                },
-                                1024: {
-                                    slidesPerView: 3,
-                                },
-                            }}
-                            className="pb-14!"
-                        >
-                            {relatedPrograms.map((item: any) => (
-                                <SwiperSlide key={item.id}>
-                                    <Link
-                                        href={`/program/${item.slug}`}
-                                        className="group block overflow-hidden rounded-3xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-                                    >
-                                        <div className="aspect-16/10 overflow-hidden">
-                                            <img
-                                                src={getStorageUrl(
-                                                    item.featured_image,
-                                                )}
-                                                alt={item.name}
-                                                className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
-                                            />
-                                        </div>
-
-                                        <div className="p-6">
-                                            <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
-                                                {item.category?.name}
-                                            </span>
-
-                                            <h3 className="mt-4 line-clamp-2 text-xl font-black text-slate-950">
-                                                {item.name}
-                                            </h3>
-
-                                            <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600">
-                                                {item.excerpt ||
-                                                    item.description?.replace(
-                                                        /<[^>]+>/g,
-                                                        '',
-                                                    )}
-                                            </p>
-
-                                            <div className="mt-6 inline-flex items-center gap-2 font-semibold text-emerald-600">
-                                                Lihat Detail
-                                                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
-                    </div>
-                </section>
-            )} */}
         </Fragment>
     );
 }
