@@ -20,7 +20,7 @@ use Spatie\Sluggable\Attributes\Sluggable;
     'featured_image',
     'status',
     'recommended',
-    'benefits',
+    'activities',
     'category_id',
 ])]
 

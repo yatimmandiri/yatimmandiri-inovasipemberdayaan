@@ -18,10 +18,11 @@ return new class extends Migration
             $table->text('excerpt')->nullable();
             $table->text('description')->nullable();
             $table->string('featured_image')->nullable();
-            $table->text('benefits')->nullable();
+            $table->text('activities')->nullable();
             $table->string('video_url')->nullable();
             $table->boolean('status')->default(true);
             $table->boolean('recommended')->default(false);
+            $table->foreignId('parent_id')->nullable()->constrained('programs')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();

@@ -1,4 +1,5 @@
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { ArrowUp, Mail, MapPin, MessageCircleMore, Phone } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import {
     FaFacebook,
     FaInstagram,
@@ -9,28 +10,21 @@ import {
 export const HomeFooterComponent = () => {
     return (
         <footer className="relative overflow-hidden bg-slate-950 text-white">
-            {/* Background Blur */}
             <div className="absolute top-0 left-0 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
             <div className="absolute right-0 bottom-0 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
-
             <div className="relative mx-auto max-w-7xl px-6 py-16">
-                {/* Top Section */}
                 <div className="grid gap-12 lg:grid-cols-4">
-                    {/* Brand */}
                     <div className="space-y-5">
-                        <div>
+                        <div className="flex flex-col">
                             <h2 className="text-3xl font-black">
                                 Growth YM<span className="text-primary">.</span>
                             </h2>
-
                             <p className="mt-4 text-sm leading-relaxed text-slate-300">
                                 Menghadirkan inovasi untuk pemberdayaan
                                 masyarakat melalui pendidikan, sosial, dan
                                 kolaborasi berkelanjutan.
                             </p>
                         </div>
-
-                        {/* Social Media */}
                         <div className="flex gap-3">
                             <a
                                 href="#"
@@ -38,21 +32,18 @@ export const HomeFooterComponent = () => {
                             >
                                 <FaFacebook size={18} />
                             </a>
-
                             <a
                                 href="#"
                                 className="rounded-xl border border-white/10 bg-white/5 p-3 transition hover:bg-white/10"
                             >
                                 <FaInstagram size={18} />
                             </a>
-
                             <a
                                 href="#"
                                 className="rounded-xl border border-white/10 bg-white/5 p-3 transition hover:bg-white/10"
                             >
                                 <FaTwitter size={18} />
                             </a>
-
                             <a
                                 href="#"
                                 className="rounded-xl border border-white/10 bg-white/5 p-3 transition hover:bg-white/10"
@@ -61,51 +52,44 @@ export const HomeFooterComponent = () => {
                             </a>
                         </div>
                     </div>
-
-                    {/* Navigation */}
                     <div>
                         <h3 className="mb-5 text-lg font-bold">Navigasi</h3>
-
                         <ul className="space-y-3 text-sm text-slate-300">
                             <li>
                                 <a
-                                    href="#"
+                                    href="/"
                                     className="transition hover:text-white"
                                 >
                                     Beranda
                                 </a>
                             </li>
-
                             <li>
                                 <a
-                                    href="#"
+                                    href="/about"
                                     className="transition hover:text-white"
                                 >
                                     Tentang Kami
                                 </a>
                             </li>
-
                             <li>
                                 <a
-                                    href="#"
+                                    href="/programs"
                                     className="transition hover:text-white"
                                 >
                                     Program
                                 </a>
                             </li>
-
                             <li>
                                 <a
-                                    href="#"
+                                    href="articles"
                                     className="transition hover:text-white"
                                 >
                                     Artikel
                                 </a>
                             </li>
-
                             <li>
                                 <a
-                                    href="#"
+                                    href="contact"
                                     className="transition hover:text-white"
                                 >
                                     Kontak
@@ -113,13 +97,10 @@ export const HomeFooterComponent = () => {
                             </li>
                         </ul>
                     </div>
-
-                    {/* Programs */}
                     <div>
                         <h3 className="mb-5 text-lg font-bold">
                             Program Unggulan
                         </h3>
-
                         <ul className="space-y-3 text-sm text-slate-300">
                             <li>
                                 <a
@@ -129,7 +110,6 @@ export const HomeFooterComponent = () => {
                                     Pendidikan Digital
                                 </a>
                             </li>
-
                             <li>
                                 <a
                                     href="#"
@@ -138,7 +118,6 @@ export const HomeFooterComponent = () => {
                                     Pemberdayaan UMKM
                                 </a>
                             </li>
-
                             <li>
                                 <a
                                     href="#"
@@ -147,7 +126,6 @@ export const HomeFooterComponent = () => {
                                     Beasiswa Anak Bangsa
                                 </a>
                             </li>
-
                             <li>
                                 <a
                                     href="#"
@@ -156,7 +134,6 @@ export const HomeFooterComponent = () => {
                                     Pelatihan Teknologi
                                 </a>
                             </li>
-
                             <li>
                                 <a
                                     href="#"
@@ -180,29 +157,23 @@ export const HomeFooterComponent = () => {
                                 />
 
                                 <p>
-                                    Jl. Inovasi Pemberdayaan No. 123, Indonesia
+                                    Jl. Raya Jambangan No 70, Surabaya, Jawa
+                                    Timur
                                 </p>
                             </div>
-
                             <div className="flex items-center gap-3">
                                 <Phone size={18} className="text-primary" />
-
-                                <p>+62 812 3456 7890</p>
+                                <p>+62 851 5766 30250</p>
                             </div>
-
                             <div className="flex items-center gap-3">
                                 <Mail size={18} className="text-primary" />
-
-                                <p>hello@empower.id</p>
+                                <p>program@yatimmandiri.org</p>
                             </div>
                         </div>
-
-                        {/* Newsletter */}
                         <div className="mt-6">
                             <p className="mb-3 text-sm font-medium">
                                 Dapatkan Update Program
                             </p>
-
                             <div className="flex overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                                 <input
                                     type="email"
@@ -217,22 +188,16 @@ export const HomeFooterComponent = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* Divider */}
                 <div className="my-10 border-t border-white/10" />
-
-                {/* Bottom */}
                 <div className="flex flex-col items-center justify-between gap-4 text-sm text-slate-400 md:flex-row">
                     <p>
-                        © {new Date().getFullYear()} Empower. All rights
+                        © {new Date().getFullYear()} Yatim Mandiri. All rights
                         reserved.
                     </p>
-
                     <div className="flex gap-6">
                         <a href="#" className="transition hover:text-white">
                             Privacy Policy
                         </a>
-
                         <a href="#" className="transition hover:text-white">
                             Terms & Conditions
                         </a>
@@ -242,9 +207,6 @@ export const HomeFooterComponent = () => {
         </footer>
     );
 };
-
-import { ArrowUp, MessageCircleMore } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 export const FloatingButtonSection = () => {
     const [showScrollTop, setShowScrollTop] = useState(false);

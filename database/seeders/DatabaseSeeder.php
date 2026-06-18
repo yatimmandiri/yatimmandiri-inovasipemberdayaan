@@ -15,9 +15,10 @@ class DatabaseSeeder extends Seeder
             IndoRegionSeeder::class,
             UserRolePermissionSeeder::class,
             CategorySeeder::class,
-            MitraSeeder::class,
             ProgramSeeder::class,
+            MitraSeeder::class,
             SliderSeeder::class,
+            ProductSeeder::class,
         ]);
     }
 }

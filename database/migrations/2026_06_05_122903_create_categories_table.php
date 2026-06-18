@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('icon')->nullable();
             $table->string('featured_image')->nullable();
             $table->text('benefits')->nullable();
+            $table->string('video_url')->nullable();
             $table->boolean('status')->default(true);
             $table->boolean('recommended')->default(false);
             $table->timestamps();

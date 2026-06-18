@@ -82,52 +82,51 @@ export const TimelineSection = () => {
     );
 };
 
-export const ProfileSection = () => {
+export const SejarahSection = () => {
     return (
-        <section className="py-24">
+        <section className="bg-white py-24">
             <div className="container mx-auto max-w-7xl px-6">
                 <div className="grid items-center gap-16 lg:grid-cols-2">
-                    <div>
+                    {/* Image */}
+                    <div className="relative">
                         <img
                             src="https://picsum.photos/700/500"
-                            alt="Tentang Kami"
-                            className="w-full rounded-3xl shadow-2xl"
+                            alt="Sejarah Inovasi Pemberdayaan"
+                            className="h-120 w-full rounded-3xl object-cover shadow-xl"
                         />
+                        <div className="absolute -inset-4 -z-10 rounded-3xl bg-emerald-50" />
                     </div>
-                    <div className="flex flex-col space-y-1">
-                        <h2 className="mt-4 text-4xl font-bold text-slate-900">
-                            Tentang Kami
+
+                    {/* Content */}
+                    <div>
+                        <span className="text-sm font-semibold tracking-[0.2em] text-emerald-600 uppercase">
+                            Sejarah
+                        </span>
+
+                        <h2 className="mt-4 text-4xl leading-tight font-bold text-slate-900">
+                            Tentang Inovasi Pemberdayaan
                         </h2>
-                        <p className="mt-6 leading-relaxed text-slate-600">
-                            Inovasi Pemberdayaan Yatim Mandiri merupakan
-                            platform inovasi sosial dan pemberdayaan masyarakat
-                            yang diinisiasi oleh Yatim Mandiri sebagai upaya
-                            menghadirkan program pemberdayaan yang lebih
-                            adaptif, berkelanjutan, dan berdampak luas bagi
-                            masyarakat, khususnya keluarga yatim dan dhuafa
-                        </p>
-                        <p className="mt-2 leading-relaxed text-slate-600">
-                            Berangkat dari pengalaman panjang dalam menjalankan
-                            berbagai program pemberdayaan, Yatim Mandiri percaya
-                            bahwa tantangan sosial dan ekonomi masa depan
-                            membutuhkan pendekatan yang lebih kreatif,
-                            kolaboratif, dan berbasis solusi nyata. Karena itu,
-                            Inovasi Pemberdayaan hadir sebagai ruang
-                            pengembangan ide, kolaborasi, serta inkubasi program
-                            yang mampu menjawab kebutuhan masyarakat secara
-                            lebih relevan dan berkelanjutan.
-                        </p>
-                        <p className="mt-2 leading-relaxed text-slate-600">
-                            Melalui program ini, setiap inovasi tidak hanya
-                            berhenti sebagai gagasan, tetapi dikembangkan
-                            menjadi aksi nyata yang dapat diterapkan langsung di
-                            masyarakat. Dengan mengusung semangat transformasi
-                            digital, ekonomi hijau, dan Sustainable Development
-                            Goals (SDGs), Inovasi Pemberdayaan menjadi langkah
-                            nyata Yatim Mandiri dalam membangun ekosistem
-                            pemberdayaan yang mandiri, produktif, dan berdaya
-                            saing menuju Indonesia Emas 2045.
-                        </p>
+
+                        <div className="mt-8 space-y-5 leading-relaxed text-slate-600 prose-p:leading-6">
+                            <p className="text-sm">
+                                Inovasi Pemberdayaan Yatim Mandiri adalah
+                                platform sosial yang diinisiasi oleh Yatim
+                                Mandiri untuk menghadirkan program pemberdayaan
+                                masyarakat yang lebih adaptif, berkelanjutan,
+                                dan berdampak luas, khususnya bagi keluarga
+                                yatim dan dhuafa. Berangkat dari pengalaman
+                                panjang dalam pemberdayaan, platform ini menjadi
+                                ruang pengembangan ide, kolaborasi, dan inkubasi
+                                solusi sosial yang relevan dengan kebutuhan
+                                masyarakat. Setiap inovasi tidak hanya berhenti
+                                sebagai gagasan, tetapi diwujudkan menjadi aksi
+                                nyata di lapangan dengan mengusung semangat
+                                transformasi digital, ekonomi hijau, dan SDGs,
+                                sebagai langkah menuju ekosistem pemberdayaan
+                                yang mandiri, produktif, dan berdaya saing
+                                menuju Indonesia Emas 2045.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -137,45 +136,53 @@ export const ProfileSection = () => {
 
 export const VisiMisiSection = () => {
     return (
-        <section className="py-24">
+        <section className="bg-slate-50 py-24">
             <div className="container mx-auto max-w-7xl px-6">
+                <div className="mb-12 text-center">
+                    <h2 className="text-4xl font-bold text-slate-900">
+                        Visi & Misi
+                    </h2>
+                    <p className="mt-3 text-slate-600">
+                        Fondasi arah dan tujuan dalam membangun pemberdayaan
+                        yang berkelanjutan
+                    </p>
+                </div>
+
                 <div className="grid gap-8 lg:grid-cols-2">
-                    <div className="rounded-3xl bg-linear-to-br from-emerald-600 to-emerald-500 p-10 text-white shadow-xl">
-                        <h3 className="text-3xl font-bold">Visi</h3>
-                        <p className="mt-6 text-lg leading-relaxed">
+                    <div className="group relative overflow-hidden rounded-3xl bg-linear-to-br from-emerald-600 to-emerald-500 p-10 text-white shadow-lg transition hover:shadow-2xl">
+                        <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-2xl transition group-hover:scale-110" />
+                        <h3 className="text-2xl font-semibold tracking-wide">
+                            Visi
+                        </h3>
+                        <p className="mt-6 text-lg leading-relaxed text-white/90">
                             Menjadi platform inovasi pemberdayaan masyarakat
                             yang melahirkan solusi berkelanjutan untuk
                             menciptakan komunitas yang mandiri, produktif, dan
-                            berdaya saing
+                            berdaya saing.
                         </p>
                     </div>
-
-                    <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-lg">
-                        <h3 className="text-3xl font-bold text-slate-900">
+                    <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-sm transition hover:shadow-md">
+                        <h3 className="text-2xl font-semibold text-slate-900">
                             Misi
                         </h3>
-
-                        <ul className="mt-6 space-y-4 text-slate-600">
-                            <li>
-                                ✓ Mengembangkan program pemberdayaan yang
-                                inovatif dan berkelanjutan.
-                            </li>
-                            <li>
-                                ✓ Mendorong lahirnya solusi sosial berbasis
-                                kebutuhan masyarakat.
-                            </li>
-                            <li>
-                                ✓ Menguatkan kapasitas amil dan komunitas dalam
-                                membangun kemandirian ekonomi.
-                            </li>
-                            <li>
-                                ✓ Menghubungkan berbagai stakeholder dalam
-                                kolaborasi sosial yang berdampak.
-                            </li>
-                            <li>
-                                ✓ Mengimplementasikan inovasi terbaik menjadi
-                                program nyata di masyarakat.
-                            </li>
+                        <ul className="mt-6 space-y-4">
+                            {[
+                                'Mengembangkan program pemberdayaan yang inovatif dan berkelanjutan',
+                                'Mendorong lahirnya solusi sosial berbasis kebutuhan masyarakat',
+                                'Menguatkan kapasitas amil dan komunitas dalam membangun kemandirian ekonomi',
+                                'Menghubungkan berbagai stakeholder dalam kolaborasi sosial yang berdampak',
+                                'Mengimplementasikan inovasi terbaik menjadi program nyata di masyarakat',
+                            ].map((item, i) => (
+                                <li
+                                    key={i}
+                                    className="flex gap-3 leading-relaxed text-slate-600"
+                                >
+                                    <span className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-600">
+                                        ✓
+                                    </span>
+                                    <span>{item}</span>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>
@@ -265,7 +272,7 @@ export const TujuanSection = () => {
         },
         {
             icon: GraduationCap,
-            title: 'Peningkatan Kapasitas Amil',
+            title: 'Peningkatan Kapasitas',
             description:
                 'Meningkatkan kapasitas, kompetensi, dan kreativitas amil dalam membangun program pemberdayaan.',
         },

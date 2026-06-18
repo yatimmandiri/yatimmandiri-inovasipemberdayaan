@@ -1,7 +1,7 @@
 import { CallToActionSection } from '@/components/sections/home/call-to-action-section';
 import {
     NilaiNilaiSection,
-    ProfileSection,
+    SejarahSection,
     TimelineSection,
     TujuanSection,
     VisiMisiSection,
@@ -11,31 +11,29 @@ import { Fragment } from 'react';
 export default function AboutPage() {
     return (
         <Fragment>
-            <section className="relative overflow-hidden bg-linear-to-br from-emerald-700 via-emerald-600 to-emerald-500 py-28 text-white">
-                <div className="absolute inset-0">
-                    <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
-                    <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
-                </div>
-                <div className="relative container mx-auto max-w-7xl px-6">
-                    <div className="mx-auto max-w-4xl text-center">
-                        <h1 className="mt-8 text-5xl font-bold md:text-7xl">
-                            Membangun
-                            <b className="block text-emerald-200">
-                                Kemandirian Masyarakat
-                            </b>
-                        </h1>
-                        <p className="mt-8 text-lg leading-relaxed text-emerald-50 md:text-xl">
-                            Mengembangkan potensi masyarakat melalui program
-                            ekonomi, pendidikan, sosial, dan lingkungan yang
-                            berkelanjutan.
-                        </p>
-                    </div>
+            <section className="bg-emerald-700 py-32 text-white">
+                <div className="container mx-auto max-w-4xl px-6 text-center">
+                    <p className="mb-4 text-sm font-medium tracking-[0.3em] text-emerald-200 uppercase">
+                        Tentang Kami
+                    </p>
+
+                    <h1 className="text-5xl leading-tight font-bold md:text-6xl">
+                        Memberdayakan Potensi,
+                        <br />
+                        Membangun Masa Depan
+                    </h1>
+
+                    <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-emerald-100">
+                        Bersama masyarakat, kami menghadirkan inovasi dan
+                        program berkelanjutan yang memberikan manfaat nyata
+                        serta menciptakan perubahan yang lebih baik.
+                    </p>
                 </div>
             </section>
-            <ProfileSection />
+            <SejarahSection />
             <TujuanSection />
-            <TimelineSection />
             <VisiMisiSection />
+            <TimelineSection />
             <NilaiNilaiSection />
             <CallToActionSection />
         </Fragment>

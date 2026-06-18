@@ -86,7 +86,7 @@ export const ImpactItemSection = ({ item }: { item: any }) => {
                 <div className="text-lg font-semibold text-slate-800">
                     {item.label}
                 </div>
-                <p className="leading-relaxed text-slate-600">
+                <p className="text-base leading-relaxed text-slate-600">
                     {item.description}
                 </p>
             </div>

@@ -11,6 +11,11 @@ export const BeritaSection = () => {
         try {
             const response = await axios.get(
                 'https://yatimmandiri.org/news/wp-json/ymapi/v2/posts',
+                {
+                    params: {
+                        categories: 25,
+                    },
+                },
             );
 
             setData(response.data ?? []);
@@ -85,6 +90,11 @@ export const KabarSection = () => {
         try {
             const response = await axios.get(
                 'https://yatimmandiri.org/news/wp-json/ymapi/v2/posts',
+                {
+                    params: {
+                        categories: 25,
+                    },
+                },
             );
 
             setData(response.data ?? []);

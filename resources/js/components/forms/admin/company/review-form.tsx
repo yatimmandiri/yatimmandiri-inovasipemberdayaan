@@ -13,22 +13,15 @@ import { SaveIcon } from 'lucide-react';
 export const ReviewForm = ({ dataId }: { dataId?: number }) => {
     const { review } = usePage<any>().props;
 
-    const {
-        data,
-        setData,
-        post,
-        put,
-        transform,
-        processing,
-        errors,
-        reset,
-    }: any = useForm({
-        saveBack: 'false',
-        name: review?.name || '',
-        position: review?.position || '',
-        description: review?.description || '',
-        photo: null,
-    });
+    const { data, setData, post, transform, processing, errors }: any = useForm(
+        {
+            saveBack: 'false',
+            name: review?.name || '',
+            position: review?.position || '',
+            description: review?.description || '',
+            photo: null,
+        },
+    );
 
     // transformData
     transform((data: any) => ({

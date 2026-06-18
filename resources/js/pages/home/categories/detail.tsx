@@ -1,4 +1,7 @@
-import { usePage } from '@inertiajs/react';
+import { programDetail } from '@/actions/App/Http/Controllers/Home/MainController';
+import { SRIOSectionV2 } from '@/components/sections/home/sroi-section';
+import { getStorageUrl } from '@/utils/copyText';
+import { Link, usePage } from '@inertiajs/react';
 import parse from 'html-react-parser';
 import { Fragment } from 'react';
 
@@ -49,7 +52,7 @@ export default function DetailCategoriesPage() {
                                 {category.name}
                             </h2>
                             <div className="mt-6 h-1 w-20 rounded-full bg-emerald-600" />
-                            <div className="prose prose-lg mt-8 max-w-none prose-slate">
+                            <div className="description mt-8 max-w-none prose-slate">
                                 {parse(category.description ?? '')}
                             </div>
                         </div>
@@ -89,6 +92,65 @@ export default function DetailCategoriesPage() {
                     </div>
                 </div>
             </section>
+            <section className="py-24">
+                <div className="container mx-auto max-w-7xl px-6">
+                    <div className="mb-14 text-center">
+                        <span className="text-sm font-medium tracking-wider text-primary uppercase">
+                            Program Inovasi
+                        </span>
+
+                        <h2 className="mt-3 text-3xl font-bold text-slate-900 md:text-4xl">
+                            Program {category.name}
+                        </h2>
+
+                        <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+                            Jelajahi berbagai program inovasi yang memberikan
+                            dampak nyata bagi masyarakat melalui solusi yang
+                            kreatif dan berkelanjutan.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        {category.programs?.map((item: any) => (
+                            <Link
+                                key={item.id}
+                                href={programDetail(item.slug).url}
+                                className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
+                            >
+                                <div className="overflow-hidden">
+                                    <img
+                                        src={getStorageUrl(item.featured_image)}
+                                        alt={item.name}
+                                        className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
+                                    />
+                                </div>
+
+                                <div className="p-6">
+                                    <span className="text-xs font-medium tracking-wide text-primary uppercase">
+                                        {category.name}
+                                    </span>
+
+                                    <h3 className="mt-3 line-clamp-2 text-xl font-semibold text-slate-900">
+                                        {item.name}
+                                    </h3>
+
+                                    <div className="description mt-3 line-clamp-3 leading-relaxed text-slate-600">
+                                        {parse(item.description || '')}
+                                    </div>
+
+                                    <div className="mt-6 flex items-center gap-2 text-sm font-medium text-primary">
+                                        Lihat Detail
+                                        <span className="transition-transform duration-300 group-hover:translate-x-1">
+                                            →
+                                        </span>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
+            <SRIOSectionV2 />
         </Fragment>
     );
 }

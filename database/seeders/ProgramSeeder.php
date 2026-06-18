@@ -17,6 +17,7 @@ class ProgramSeeder extends Seeder
                 'name' => 'Agro Produktif Nusantara',
                 'description' => 'Agro Produktif Nusantara merupakan program pemberdayaan berbasis pertanian dan perkebunan yang bertujuan meningkatkan produktivitas lahan serta kesejahteraan petani dan keluarga yatim dhuafa. Melalui pelatihan, pendampingan, penyediaan sarana produksi, dan penguatan akses pasar, program ini mendorong terciptanya usaha pertanian yang berkelanjutan, mandiri, dan mampu memberikan manfaat ekonomi jangka panjang bagi masyarakat.',
                 'category_id' => 1,
+                'video_url' => 'https://www.youtube.com/watch?v=jX5FV-786cI',
             ],
             [
                 'name' => 'Peternakan Terpadu',

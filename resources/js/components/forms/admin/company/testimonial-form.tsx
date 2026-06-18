@@ -13,23 +13,16 @@ import { SaveIcon } from 'lucide-react';
 export const TestimonialForm = ({ dataId }: { dataId?: number }) => {
     const { testimonial, category } = usePage<any>().props;
 
-    const {
-        data,
-        setData,
-        post,
-        put,
-        transform,
-        processing,
-        errors,
-        reset,
-    }: any = useForm({
-        saveBack: 'false',
-        name: testimonial?.name || '',
-        position: testimonial?.position || '',
-        categories_id: testimonial?.categories_id || '',
-        description: testimonial?.description || '',
-        photo: null,
-    });
+    const { data, setData, post, transform, processing, errors }: any = useForm(
+        {
+            saveBack: 'false',
+            name: testimonial?.name || '',
+            position: testimonial?.position || '',
+            categories_id: testimonial?.category_id || '',
+            description: testimonial?.description || '',
+            photo: null,
+        },
+    );
 
     // transformData
     transform((data: any) => ({
