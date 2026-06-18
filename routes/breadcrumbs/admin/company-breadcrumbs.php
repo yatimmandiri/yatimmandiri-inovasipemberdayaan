@@ -212,3 +212,38 @@ Breadcrumbs::for(
     fn(BreadcrumbTrail $trail) =>
     $trail->parent('admin.companies.reviews.index')->push('Review Data', route('admin.companies.reviews.data'))
 );
+
+// Location Index
+Breadcrumbs::for(
+    'admin.companies.locations.index',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.dashboard')->push('Location', route('admin.companies.locations.index'))
+);
+
+// Location Create
+Breadcrumbs::for(
+    'admin.companies.locations.create',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.locations.index')->push('Create', route('admin.companies.locations.create'))
+);
+
+// Location Show
+Breadcrumbs::for(
+    'admin.companies.locations.show',
+    fn(BreadcrumbTrail $trail, $location) =>
+    $trail->parent('admin.companies.locations.index')->push($location->pic, route('admin.companies.locations.show', $location))
+);
+
+// Location Edit
+Breadcrumbs::for(
+    'admin.companies.locations.edit',
+    fn(BreadcrumbTrail $trail, $location) =>
+    $trail->parent('admin.companies.locations.show', $location)->push('Edit', route('admin.companies.locations.edit', $location))
+);
+
+// Location Data
+Breadcrumbs::for(
+    'admin.companies.locations.data',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.locations.index')->push('Location Data', route('admin.companies.locations.data'))
+);

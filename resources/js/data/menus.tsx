@@ -1,4 +1,5 @@
 import categories from '@/routes/admin/companies/categories';
+import locations from '@/routes/admin/companies/locations';
 import mitras from '@/routes/admin/companies/mitras';
 import programs from '@/routes/admin/companies/programs';
 import reviews from '@/routes/admin/companies/reviews';
@@ -122,6 +123,12 @@ export const NavigationList = [
                         title: 'Programs',
                         href: programs.index().url,
                         permission: 'view-program',
+                        icon: ChevronRight,
+                    },
+                    {
+                        title: 'Locations',
+                        href: locations.index().url,
+                        permission: 'view-location',
                         icon: ChevronRight,
                     },
                     {

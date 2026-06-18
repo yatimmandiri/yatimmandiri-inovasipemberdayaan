@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Company\CategoryController;
+use App\Http\Controllers\Admin\Company\LocationController;
 use App\Http\Controllers\Admin\Company\MitraController;
 use App\Http\Controllers\Admin\Company\ProgramController;
 use App\Http\Controllers\Admin\Company\ReviewController;
@@ -17,7 +18,6 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\Settings\LogActivityController;
 use App\Http\Controllers\Admin\Settings\SiteSettingsController;
-use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -74,6 +74,9 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
         Route::put('programs/{program}/status', [ProgramController::class, 'status'])->name('programs.status');
         Route::get('programs/data', [ProgramController::class, 'getData'])->name('programs.data');
         Route::resource('programs', ProgramController::class);
+
+        Route::get('locations/data', [LocationController::class, 'getData'])->name('locations.data');
+        Route::resource('locations', LocationController::class);
 
         Route::get('sliders/data', [SliderController::class, 'getData'])->name('sliders.data');
         Route::resource('sliders', SliderController::class);
