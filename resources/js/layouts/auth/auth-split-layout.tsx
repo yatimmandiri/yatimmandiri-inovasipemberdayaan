@@ -1,4 +1,5 @@
 import AppLogoIcon from '@/components/app-logo-icon';
+import { Particles } from '@/components/ui/shadcn-io/particles';
 import home from '@/routes/home';
 import type { AuthLayoutProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
@@ -22,13 +23,19 @@ export default function AuthSplitLayout({
         }
     }, [flash?.success, flash?.error]);
 
-    // toast.success('Test');
-    // console.info(flash?.success, flash?.error);
-
     return (
         <div className="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
             <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex dark:border-r">
-                <div className="absolute inset-0 bg-zinc-900" />
+                <div className="absolute inset-0 bg-slate-900">
+                    <Particles
+                        className="absolute inset-0"
+                        quantity={1000}
+                        ease={100}
+                        staticity={50}
+                        color="#ffffff"
+                        size={0.8}
+                    />
+                </div>
                 <Link
                     href={home.index()}
                     className="relative z-20 flex items-center text-lg font-medium"
