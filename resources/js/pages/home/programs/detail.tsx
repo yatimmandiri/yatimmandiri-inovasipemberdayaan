@@ -1,3 +1,4 @@
+import { GallerySection } from '@/components/sections/home/gallery-section';
 import { LocationSection } from '@/components/sections/home/location-section';
 import { ProductPilihanSection } from '@/components/sections/home/product-section';
 import { SROISection } from '@/components/sections/home/sroi-section';
@@ -107,6 +108,7 @@ export default function ProgramDetailPage() {
                 </div>
             </section>
             <LocationSection locations={program.locations} />
+            <GallerySection />
             <ProductPilihanSection data={program.products} />
             <SROISection />
         </Fragment>
