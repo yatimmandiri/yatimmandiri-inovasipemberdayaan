@@ -41,34 +41,40 @@ export const GallerySection = ({
                     <div className="mb-12 text-center">
                         <h2 className="text-3xl font-bold">{title}</h2>
 
-                        <p className="mt-3 text-gray-500">{subtitle}</p>
+                        <p className="mt-3 text-base text-gray-500">
+                            {subtitle}
+                        </p>
                     </div>
-
-                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                         {galleries.map((item: any) => (
                             <div
                                 key={item.id}
                                 onClick={() => setPreview(item.image)}
-                                className="group cursor-pointer overflow-hidden rounded-2xl shadow transition hover:-translate-y-2 hover:shadow-xl"
+                                className="group relative aspect-square cursor-pointer overflow-hidden rounded-2xl"
                             >
-                                <div className="aspect-square overflow-hidden">
-                                    <img
-                                        src={getStorageUrl(item.image)}
-                                        alt={item.title}
-                                        className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
-                                    />
-                                </div>
-
-                                <div className="p-4">
-                                    <h3 className="font-semibold">
-                                        {item.title}
-                                    </h3>
-
-                                    {item.description && (
-                                        <p className="mt-2 line-clamp-2 text-sm text-gray-500">
-                                            {item.description}
-                                        </p>
-                                    )}
+                                <img
+                                    src={getStorageUrl(item.image)}
+                                    alt={item.title}
+                                    className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-black/0 transition duration-300 group-hover:bg-black/30" />
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition duration-300 group-hover:opacity-100">
+                                    <div className="rounded-full bg-white/90 p-3 shadow-lg">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-6 w-6 text-emerald-600"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            strokeWidth={2}
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0c-1.5-4-5-7-9-7S4.5 8 3 12c1.5 4 5 7 9 7s7.5-3 9-7z"
+                                            />
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
                         ))}
