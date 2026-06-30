@@ -32,12 +32,36 @@ export const GallerySection = ({
             image: null,
             description: 'Aksi peduli lingkungan',
         },
+        {
+            id: 5,
+            title: 'Pemberdayaan Masyarakat',
+            image: null,
+            description: 'Program sosial dan ekonomi',
+        },
+        {
+            id: 6,
+            title: 'Pemberdayaan Masyarakat',
+            image: null,
+            description: 'Program sosial dan ekonomi',
+        },
+        {
+            id: 7,
+            title: 'Pemberdayaan Masyarakat',
+            image: null,
+            description: 'Program sosial dan ekonomi',
+        },
+        {
+            id: 8,
+            title: 'Pemberdayaan Masyarakat',
+            image: null,
+            description: 'Program sosial dan ekonomi',
+        },
     ];
 
     return (
         <Fragment>
             <section className="bg-white py-20">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto max-w-7xl px-6">
                     <div className="mb-12 text-center">
                         <h2 className="text-3xl font-bold">{title}</h2>
 
