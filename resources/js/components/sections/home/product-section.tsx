@@ -35,30 +35,32 @@ export const ProductPilihanSection = ({ data }: { data?: any[] }) => {
                     </Link>
                 </div>
 
-                <Swiper
-                    modules={[Pagination, Autoplay]}
-                    spaceBetween={10}
-                    slidesPerView={1}
-                    autoplay={{
-                        delay: 5000,
-                        disableOnInteraction: false,
-                    }}
-                    breakpoints={{
-                        640: {
-                            slidesPerView: 2,
-                        },
-                        1024: {
-                            slidesPerView: 3,
-                        },
-                        1280: {
-                            slidesPerView: 4,
-                        },
-                    }}
-                >
-                    {data?.map((item) => (
-                        <SwiperSlide key={item.id}></SwiperSlide>
-                    ))}
-                </Swiper>
+                <div className="block">
+                    <Swiper
+                        modules={[Pagination, Autoplay]}
+                        spaceBetween={10}
+                        slidesPerView={1}
+                        autoplay={{
+                            delay: 5000,
+                            disableOnInteraction: false,
+                        }}
+                        breakpoints={{
+                            640: {
+                                slidesPerView: 2,
+                            },
+                            1024: {
+                                slidesPerView: 3,
+                            },
+                            1280: {
+                                slidesPerView: 4,
+                            },
+                        }}
+                    >
+                        {data?.map((item) => (
+                            <SwiperSlide key={item.id}></SwiperSlide>
+                        ))}
+                    </Swiper>
+                </div>
             </div>
         </section>
     );
