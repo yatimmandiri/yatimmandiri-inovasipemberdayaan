@@ -14,8 +14,6 @@ export default function ProgramDetailPage() {
         ? program.activities.split(';').filter(Boolean)
         : [];
 
-    console.log(program);
-
     return (
         <Fragment>
             <section id="hero" className="relative min-h-165.5 overflow-hidden">
