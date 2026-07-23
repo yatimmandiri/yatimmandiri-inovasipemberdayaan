@@ -106,7 +106,7 @@ export default function ProgramDetailPage() {
                 </div>
             </section>
             <LocationSection locations={program.locations} />
-            <GallerySection />
+            <GallerySection data={program.galleries} />
             <ProductPilihanSection data={program.products} />
             <SROISection />
         </Fragment>

@@ -282,3 +282,39 @@ Breadcrumbs::for(
     fn(BreadcrumbTrail $trail) =>
     $trail->parent('admin.companies.products.index')->push('Products Data', route('admin.companies.products.data'))
 );
+
+
+// Galleries Index
+Breadcrumbs::for(
+    'admin.companies.galleries.index',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.dashboard')->push('Galleries', route('admin.companies.galleries.index'))
+);
+
+// Galleries Create
+Breadcrumbs::for(
+    'admin.companies.galleries.create',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.galleries.index')->push('Create', route('admin.companies.galleries.create'))
+);
+
+// Galleries Show
+Breadcrumbs::for(
+    'admin.companies.galleries.show',
+    fn(BreadcrumbTrail $trail, $galleries) =>
+    $trail->parent('admin.companies.galleries.index')->push($galleries->name, route('admin.companies.galleries.show', $galleries))
+);
+
+// Galleries Edit
+Breadcrumbs::for(
+    'admin.companies.galleries.edit',
+    fn(BreadcrumbTrail $trail, $galleries) =>
+    $trail->parent('admin.companies.galleries.show', $galleries)->push('Edit', route('admin.companies.galleries.edit', $galleries))
+);
+
+// Galleries Data
+Breadcrumbs::for(
+    'admin.companies.galleries.data',
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.companies.galleries.index')->push('Galleries Data', route('admin.companies.galleries.data'))
+);

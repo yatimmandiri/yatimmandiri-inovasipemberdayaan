@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Company\ProgramController;
 use App\Http\Controllers\Admin\Company\ReviewController;
 use App\Http\Controllers\Admin\Company\SliderController;
 use App\Http\Controllers\Admin\Company\TestimonialController;
+use App\Http\Controllers\Admin\Company\GalleryController;
 use App\Http\Controllers\Admin\Core\PermissionController;
 use App\Http\Controllers\Admin\Core\Region\DistrictController;
 use App\Http\Controllers\Admin\Core\Region\ProvinceController;
@@ -93,6 +94,9 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
 
         Route::get('testimonials/data', [TestimonialController::class, 'getData'])->name('testimonials.data');
         Route::resource('testimonials', TestimonialController::class);
+
+        Route::get('galleries/data', [GalleryController::class, 'getData'])->name('galleries.data');
+        Route::resource('galleries', GalleryController::class);
     });
 
     Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');

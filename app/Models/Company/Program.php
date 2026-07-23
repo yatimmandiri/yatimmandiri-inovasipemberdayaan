@@ -45,6 +45,11 @@ class Program extends Model
         return $this->hasMany(Product::class, 'program_id');
     }
 
+    public function galleries(): HasMany
+    {
+        return $this->hasMany(Gallery::class, 'program_id');
+    }
+
     public function scopeSearch(Builder $query, ?string $search)
     {
         return $query->when($search, function ($q, $search) {

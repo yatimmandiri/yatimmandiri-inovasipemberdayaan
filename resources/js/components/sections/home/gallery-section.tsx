@@ -2,9 +2,10 @@ import { getStorageUrl } from '@/utils/copyText';
 import { Fragment, useState } from 'react';
 
 export const GallerySection = ({
+    data,
     title = 'Galeri Kegiatan',
     subtitle = 'Dokumentasi berbagai program, kegiatan sosial, dan momen inspiratif bersama para donatur, relawan, serta penerima manfaat di seluruh Indonesia.',
-}) => {
+}: any) => {
     const [preview, setPreview] = useState(null);
 
     const galleries = [
@@ -70,14 +71,14 @@ export const GallerySection = ({
                         </p>
                     </div>
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                        {galleries.map((item: any) => (
+                        {data?.map((item: any) => (
                             <div
                                 key={item.id}
-                                onClick={() => setPreview(item.image)}
+                                onClick={() => setPreview(item.photo)}
                                 className="group relative aspect-square cursor-pointer overflow-hidden rounded-2xl"
                             >
                                 <img
-                                    src={getStorageUrl(item.image)}
+                                    src={getStorageUrl(item.photo)}
                                     alt={item.title}
                                     className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                                 />

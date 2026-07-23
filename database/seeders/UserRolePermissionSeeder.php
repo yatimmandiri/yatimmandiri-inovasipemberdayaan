@@ -112,6 +112,11 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'update-product'],
             ['name' => 'delete-product'],
             ['name' => 'data-product'],
+            ['name' => 'view-gallery'],
+            ['name' => 'create-gallery'],
+            ['name' => 'update-gallery'],
+            ['name' => 'delete-gallery'],
+            ['name' => 'data-gallery'],
         ])->each(fn($permission) => Permission::create($permission)->assignRole(['Administrators', 'Editors']));
 
         User::create([

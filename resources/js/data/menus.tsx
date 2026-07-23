@@ -1,4 +1,5 @@
 import categories from '@/routes/admin/companies/categories';
+import galleries from '@/routes/admin/companies/galleries';
 import locations from '@/routes/admin/companies/locations';
 import mitras from '@/routes/admin/companies/mitras';
 import products from '@/routes/admin/companies/products';
@@ -148,6 +149,12 @@ export const NavigationList = [
                         title: 'Mitra',
                         href: mitras.index().url,
                         permission: 'view-mitra',
+                        icon: ChevronRight,
+                    },
+                    {
+                        title: 'Gallery',
+                        href: galleries.index().url,
+                        permission: 'view-gallery',
                         icon: ChevronRight,
                     },
                     {
