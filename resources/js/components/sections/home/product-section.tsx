@@ -56,7 +56,9 @@ export const ProductPilihanSection = ({ data }: { data?: any[] }) => {
                     }}
                 >
                     {data?.map((item) => (
-                        <SwiperSlide key={item.id}></SwiperSlide>
+                        <SwiperSlide key={item.id}>
+                            <ProductItemSection item={item} />
+                        </SwiperSlide>
                     ))}
                 </Swiper>
             </div>
