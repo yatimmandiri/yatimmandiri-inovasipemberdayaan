@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Company\Category;
+use App\Models\Company\Program;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
