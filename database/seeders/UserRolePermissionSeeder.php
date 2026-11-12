@@ -26,7 +26,8 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'Administrators', 'guard_name' => 'web'],
             ['name' => 'Editors', 'guard_name' => 'web'],
             ['name' => 'Users', 'guard_name' => 'web'],
-        ])->each(fn($role) => Role::create($role));
+            ['name' => 'Fasilitator', 'guard_name' => 'web'],
+        ])->each(fn ($role) => Role::firstOrCreate($role));
 
         collect([
             ['name' => 'view-permission', 'guard_name' => 'web'],
@@ -69,7 +70,7 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'data-village', 'guard_name' => 'web'],
             ['name' => 'view-log-activity', 'guard_name' => 'web'],
             ['name' => 'data-log-activity', 'guard_name' => 'web'],
-        ])->each(fn($permission) => Permission::create($permission)->assignRole('Administrators'));
+        ])->each(fn ($permission) => Permission::create($permission)->assignRole('Administrators'));
 
         collect([
             ['name' => 'view-category', 'guard_name' => 'web'],
@@ -117,7 +118,71 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'update-gallery'],
             ['name' => 'delete-gallery'],
             ['name' => 'data-gallery'],
-        ])->each(fn($permission) => Permission::create($permission)->assignRole(['Administrators', 'Editors']));
+        ])->each(fn ($permission) => Permission::create($permission)->assignRole(['Administrators', 'Editors']));
+
+        // Permission laporan pendampingan (visit_reports) — blok ini idempoten agar aman dijalankan ulang
+        // di database yang sudah hidup (pola firstOrCreate, bukan Permission::create).
+        collect([
+            'view-visit-report',
+            'create-visit-report',
+            'update-visit-report',
+            'delete-visit-report',
+            'data-visit-report',
+        ])->each(function (string $name) {
+            $permission = Permission::firstOrCreate([
+                'name' => $name,
+                'guard_name' => 'web',
+            ]);
+
+            $permission->assignRole(['Administrators', 'Fasilitator']);
+        });
+
+        Permission::firstOrCreate([
+            'name' => 'review-visit-report',
+            'guard_name' => 'web',
+        ])->assignRole('Administrators');
+
+        // Permission master cabang & kelompok + modul kas — blok idempoten (firstOrCreate + assignRole),
+        // aman dijalankan ulang pada database produksi yang sudah hidup.
+        collect([
+            'view-group',
+            'data-group',
+        ])->each(function (string $name) {
+            Permission::firstOrCreate([
+                'name' => $name,
+                'guard_name' => 'web',
+            ])->assignRole(['Administrators', 'Fasilitator']);
+        });
+
+        collect([
+            'create-group',
+            'update-group',
+            'delete-group',
+        ])->each(function (string $name) {
+            // Master kelompok dikelola admin; fasil hanya pemakai data kelompoknya.
+            Permission::firstOrCreate([
+                'name' => $name,
+                'guard_name' => 'web',
+            ])->assignRole('Administrators');
+        });
+
+        Permission::firstOrCreate([
+            'name' => 'manage-branch',
+            'guard_name' => 'web',
+        ])->assignRole('Administrators');
+
+        collect([
+            'view-cash-transaction',
+            'create-cash-transaction',
+            'update-cash-transaction',
+            'delete-cash-transaction',
+            'data-cash-transaction',
+        ])->each(function (string $name) {
+            Permission::firstOrCreate([
+                'name' => $name,
+                'guard_name' => 'web',
+            ])->assignRole(['Administrators', 'Fasilitator']);
+        });
 
         User::create([
             'name' => 'Administrator',

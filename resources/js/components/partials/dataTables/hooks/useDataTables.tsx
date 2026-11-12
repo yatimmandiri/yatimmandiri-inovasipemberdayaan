@@ -1,11 +1,8 @@
-import {
-    getCoreRowModel,
-    SortingState,
-    useReactTable,
-} from '@tanstack/react-table';
+import type { SortingState } from '@tanstack/react-table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import type { ReactNode } from 'react';
 import {
     createContext,
-    ReactNode,
     useCallback,
     useContext,
     useEffect,
@@ -39,9 +36,11 @@ export const DataTableContext = createContext({});
 
 export const UseDataTable = () => {
     const context = useContext(DataTableContext);
+
     if (!context) {
         throw new Error('useDataTable must be used within DataTableProvider');
     }
+
     return context;
 };
 
@@ -54,7 +53,6 @@ export const DataTableProvider = ({
     withActions = true,
     formatDataExport,
     customButtons,
-    rowSelection,
     setRowSelection,
     children,
 }: DataTableProps) => {
@@ -214,10 +212,10 @@ export const DataTableProvider = ({
 
         // Gabungkan baseStart + custom + baseEnd
         const tempColumns = [
-            ...baseStartColumns,
             ...columns.filter(
                 (c: any) => c.accessorKey !== 'actions' && c.id !== 'actions', // exclude action dulu
             ),
+            ...baseStartColumns,
             ...baseEndColumns,
         ];
 
@@ -227,6 +225,7 @@ export const DataTableProvider = ({
 
         tempColumns.forEach((col) => {
             const key = col.accessorKey || col.id;
+
             if (!seen.has(key)) {
                 seen.add(key);
                 mergedColumns.push(col);
@@ -238,14 +237,14 @@ export const DataTableProvider = ({
             }
         });
 
-        // Tambahkan kolom Action di paling akhir (custom jika ada, default jika tidak)
+        // Taruh kolom Action di paling awal (custom jika ada, default jika tidak)
         if (hasCustomAction) {
             const customAction = columns.find(
                 (c: any) => c.accessorKey === 'actions' || c.id === 'actions',
             );
-            mergedColumns.push(customAction);
+            mergedColumns.unshift(customAction);
         } else if (defaultActionColumn) {
-            mergedColumns.push(defaultActionColumn);
+            mergedColumns.unshift(defaultActionColumn);
         }
 
         return mergedColumns;
