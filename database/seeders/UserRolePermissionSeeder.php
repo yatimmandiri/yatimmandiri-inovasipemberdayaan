@@ -70,7 +70,7 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'data-village', 'guard_name' => 'web'],
             ['name' => 'view-log-activity', 'guard_name' => 'web'],
             ['name' => 'data-log-activity', 'guard_name' => 'web'],
-        ])->each(fn ($permission) => Permission::create($permission)->assignRole('Administrators'));
+        ])->each(fn ($permission) => Permission::firstOrCreate($permission)->assignRole('Administrators'));
 
         collect([
             ['name' => 'view-category', 'guard_name' => 'web'],
@@ -118,7 +118,7 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'update-gallery'],
             ['name' => 'delete-gallery'],
             ['name' => 'data-gallery'],
-        ])->each(fn ($permission) => Permission::create($permission)->assignRole(['Administrators', 'Editors']));
+        ])->each(fn ($permission) => Permission::firstOrCreate($permission)->assignRole(['Administrators', 'Editors']));
 
         // Permission laporan pendampingan (visit_reports) — blok ini idempoten agar aman dijalankan ulang
         // di database yang sudah hidup (pola firstOrCreate, bukan Permission::create).
@@ -184,12 +184,15 @@ class UserRolePermissionSeeder extends Seeder
             ])->assignRole(['Administrators', 'Fasilitator']);
         });
 
-        User::create([
-            'name' => 'Administrator',
-            'email' => 'scrum@yatimmandiri.org',
-            'email_verified_at' => now(),
-            'password' => Hash::make('password'),
-        ])->assignRole('Administrators');
+        // Admin default: idempoten by email agar seeder aman dijalankan ulang di DB hidup.
+        User::firstOrCreate(
+            ['email' => 'scrum@yatimmandiri.org'],
+            [
+                'name' => 'Administrator',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+            ]
+        )->assignRole('Administrators');
 
         Province::query()->update([
             'created_at' => now(),
