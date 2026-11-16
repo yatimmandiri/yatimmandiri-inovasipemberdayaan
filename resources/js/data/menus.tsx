@@ -7,6 +7,13 @@ import programs from '@/routes/admin/companies/programs';
 import reviews from '@/routes/admin/companies/reviews';
 import sliders from '@/routes/admin/companies/sliders';
 import testimonials from '@/routes/admin/companies/testimonials';
+import visitReports from '@/routes/admin/visit-reports';
+import branches from '@/routes/admin/branches';
+import groups from '@/routes/admin/groups';
+import kas from '@/routes/admin/kas';
+import fasilitatorPortal from '@/routes/fasilitator';
+import fasilitatorKas from '@/routes/fasilitator/kas';
+import fasilitatorGroup from '@/routes/fasilitator/group';
 import permissions from '@/routes/admin/core/permissions';
 import districts from '@/routes/admin/core/regions/districts';
 import provinces from '@/routes/admin/core/regions/provinces';
@@ -18,13 +25,46 @@ import activities from '@/routes/admin/logs/activities';
 import site from '@/routes/admin/settings/site';
 import {
     ChevronRight,
+    ClipboardListIcon,
     CogIcon,
     CpuIcon,
     DatabaseIcon,
     MapIcon,
+    WalletIcon,
+    UsersIcon,
+    Building2Icon,
 } from 'lucide-react';
 
 export const NavigationList = [
+    {
+        title: 'Fasilitator',
+        roles: ['Fasilitator'],
+        children: [
+            {
+                title: 'Dashboard',
+                href: fasilitatorPortal.dashboard().url,
+                icon: ChevronRight,
+            },
+            {
+                title: 'Laporan Monitoring Evaluasi',
+                href: fasilitatorPortal.visitReports.index().url,
+                permission: 'view-visit-report',
+                icon: ClipboardListIcon,
+            },
+            {
+                title: 'Pencatatan Kas',
+                href: fasilitatorKas.index().url,
+                permission: 'view-cash-transaction',
+                icon: WalletIcon,
+            },
+            {
+                title: 'Kelompok Saya',
+                href: fasilitatorGroup.my().url,
+                permission: 'view-group',
+                icon: UsersIcon,
+            },
+        ],
+    },
     {
         title: 'Platform',
         roles: ['Administrators'],
@@ -170,6 +210,42 @@ export const NavigationList = [
                         icon: ChevronRight,
                     },
                 ],
+            },
+        ],
+    },
+    {
+        title: 'Monitoring Evaluasi',
+        roles: ['Administrators', 'Editors'],
+        children: [
+            {
+                title: 'Monitoring Evaluasi',
+                href: visitReports.index().url,
+                permission: 'view-visit-report',
+                icon: ClipboardListIcon,
+            },
+        ],
+    },
+    {
+        title: 'Kas & Kelompok',
+        roles: ['Administrators', 'Editors'],
+        children: [
+            {
+                title: 'Cabang',
+                href: branches.index().url,
+                roles: ['Administrators', 'Editors'],
+                icon: Building2Icon,
+            },
+            {
+                title: 'Kelompok Fasilitator',
+                href: groups.index().url,
+                permission: 'view-group',
+                icon: UsersIcon,
+            },
+            {
+                title: 'Pencatatan Kas',
+                href: kas.index().url,
+                permission: 'view-cash-transaction',
+                icon: WalletIcon,
             },
         ],
     },

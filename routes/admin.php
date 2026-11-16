@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\BranchController;
+use App\Http\Controllers\Admin\CashTransactionController;
 use App\Http\Controllers\Admin\Company\CategoryController;
+use App\Http\Controllers\Admin\Company\GalleryController;
 use App\Http\Controllers\Admin\Company\LocationController;
 use App\Http\Controllers\Admin\Company\MitraController;
 use App\Http\Controllers\Admin\Company\ProductController;
@@ -8,7 +11,7 @@ use App\Http\Controllers\Admin\Company\ProgramController;
 use App\Http\Controllers\Admin\Company\ReviewController;
 use App\Http\Controllers\Admin\Company\SliderController;
 use App\Http\Controllers\Admin\Company\TestimonialController;
-use App\Http\Controllers\Admin\Company\GalleryController;
+use App\Http\Controllers\Admin\Company\VisitReportController;
 use App\Http\Controllers\Admin\Core\PermissionController;
 use App\Http\Controllers\Admin\Core\Region\DistrictController;
 use App\Http\Controllers\Admin\Core\Region\ProvinceController;
@@ -17,6 +20,7 @@ use App\Http\Controllers\Admin\Core\Region\VillageController;
 use App\Http\Controllers\Admin\Core\RoleController;
 use App\Http\Controllers\Admin\Core\UserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\Settings\LogActivityController;
 use App\Http\Controllers\Admin\Settings\SiteSettingsController;
@@ -97,6 +101,31 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
 
         Route::get('galleries/data', [GalleryController::class, 'getData'])->name('galleries.data');
         Route::resource('galleries', GalleryController::class);
+    });
+
+    Route::prefix('visit-reports')->as('visit-reports.')->group(function () {
+        Route::put('{visitReport}/review', [VisitReportController::class, 'review'])->name('review');
+        Route::get('data', [VisitReportController::class, 'getData'])->name('data');
+        Route::get('/', [VisitReportController::class, 'index'])->name('index');
+        Route::get('{visitReport}', [VisitReportController::class, 'show'])->name('show');
+    });
+
+    // Master cabang (seed JSON + CRUD admin + import JSON).
+    // create/edit memakai dialog di halaman list, jadi resource hanya butuh
+    // index/store/update/destroy (controller tidak punya method create/edit).
+    Route::post('branches/import', [BranchController::class, 'import'])->name('branches.import');
+    Route::get('branches/data', [BranchController::class, 'getData'])->name('branches.data');
+    Route::resource('branches', BranchController::class)->only(['index', 'store', 'update', 'destroy']);
+
+    // Master kelompok fasilitator
+    Route::get('groups/data', [GroupController::class, 'getData'])->name('groups.data');
+    Route::resource('groups', GroupController::class);
+
+    // Pencatatan kas (bagian sendiri, bukan Company Profile)
+    Route::prefix('kas')->as('kas.')->group(function () {
+        Route::get('data', [CashTransactionController::class, 'getData'])->name('data');
+        Route::get('/', [CashTransactionController::class, 'index'])->name('index');
+        Route::delete('{cashTransaction}', [CashTransactionController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');

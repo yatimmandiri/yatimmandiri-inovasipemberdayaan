@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Home;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company\Category;
+use App\Models\Company\Location;
 use App\Models\Company\Mitra;
 use App\Models\Company\Product;
 use App\Models\Company\Program;
@@ -13,6 +14,8 @@ use Illuminate\Http\Request;
 
 class MainController extends Controller
 {
+    private const PROGRAMS_PER_PAGE = 9;
+
     public function index()
     {
         $sliders = Slider::with(['category.programs'])->get();
@@ -94,6 +97,8 @@ class MainController extends Controller
 
     public function programs()
     {
+        $perPage = self::PROGRAMS_PER_PAGE;
+
         $categories = Category::active()
             ->withCount(['programs' => fn($query) => $query->where('status', true)])
             ->get();
