@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\RegisterResponse;
+use Laravel\Fortify\Contracts\TwoFactorLoginResponse;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 
@@ -21,6 +24,24 @@ class FortifyServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
+
+        // Fortify default memakai config 'home' => '/dashboard' yang tidak
+        // ada sebagai route. Bind respons login/register per role.
+        $this->app->singleton(
+            LoginResponse::class,
+            \App\Http\Responses\LoginResponse::class,
+        );
+
+        $this->app->singleton(
+            RegisterResponse::class,
+            \App\Http\Responses\RegisterResponse::class,
+        );
+
+        // Alur 2FA memakai kontrak tersendiri yang default-nya juga ke /dashboard.
+        $this->app->singleton(
+            TwoFactorLoginResponse::class,
+            \App\Http\Responses\LoginResponse::class,
+        );
     }
 
     /**

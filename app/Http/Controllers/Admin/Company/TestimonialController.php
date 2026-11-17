@@ -14,7 +14,7 @@ use Inertia\Inertia;
 
 class TestimonialController extends Controller
 {
-    use UploadFiles, LogActivity;
+    use LogActivity, UploadFiles;
 
     /**
      * Display a listing of the resource.
@@ -125,7 +125,6 @@ class TestimonialController extends Controller
             'name',
             'position',
             'description',
-            'categories_id',
         ]);
 
         $data['category_id'] = $request->categories_id;

@@ -1,53 +1,363 @@
 # AGENTS.md
 
-## Stack
+Project-specific working rules for AI agents. Read this before changing code.
 
-- Laravel 13 + Inertia 3 + React 19 + TailwindCSS 4 + TypeScript 6
-- **Auth**: Laravel Fortify (login, register, 2FA, passkeys) — no custom auth controllers needed
-- **Real-time**: Laravel Echo + Reverb (configured in `resources/js/app.tsx`)
-- **Testing**: Pest 4 (SQLite in-memory, `RefreshDatabase`)
-- **Frontend UI**: shadcn/ui New York style (`@/components/ui/`)
-- **Icons**: lucide-react
+This file complements `CLAUDE.md` (Laravel Boost baseline). If guidance conflicts,
+prefer this file for project architecture and boundaries.
 
-## Key Commands
+Last verified against the repository: 2026-10-30.
 
-| Action | Command |
-|--------|---------|
-| Dev server | `composer run dev` (serves PHP + queue + Vite concurrently) |
-| Frontend build | `yarn build` |
-| Run all tests | `php artisan test --compact` |
-| Single test file | `php artisan test --compact --filter=testName` or `tests/path/to/Test.php` |
-| Lint PHP | `vendor/bin/pint --format agent` |
-| Lint JS/TS | `yarn lint` (fix) / `yarn lint:check` |
-| Format JS/TS | `yarn format` (fix) / `yarn format:check` |
-| Type check | `yarn types:check` |
-| Full CI check | `composer run ci:check` (lint + format + types + test) |
-| Create a test | `php artisan make:test --pest SomeFeatureTest` |
-| Create a model + factory + seeder | `php artisan make:model -mf --all ModelName` |
+## 1. Project Snapshot
 
-Always run `vendor/bin/pint --format agent` after editing PHP files.
+Yatim Mandiri Inovasi Pemberdayaan is a company profile and CMS, not an
+e-commerce application.
 
-## Architecture
+- Public site: home, about, categories, programs, products, articles,
+  partnerships, contact.
+- Admin CMS: company content, users, roles, permissions, regions, activity logs,
+  site settings, and external news.
+- Authentication: Laravel Fortify plus Socialite OAuth.
+- Primary language for UI copy: Indonesian. Code and identifiers: English.
 
-- **Routes**: `routes/web.php` requires `auth.php`, `settings.php`, `admin.php`, `welcome.php`
-- **Admin**: all routes under `/admin` prefix with `auth`, `verified`, `auth.admin` middleware
-- **Public site**: routes in `routes/welcome.php` (home/about/categories/programs/products/articles/contact)
-- **Controllers**: `App\Http\Controllers\Admin\*`, `App\Http\Controllers\Home\*`, `App\Http\Controllers\Settings\*`, `App\Http\Controllers\Auth\*`
-- **Models**: two domains — `App\Models\Core` (User, Role, Permission, Region) and `App\Models\Company` (Category, Product, Program, Mitra, Slider, Review, Testimonial, Gallery, Location)
-- **Frontend entry**: `resources/js/app.tsx` — auto-layout logic picks `AppLayout`, `AuthLayout`, `SettingsLayout`, `HomeLayout`, or `null` (welcome)
-- **Wayfinder** generates TS route helpers: import from `@/routes/` (named routes) or `@/actions/` (controller actions)
-- **Skills** in `.claude/skills/` — activate the matching skill before working in a domain (fortify, inertia-react, pest-testing, echo, wayfinder, tailwindcss, etc.)
+## 2. Stack
 
-## Conventions
+- PHP 8.3+ (local environment may use 8.5)
+- Laravel 13
+- Inertia.js v3
+- React 19 + TypeScript
+- Tailwind CSS v4
+- shadcn/Radix UI
+- Laravel Wayfinder
+- Laravel Fortify + Socialite
+- Spatie: Permission, ActivityLog, Settings, Sluggable
+- Pest 4 + PHPUnit 12
+- Pint, ESLint, Prettier
 
-- Use `Inertia::render()` for pages (no Blade views)
-- Use Inertia v3 APIs: `Inertia::optional()` (not `lazy()`), `useHttp` for standalone requests, `router.cancelAll()` (not `.cancel()`)
-- Built-in XHR client is preferred; Axios still available for non-Inertia requests
-- Use curly braces for all control structures (PHP + JS)
-- PHP: constructor property promotion, explicit return types, PHPDoc for complex logic, array-shape annotations
-- TS/JS: `@/` path alias maps to `resources/js/`
-- ESLint enforces `consistent-type-imports` with `prefer-top-level` specifier style
-- Prettier: single quotes, 4-space indent (2-space for YAML), `prettier-plugin-tailwindcss` sorts classes
-- Tests are mandatory for every change (Pest feature tests preferred)
-- Alpine: posts imported from `yatimmandiri.org` WordPress JSON API (`NEWS_API_POSTS_URL` env var)
-- Broadcasting uses Reverb (configured via `config/reverb.php`)
+Package manager: `yarn` for frontend dependencies. Use `composer` for PHP.
+
+## 3. Route Map
+
+Routes are split by area and loaded from `routes/web.php`:
+
+- `routes/welcome.php` - public site (`home.*`).
+- `routes/admin.php` - admin CMS (`admin.*`).
+- `routes/settings.php` - profile, security, appearance.
+- `routes/auth.php` - Socialite OAuth only. Fortify owns login/register/reset/2FA.
+- `routes/breadcrumbs.php` - breadcrumb registry.
+
+Admin routes use:
+
+```php
+Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admin'])
+```
+
+Public pages use the `home.` name prefix and are rendered by
+`App\Http\Controllers\Home\MainController`.
+
+## 4. Request Lifecycle
+
+```text
+Route
+  -> middleware (web, HandleInertiaRequests, auth, verified, auth.admin)
+  -> Controller
+       -> FormRequest validation
+       -> Policy / Spatie permission check
+       -> Model query, relationship, scope
+       -> Trait (UploadFiles, LogActivity)
+       -> Service (DashboardService, NewsApiService)
+       -> Inertia::render() or response()->json()
+  -> React page in resources/js/pages
+```
+
+Admin list pages do not receive table rows as Inertia props. They fetch rows from
+a sibling `.../data` endpoint via the shared DataTable provider.
+
+## 5. Directory Ownership
+
+| Path | Responsibility |
+| --- | --- |
+| `routes/*.php` | Route registration, middleware, names |
+| `app/Http/Controllers/Admin/Company` | Company content CRUD |
+| `app/Http/Controllers/Admin/Core` | Users, roles, permissions, regions |
+| `app/Http/Controllers/Admin/Settings` | Site settings, logs, backup |
+| `app/Http/Controllers/Home` | Public pages |
+| `app/Http/Requests` | Store/Update validation classes |
+| `app/Models/Company`, `app/Models/Core` | Eloquent models |
+| `app/Policies/Company`, `app/Policies/Core` | Permission-based policies |
+| `app/Concerns/Traits` | `UploadFiles`, `LogActivity` |
+| `app/Services` | Non-controller application logic |
+| `app/Settings` | `spatie/laravel-settings` classes |
+| `resources/js/pages` | Inertia pages |
+| `resources/js/components/forms` | Reusable form components |
+| `resources/js/components/partials` | Shared UI and DataTable parts |
+| `resources/js/components/ui` | shadcn components |
+| `resources/js/data/menus.tsx` | Admin sidebar definition |
+| `resources/js/routes`, `resources/js/actions`, `resources/js/wayfinder` | Generated by Wayfinder. Do not edit manually. |
+
+## 6. Backend Conventions
+
+### Models
+
+- Use PHP attributes, not `$fillable` properties:
+  `#[Fillable([...])]`, `#[Sluggable(from: 'name', to: 'slug')]`.
+- Use `LogsActivity` and `getActivitylogOptions()` on content models.
+- Add `SoftDeletes` only when the table already has `deleted_at`.
+- Define relationships explicitly with return types, for example
+  `public function programs(): HasMany`.
+- Add reusable scopes: `scopeSearch`, `scopeActive`, `scopeRecommended`,
+  `scopeSelectBasicColumn`.
+- Prefer PHPDoc array shapes over inline comments.
+
+### Controllers
+
+- Always call `$this->authorize(...)` before reading or mutating data.
+- Keep controllers thin: validate, authorize, query, render, redirect.
+- Use `Inertia::render('admin/...', $data)` for pages.
+- Use `response()->json()` only for DataTable/API endpoints.
+- Use `logSuccess()` / `logError()` from `LogActivity` for mutations.
+- Use `uploadFile()` / `deleteFile()` / `replaceFile()` from `UploadFiles`.
+- Redirect with a named route and a flash message:
+  `->with('success', '...')`.
+- Do not use `$request->all()` for mass assignment. Select fields explicitly.
+
+### Form Requests
+
+- Create separate `StoreXRequest` and `UpdateXRequest` classes.
+- Keep `authorize(): bool` returning `true`; authorization stays in controllers.
+- Define rules as arrays with explicit validation rules.
+- Add validation for file MIME type and size.
+
+### DataTable Contract
+
+`getData()` endpoints must accept:
+
+- `page`
+- `perPage`
+- `globalSearch`
+- `orderBy`
+- `orderDirection`
+- `filterValue`
+
+Return a Laravel paginator when `perPage` is present, otherwise a collection.
+The frontend expects `data`, `current_page`, `per_page`, `total`, `from`, `to`.
+
+Always whitelist sortable columns:
+
+```php
+$allowedSorts = ['id', 'name', 'created_at', 'updated_at'];
+$sort = in_array($orderBy, $allowedSorts, true) ? $orderBy : 'id';
+$direction = $orderDirection === 'asc' ? 'asc' : 'desc';
+```
+
+### Services and Settings
+
+- Put multi-step or non-HTTP logic in `app/Services`.
+- Use `DashboardService` for role-based dashboard view selection.
+- Use `SiteSettings` for site-wide configuration. Do not hardcode site identity.
+- Settings are shared through `HandleInertiaRequests` and `AppServiceProvider`.
+
+## 7. Frontend Conventions
+
+- Import backend routes from `@/routes/...` or actions from `@/actions/...`.
+- Never hardcode admin URLs in new code.
+- Admin pages follow `list.tsx`, `create.tsx`, `edit.tsx`, `show.tsx`.
+- Form components live in `resources/js/components/forms/admin/<module>`.
+- Reuse existing partials: `input-component`, `select-component`,
+  `textarea-component`, `editor-component`, `datePicker-component`,
+  `button-component`, and other files in `components/partials`.
+- Use `useForm` from Inertia. For edit forms, use `transform()` to send
+  `_method: 'put'`. Use `forceFormData: true` when uploading files.
+- Use `DataTableProvider` and `DataTableComponent` for admin lists. Do not build
+  a separate table implementation.
+- Use `router.put(route.status(id).url, {}, {...})` for status/recommended
+  toggles and refresh the DataTable on success.
+- Layouts are resolved in `resources/js/app.tsx`:
+  - `home/*` -> `HomeLayout`
+  - `auth/*` -> `AuthLayout`
+  - `settings/*` -> `AppLayout` + `SettingsLayout`
+  - default admin -> `AppLayout`
+- Use `getStorageUrl()` or `/storage/...` for uploaded files.
+- Use Sonner toasts for flash feedback.
+- Keep TypeScript strict. Avoid adding new `any` unless the surrounding file
+  already uses it.
+
+## 8. Adding a New Module
+
+Follow this order. Do not skip permission, routing, or verification steps.
+
+1. Create migration and update the schema.
+2. Create the model with fillable, slug, relationships, and scopes.
+3. Add a factory and/or seeder when data must be reproducible.
+4. Create the policy.
+5. Add permissions to `database/seeders/UserRolePermissionSeeder.php` and assign
+   them to `Administrators` / `Editors` as appropriate.
+6. Create `StoreXRequest` and `UpdateXRequest`.
+7. Create the controller with `index`, `create`, `store`, `show`, `edit`,
+   `update`, `destroy`, and `getData`.
+8. Register routes in `routes/admin.php`. Put `/data` and custom PUT routes before
+   `Route::resource()`.
+9. Add breadcrumbs under `routes/breadcrumbs/admin/` and ensure the file is
+   required from `routes/breadcrumbs.php`.
+10. Regenerate Wayfinder: `php artisan wayfinder:generate --with-form`.
+11. Add pages under `resources/js/pages/admin/<module>/`.
+12. Add the form component under `resources/js/components/forms/admin/<module>/`.
+13. Add the menu item and permission to `resources/js/data/menus.tsx`.
+14. Write or update Pest tests.
+15. Run Pint, tests, lint, typecheck, and build.
+
+## 9. Authentication and Permissions
+
+Roles:
+
+- `Administrators` - full platform access.
+- `Editors` - company content access.
+- `Users` - public account role; blocked from admin by `auth.admin`.
+
+Permission naming convention:
+
+```text
+view-<entity>
+create-<entity>
+update-<entity>
+delete-<entity>
+data-<entity>
+restore-<entity>
+force-delete-<entity>
+```
+
+Authorization rules:
+
+- Ability names passed to `authorize()` must match permission names.
+- Spatie registers a `Gate::before` that checks the ability as a permission.
+  Do not remove or weaken this behavior.
+- `AdminMiddleware` only rejects the `Users` role. It is not a substitute for
+  policy checks.
+- New permissions must be added to the seeder and assigned to roles. Otherwise
+  the UI and endpoints will return 403.
+- Sidebar visibility is filtered by both `roles` and `permission` fields.
+
+## 10. Files, Logging, and Data
+
+- Uploaded files use the `public` disk.
+- Folders: `uploads`, `uploads/program`, `uploads/gallery`, `settings/logo`,
+  `settings/favicon`.
+- Run `php artisan storage:link` when setting up a new environment.
+- Do not write uploaded files directly into `public/`.
+- Activity logging has two layers:
+  - Spatie ActivityLog through `LogsActivity` on models.
+  - File logging through the `LogActivity` trait in controllers.
+- Keep both when modifying existing mutation flows.
+
+## 11. Domain Map
+
+```text
+Core
+  User 1-N Social
+  User N-N Role N-N Permission
+  Province > Regency > District > Village (azishapidin/indoregion)
+  LogActivity
+  SiteSettings
+
+Company
+  Category 1-N Program
+  Program 1-N Location
+  Program 1-N Product
+  Program 1-N Gallery
+  Category 1-N Slider
+  Category 1-N Testimonial
+  Review, Mitra (standalone)
+```
+
+External news is fetched through `NewsApiService`; it is not a local table.
+
+## 12. Commands
+
+```bash
+# Application
+composer run dev
+yarn dev
+yarn build
+
+# PHP formatting
+vendor/bin/pint --dirty --format agent
+
+# Tests
+php artisan test --compact
+php artisan test --compact --filter=TestName
+
+# Frontend checks
+yarn lint:check
+yarn types:check
+yarn format:check
+
+# Wayfinder after route changes
+php artisan wayfinder:generate --with-form
+
+# Storage symlink
+php artisan storage:link
+```
+
+## 13. Hard Boundaries
+
+Do not:
+
+- Edit `vendor`, `node_modules`, `public/build`, or `storage`.
+- Edit generated Wayfinder files: `resources/js/routes`,
+  `resources/js/actions`, `resources/js/wayfinder`.
+- Change `composer.json`, `package.json`, `composer.lock`, or `yarn.lock`
+  without explicit approval.
+- Rename namespaces, base folders, or module folders without explicit approval.
+- Bypass `authorize()` or remove policy checks.
+- Remove or weaken existing tests.
+- Commit `.env`, secrets, tokens, or credentials.
+- Add documentation files unless requested.
+- Create new top-level folders without approval.
+- Silently fix legacy issues listed below. Propose a separate change instead.
+- Copy patterns from incomplete features into new modules.
+
+## 14. Known Issues and Legacy Code
+
+These are known inconsistencies. Do not treat them as reference implementations.
+
+- `app/Http/Controllers/Admin/NewsController.php` and
+  `app/Http/Controllers/Admin/VideoController.php` reference
+  `App\Models\News` and `App\Models\Video`, which do not exist.
+- `app/Http/Controllers/Admin/VideoController.php`, `app/Policies/VideoPolicy.php`,
+  and `resources/js/pages/admin/videos/*` exist, but video routes are not
+  registered in `routes/admin.php`.
+- `app/Models/Company/Location.php` and `app/Models/Company/Slider.php` use
+  `scopeSearch` against a `name` column that those tables do not have.
+- `app/Models/Core/LogActivity.php` uses `scopeSearch` against `name`, but the
+  `activity_log` table uses `description`.
+- `app/Models/Company/Gallery.php` defines `programs()` as `hasMany`, but
+  `galleries.program_id` implies `belongsTo(Program::class)`.
+- Data endpoint authorization relies on Spatie `Gate::before`. Policies define
+  `getData()`, but controllers call `authorize('data-<entity>')`, which maps to a
+  different method name.
+- Most `getData()` methods do not whitelist `orderBy`. Follow the safe pattern in
+  section 6 instead.
+- `SiteSettingsController::update()` skips empty values, so optional settings
+  cannot be cleared.
+- `AuthController` contains unused login/register/reset methods. Fortify handles
+  those routes.
+- `routes/breadcrumbs/admin/content-breadcrumbs.php` is not required from
+  `routes/breadcrumbs.php` and references old route names.
+- The `locations` migration `down()` drops `program_locations` instead of
+  `locations`.
+- Test coverage is limited to starter auth/dashboard tests. `RefreshDatabase` is
+  still commented out in `tests/Pest.php`.
+
+## 15. Definition of Done
+
+A change is complete only when:
+
+- The affected behavior has a test, or an existing related test is updated.
+- `vendor/bin/pint --dirty --format agent` passes.
+- `php artisan test --compact` passes for the affected area.
+- `yarn lint:check`, `yarn types:check`, and `yarn format:check` pass when
+  frontend files changed.
+- `yarn build` succeeds when frontend files changed.
+- Permissions, sidebar menu, breadcrumbs, activity log, uploads, and empty states
+  are verified for new modules.
+- No generated file was edited manually.
+- No hardcoded admin URL was introduced.

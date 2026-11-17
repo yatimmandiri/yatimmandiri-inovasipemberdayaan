@@ -11,17 +11,28 @@ import {
 } from '@/components/ui/sidebar';
 import { NavigationList } from '@/data/menus';
 import { dashboard } from '@/routes/admin';
-import { Link } from '@inertiajs/react';
+import fasilitatorDashboard from '@/routes/fasilitator';
+import { Link, usePage } from '@inertiajs/react';
 import { MainNav } from './nav-main';
 
 export function AppSidebar() {
+    const { auth } = usePage<any>().props;
+    const isFasilitator = (auth?.user?.roles ?? []).includes('Fasilitator');
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link
+                                href={
+                                    isFasilitator
+                                        ? fasilitatorDashboard.dashboard().url
+                                        : dashboard()
+                                }
+                                prefetch
+                            >
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
