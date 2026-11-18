@@ -161,9 +161,11 @@ export const DataTableProvider = ({
             ),
             enableSorting: false,
             enableHiding: false,
+            size: 40,
         };
 
         const numberColumn = {
+            id: 'row_number',
             header: () => (
                 <div className="flex cursor-pointer flex-row items-center justify-between">
                     <span>No</span>
@@ -176,6 +178,8 @@ export const DataTableProvider = ({
 
                 return pageIndex * pageSize + info.row.index + 1;
             },
+            size: 50,
+            enableSorting: false,
         };
 
         const baseEndColumns = [
@@ -205,6 +209,7 @@ export const DataTableProvider = ({
                           renderRowActions(info, setRefreshData),
                       enableSorting: false,
                       enableHiding: false,
+                      size: 60,
                   }
                 : null;
 
