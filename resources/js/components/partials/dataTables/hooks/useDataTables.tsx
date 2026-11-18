@@ -136,49 +136,47 @@ export const DataTableProvider = ({
     }, [fetchData]);
 
     const initialColumns = useMemo(() => {
-        const baseStartColumns = [
-            {
-                id: 'select',
-                header: ({ table }: any) => (
-                    <Checkbox
-                        checked={
-                            table.getIsAllPageRowsSelected() ||
-                            (table.getIsSomePageRowsSelected() &&
-                                'indeterminate')
-                        }
-                        onCheckedChange={(value: any) =>
-                            table.toggleAllPageRowsSelected(!!value)
-                        }
-                        aria-label="Select all"
-                    />
-                ),
-                cell: ({ row }: any) => (
-                    <Checkbox
-                        checked={row.getIsSelected()}
-                        onCheckedChange={(value: any) =>
-                            row.toggleSelected(!!value)
-                        }
-                        aria-label="Select row"
-                    />
-                ),
-                enableSorting: false,
-                enableHiding: false,
-            },
-            {
-                header: () => (
-                    <div className="flex cursor-pointer flex-row items-center justify-between">
-                        <span>No</span>
-                    </div>
-                ),
-                accessorKey: 'id',
-                cell: (info: any) => {
-                    const pageIndex = table.getState().pagination.pageIndex; // 0-based
-                    const pageSize = table.getState().pagination.pageSize;
+        const selectColumn = {
+            id: 'select',
+            header: ({ table }: any) => (
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && 'indeterminate')
+                    }
+                    onCheckedChange={(value: any) =>
+                        table.toggleAllPageRowsSelected(!!value)
+                    }
+                    aria-label="Select all"
+                />
+            ),
+            cell: ({ row }: any) => (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value: any) =>
+                        row.toggleSelected(!!value)
+                    }
+                    aria-label="Select row"
+                />
+            ),
+            enableSorting: false,
+            enableHiding: false,
+        };
 
-                    return pageIndex * pageSize + info.row.index + 1;
-                },
+        const numberColumn = {
+            header: () => (
+                <div className="flex cursor-pointer flex-row items-center justify-between">
+                    <span>No</span>
+                </div>
+            ),
+            accessorKey: 'id',
+            cell: (info: any) => {
+                const pageIndex = table.getState().pagination.pageIndex; // 0-based
+                const pageSize = table.getState().pagination.pageSize;
+
+                return pageIndex * pageSize + info.row.index + 1;
             },
-        ];
+        };
 
         const baseEndColumns = [
             {
@@ -216,10 +214,11 @@ export const DataTableProvider = ({
               )
             : defaultActionColumn;
 
-        // Gabungkan dengan urutan: Action -> Checkbox/Select & No (baseStart) -> Custom columns -> Created At & Updated At (baseEnd)
+        // Gabungkan dengan urutan: select -> actions -> no -> dst (custom columns) -> created at -> updated at
         const tempColumns = [
+            selectColumn,
             ...(actionColumn ? [actionColumn] : []),
-            ...baseStartColumns,
+            numberColumn,
             ...columns.filter(
                 (c: any) => c.accessorKey !== 'actions' && c.id !== 'actions', // exclude action
             ),
