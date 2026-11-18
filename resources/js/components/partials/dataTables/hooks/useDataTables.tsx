@@ -210,12 +210,19 @@ export const DataTableProvider = ({
                   }
                 : null;
 
-        // Gabungkan baseStart + custom + baseEnd
+        const actionColumn = hasCustomAction
+            ? columns.find(
+                  (c: any) => c.accessorKey === 'actions' || c.id === 'actions',
+              )
+            : defaultActionColumn;
+
+        // Gabungkan dengan urutan: Action -> Checkbox/Select & No (baseStart) -> Custom columns -> Created At & Updated At (baseEnd)
         const tempColumns = [
-            ...columns.filter(
-                (c: any) => c.accessorKey !== 'actions' && c.id !== 'actions', // exclude action dulu
-            ),
+            ...(actionColumn ? [actionColumn] : []),
             ...baseStartColumns,
+            ...columns.filter(
+                (c: any) => c.accessorKey !== 'actions' && c.id !== 'actions', // exclude action
+            ),
             ...baseEndColumns,
         ];
 
@@ -236,16 +243,6 @@ export const DataTableProvider = ({
                 mergedColumns[idx] = col; // replace existing
             }
         });
-
-        // Taruh kolom Action di paling awal (custom jika ada, default jika tidak)
-        if (hasCustomAction) {
-            const customAction = columns.find(
-                (c: any) => c.accessorKey === 'actions' || c.id === 'actions',
-            );
-            mergedColumns.unshift(customAction);
-        } else if (defaultActionColumn) {
-            mergedColumns.unshift(defaultActionColumn);
-        }
 
         return mergedColumns;
     }, [columns]);
