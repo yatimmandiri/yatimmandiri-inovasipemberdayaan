@@ -5,6 +5,7 @@ import {
     renderRowDate,
     renderRowHeader,
 } from '@/components/partials/dataTables/utils/dataTable-utils';
+import { InputTextComponent } from '@/components/partials/input-component';
 import {
     Dialog,
     DialogContent,
@@ -21,7 +22,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, PencilIcon, TrashIcon } from 'lucide-react';
+import { FilterIcon, MoreHorizontal, PencilIcon, RotateCcwIcon, TrashIcon } from 'lucide-react';
 import kas from '@/routes/fasilitator/kas';
 import { formatDate } from '@/utils/formatDate';
 import { router, usePage } from '@inertiajs/react';
@@ -38,7 +39,9 @@ export default function ListPage() {
     const { myGroup, summary }: any = usePage<any>().props;
 
     const [refreshData, setRefreshData] = useState(false);
-    const [filterValue] = useState<object>({});
+    const [filterValue, setFilterValue] = useState<Record<string, any>>({});
+
+    const hasActiveFilter = Object.values(filterValue).some(Boolean);
 
     // Baris yang akan dihapus (konfirmasi lewat modal).
     const [deleterow, setDeleterow] = useState<any>(null);
@@ -161,6 +164,52 @@ export default function ListPage() {
                         </span>
                     </div>
                 </div>
+            </div>
+
+            {/* Filter toolbar periode (server-side via filterValue + whitelist) */}
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-sidebar-border/70 p-3 dark:border-sidebar-border">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                    <FilterIcon className="h-3.5 w-3.5" />
+                    <span>Filter:</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <InputTextComponent
+                        type="date"
+                        label=""
+                        name="date_from"
+                        value={filterValue.date_from ?? ''}
+                        handleOnChange={(value: string) =>
+                            setFilterValue((prev) => ({
+                                ...prev,
+                                date_from: value,
+                            }))
+                        }
+                    />
+                    <span className="text-xs text-muted-foreground">s.d.</span>
+                    <InputTextComponent
+                        type="date"
+                        label=""
+                        name="date_to"
+                        value={filterValue.date_to ?? ''}
+                        handleOnChange={(value: string) =>
+                            setFilterValue((prev) => ({
+                                ...prev,
+                                date_to: value,
+                            }))
+                        }
+                    />
+                </div>
+                {hasActiveFilter ? (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 text-xs text-muted-foreground"
+                        onClick={() => setFilterValue({})}
+                    >
+                        <RotateCcwIcon className="mr-1.5 h-3.5 w-3.5" />
+                        Reset Filter
+                    </Button>
+                ) : null}
             </div>
 
             <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">

@@ -14,3 +14,15 @@ Breadcrumbs::for(
     'admin.kas.data',
     fn (BreadcrumbTrail $trail) => $trail->parent('admin.kas.index')->push('Kas Data', route('admin.kas.data'))
 );
+
+// Kas Create
+Breadcrumbs::for(
+    'admin.kas.create',
+    fn (BreadcrumbTrail $trail) => $trail->parent('admin.kas.index')->push('Tambah Transaksi Kas', route('admin.kas.create'))
+);
+
+// Kas Edit
+Breadcrumbs::for(
+    'admin.kas.edit',
+    fn (BreadcrumbTrail $trail, $cashTransaction) => $trail->parent('admin.kas.index')->push('Edit Transaksi Kas', route('admin.kas.edit', $cashTransaction))
+);

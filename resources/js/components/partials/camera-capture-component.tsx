@@ -18,8 +18,10 @@ import { useEffect, useRef, useState } from 'react';
  * (permission kamera browser — desktop maupun mobile), lalu hasil
  * tangkapan dikompres di browser sebelum dikirim ke form.
  *
- * Fallback: kalau getUserMedia tidak tersedia atau permission ditolak,
- * selalu tersedia input file biasa (di HP memanggil kamera via capture).
+ * Kebijakan (desain terkunci): foto WAJIB live dari kamera. Input file
+ * biasa TIDAK pernah tampil di kondisi normal — hanya muncul otomatis
+ * sebagai fallback ber-label eksplisit bila getUserMedia tidak tersedia
+ * atau izin kamera ditolak (mis. HTTP non-localhost / browser lama).
  */
 export const CameraCaptureComponent = ({
     label = 'Foto Bukti Kehadiran',
@@ -36,6 +38,7 @@ export const CameraCaptureComponent = ({
 }) => {
     const [open, setOpen] = useState(false);
     const [streamError, setStreamError] = useState('');
+    const [cameraUnavailable, setCameraUnavailable] = useState(false);
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [capturedFile, setCapturedFile] = useState<File | null>(null);
     const [capturedPreview, setCapturedPreview] = useState('');
@@ -110,8 +113,9 @@ export const CameraCaptureComponent = ({
     const startStream = async () => {
         if (!navigator.mediaDevices?.getUserMedia) {
             setStreamError(
-                'Browser tidak mendukung akses kamera. Silakan gunakan unggah file di bawah.',
+                'Browser tidak mendukung akses kamera (butuh HTTPS atau browser modern).',
             );
+            setCameraUnavailable(true);
 
             return;
         }
@@ -126,9 +130,10 @@ export const CameraCaptureComponent = ({
             setStream(null);
             setStreamError(
                 error?.name === 'NotAllowedError'
-                    ? 'Izin kamera ditolak. Aktifkan izin kamera di browser, atau gunakan unggah file di bawah.'
-                    : 'Kamera tidak dapat diakses. Silakan gunakan unggah file di bawah.',
+                    ? 'Izin kamera ditolak. Aktifkan izin kamera di browser untuk mengambil foto live.'
+                    : 'Kamera tidak dapat diakses (butuh HTTPS atau perangkat dengan kamera).',
             );
+            setCameraUnavailable(true);
         }
     };
 
@@ -161,17 +166,28 @@ export const CameraCaptureComponent = ({
                     />
                 </div>
 
-                <InputFileComponent
-                    name={name}
-                    accept="image/*"
-                    capture="environment"
-                    handleOnChange={async (file: File) => {
-                        const compressed = await compressImage(file);
-                        setCapturedFile(compressed);
-                        setCapturedPreview(URL.createObjectURL(compressed));
-                        handleOnChange(compressed);
-                    }}
-                />
+                {/* Fallback HANYA bila kamera tidak tersedia/izin ditolak.
+                    Tidak pernah tampil di kondisi normal (foto wajib live). */}
+                {cameraUnavailable ? (
+                    <Field>
+                        <FieldLabel className="text-yellow-600">
+                            Fallback (kamera tidak tersedia)
+                        </FieldLabel>
+                        <InputFileComponent
+                            name={name}
+                            accept="image/*"
+                            capture="environment"
+                            handleOnChange={async (file: File) => {
+                                const compressed = await compressImage(file);
+                                setCapturedFile(compressed);
+                                setCapturedPreview(
+                                    URL.createObjectURL(compressed),
+                                );
+                                handleOnChange(compressed);
+                            }}
+                        />
+                    </Field>
+                ) : null}
             </div>
 
             {(errors || helperText) && (

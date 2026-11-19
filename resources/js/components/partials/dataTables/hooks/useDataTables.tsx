@@ -135,6 +135,12 @@ export const DataTableProvider = ({
         fetchData();
     }, [fetchData]);
 
+    // Ganti filter = mulai lagi dari halaman 1 (hasil filter jangan mulai
+    // dari halaman lama yang mungkin kosong).
+    useEffect(() => {
+        setPagination((prev) => (prev.page === 1 ? prev : { ...prev, page: 1 }));
+    }, [filterValue]);
+
     const initialColumns = useMemo(() => {
         const baseStartColumns = [
             {

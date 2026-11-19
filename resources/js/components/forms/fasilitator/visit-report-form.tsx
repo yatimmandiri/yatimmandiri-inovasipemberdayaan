@@ -3,18 +3,30 @@ import { CameraCaptureComponent } from '@/components/partials/camera-capture-com
 import { InputTextComponent } from '@/components/partials/input-component';
 import { SelectComponent } from '@/components/partials/select-component';
 import { TextAreaComponent } from '@/components/partials/textarea-component';
+import adminVisitReports from '@/routes/admin/visit-reports';
 import visitReports from '@/routes/fasilitator/visit-reports';
 import { compressImage } from '@/utils/compressImage';
 import { Fieldset } from '@headlessui/react';
 import { useForm, usePage } from '@inertiajs/react';
 import { SaveIcon, SendIcon } from 'lucide-react';
 
-export const VisitReportForm = ({ dataId }: { dataId?: number }) => {
+// admin=true: form edit oleh admin (route admin, window 3 hari dilepas,
+// tanpa tombol Ajukan — status hanya berubah lewat shortcut review).
+export const VisitReportForm = ({
+    dataId,
+    admin = false,
+}: {
+    dataId?: number;
+    admin?: boolean;
+}) => {
     const { visitReport, program } = usePage<any>().props;
 
+    const api = admin ? adminVisitReports : visitReports;
+
     // Rentang tanggal yang boleh dipilih: 3 hari sebelumnya sampai hari ini
-    // (window sama dengan validasi backend).
-    const minVisitDate = localDateShift(-3);
+    // (window sama dengan validasi backend). Admin (koreksi data) bebas
+    // memilih tanggal lama; larangan masa depan tetap ada.
+    const minVisitDate = admin ? '' : localDateShift(-3);
     const maxVisitDate = localDateToday();
 
     const { data, setData, post, transform, processing, errors }: any = useForm(
@@ -44,11 +56,11 @@ export const VisitReportForm = ({ dataId }: { dataId?: number }) => {
         e.preventDefault();
 
         if (dataId) {
-            post(visitReports.update(dataId).url, {
+            post(api.update(dataId).url, {
                 forceFormData: true,
             });
         } else {
-            post(visitReports.store().url, {
+            post(api.store().url, {
                 forceFormData: true,
             });
         }
@@ -204,13 +216,15 @@ export const VisitReportForm = ({ dataId }: { dataId?: number }) => {
                     isProcessing={processing}
                     onClick={() => setData('submit', '0')}
                 />
-                <ButtonComponent
-                    buttonText="Save & Ajukan"
-                    addonLeft={SendIcon}
-                    buttonType="submit"
-                    isProcessing={processing}
-                    onClick={() => setData('submit', '1')}
-                />
+                {!admin ? (
+                    <ButtonComponent
+                        buttonText="Save & Ajukan"
+                        addonLeft={SendIcon}
+                        buttonType="submit"
+                        isProcessing={processing}
+                        onClick={() => setData('submit', '1')}
+                    />
+                ) : null}
             </div>
         </Fieldset>
     );

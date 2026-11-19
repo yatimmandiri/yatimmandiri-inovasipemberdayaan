@@ -7,6 +7,7 @@ import {
     renderRowHeader,
 } from '@/components/partials/dataTables/utils/dataTable-utils';
 import { TextAreaComponent } from '@/components/partials/textarea-component';
+import { SelectComponent } from '@/components/partials/select-component';
 import {
     Dialog,
     DialogContent,
@@ -23,7 +24,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { CheckIcon, MoreHorizontal, RotateCcwIcon } from 'lucide-react';
+import { CheckIcon, FilterIcon, MoreHorizontal, RotateCcwIcon } from 'lucide-react';
 import visitReports from '@/routes/admin/visit-reports';
 import { renderStatusBadge } from '@/utils/visit-report-status';
 import { formatDate } from '@/utils/formatDate';
@@ -31,13 +32,31 @@ import { router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function ListPage() {
-    const { errors }: any = usePage<any>().props;
+    const { errors, programs, filterBranches }: any = usePage<any>().props;
     const [refreshData, setRefreshData] = useState(false);
-    const [filterValue] = useState<object>({});
+    const [filterValue, setFilterValue] = useState<Record<string, any>>({});
+
+    const hasActiveFilter = Object.values(filterValue).some(Boolean);
 
     // Baris yang sedang diminta revisi (untuk dialog catatan review).
     const [reviserow, setReviserow] = useState<any>(null);
     const [reviewNotes, setReviewNotes] = useState('');
+
+    // Baris yang akan dihapus (konfirmasi lewat modal).
+    const [deleterow, setDeleterow] = useState<any>(null);
+
+    const handleDelete = () => {
+        if (!deleterow) {
+            return;
+        }
+
+        router.delete(visitReports.destroy(deleterow.id).url, {
+            onSuccess: () => {
+                setDeleterow(null);
+                setRefreshData(true);
+            },
+        });
+    };
 
     const handleReview = (id: number, status: string, notes = '') => {
         router.put(
@@ -80,6 +99,21 @@ export default function ListPage() {
                                 }
                             >
                                 Detail
+                            </DropdownMenuItem>
+                            {/* Koreksi data oleh admin; snapshot milik fasil
+                                (group_id/fasilitator_id/status) dipertahankan. */}
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    router.visit(visitReports.edit(data.id).url)
+                                }
+                            >
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={() => setDeleterow(data)}
+                            >
+                                Delete
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -177,6 +211,81 @@ export default function ListPage() {
 
     return (
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            {/* Filter toolbar (server-side via filterValue + whitelist) */}
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-sidebar-border/70 p-3 dark:border-sidebar-border">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                    <FilterIcon className="h-3.5 w-3.5" />
+                    <span>Filter:</span>
+                </div>
+                <div className="w-44">
+                    <SelectComponent
+                        placeholder="Semua Status"
+                        data={[
+                            { value: '', label: 'Semua Status' },
+                            { value: 'draft', label: 'Draft' },
+                            { value: 'submitted', label: 'Submitted' },
+                            { value: 'revised', label: 'Revised' },
+                            { value: 'reviewed', label: 'Reviewed' },
+                        ]}
+                        dataSelected={filterValue.status ?? ''}
+                        handleOnChange={(value: string) =>
+                            setFilterValue((prev) => ({
+                                ...prev,
+                                status: value,
+                            }))
+                        }
+                    />
+                </div>
+                <div className="w-48">
+                    <SelectComponent
+                        placeholder="Semua Program"
+                        data={[
+                            { value: '', label: 'Semua Program' },
+                            ...(programs?.map((item: any) => ({
+                                value: item.id,
+                                label: item.name,
+                            })) ?? []),
+                        ]}
+                        dataSelected={filterValue.program_id ?? ''}
+                        handleOnChange={(value: string) =>
+                            setFilterValue((prev) => ({
+                                ...prev,
+                                program_id: value,
+                            }))
+                        }
+                    />
+                </div>
+                <div className="w-48">
+                    <SelectComponent
+                        placeholder="Semua Cabang"
+                        data={[
+                            { value: '', label: 'Semua Cabang' },
+                            ...(filterBranches?.map((item: any) => ({
+                                value: item.id,
+                                label: item.label || item.name,
+                            })) ?? []),
+                        ]}
+                        dataSelected={filterValue.branch_id ?? ''}
+                        handleOnChange={(value: string) =>
+                            setFilterValue((prev) => ({
+                                ...prev,
+                                branch_id: value,
+                            }))
+                        }
+                    />
+                </div>
+                {hasActiveFilter ? (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 text-xs text-muted-foreground"
+                        onClick={() => setFilterValue({})}
+                    >
+                        <RotateCcwIcon className="mr-1.5 h-3.5 w-3.5" />
+                        Reset Filter
+                    </Button>
+                ) : null}
+            </div>
             <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
                 <DataTableProvider
                     columns={columns}
@@ -234,6 +343,36 @@ export default function ListPage() {
                                 }
                             />
                         </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Konfirmasi hapus laporan (koreksi admin; aksi tercatat di Log Activity). */}
+            <Dialog
+                open={!!deleterow}
+                onOpenChange={(open) => (open ? null : setDeleterow(null))}
+            >
+                <DialogOverlay className="fixed inset-0 bg-black opacity-30" />
+                <DialogContent>
+                    <DialogTitle className="text-xl font-semibold">
+                        Hapus Laporan Monitoring Evaluasi
+                    </DialogTitle>
+                    <DialogDescription>
+                        Hapus laporan &quot;{deleterow?.event_name}&quot; dari
+                        fasilitator ini? Tindakan ini tercatat di Log Activity
+                        dan tidak dapat dibatalkan.
+                    </DialogDescription>
+                    <div className="mt-4 flex justify-end space-x-4">
+                        <ButtonComponent
+                            buttonText="Batal"
+                            buttonType="button"
+                            onClick={() => setDeleterow(null)}
+                        />
+                        <ButtonComponent
+                            buttonText="Delete"
+                            buttonType="button"
+                            onClick={handleDelete}
+                        />
                     </div>
                 </DialogContent>
             </Dialog>

@@ -26,3 +26,9 @@ Breadcrumbs::for(
     'admin.visit-reports.show',
     fn (BreadcrumbTrail $trail, $visitReport) => $trail->parent('admin.visit-reports.index')->push('Monev #'.$visitReport->id, route('admin.visit-reports.show', $visitReport))
 );
+
+// Monev Edit
+Breadcrumbs::for(
+    'admin.visit-reports.edit',
+    fn (BreadcrumbTrail $trail, $visitReport) => $trail->parent('admin.visit-reports.show', $visitReport)->push('Edit', route('admin.visit-reports.edit', $visitReport))
+);

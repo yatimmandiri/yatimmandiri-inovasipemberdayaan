@@ -210,6 +210,13 @@ class CashTransactionController extends Controller
             $orderDirection = 'asc';
         }
 
+        // Whitelist filter dari toolbar (periode). Nilai lain diabaikan.
+        $filterValue = (array) $request->input('filterValue', []);
+        // Filter tanggal hanya dipakai bila format Y-m-d valid (catatan
+        // review ARC-001); nilai sampah diabaikan, bukan error.
+        $dateFrom = $this->validDate($filterValue['date_from'] ?? null);
+        $dateTo = $this->validDate($filterValue['date_to'] ?? null);
+
         // Fasil tanpa kelompok: filter TIDAK dilewati — paksa hasil kosong
         // (group_id 0 tidak ada) supaya tidak melihat kas milik fasil lain.
         $query = CashTransaction::query()
@@ -217,6 +224,9 @@ class CashTransactionController extends Controller
             ->withRunningBalance()
             ->where('group_id', $group->id ?? 0)
             ->search($globalSearch)
+            // Filter periode: kunci whitelist (value tetap parameter binding).
+            ->when($dateFrom, fn ($q, $from) => $q->where('transaction_date', '>=', $from))
+            ->when($dateTo, fn ($q, $to) => $q->where('transaction_date', '<=', $to))
             ->orderBy($orderBy, $orderDirection);
 
         $data = $perPage
@@ -224,6 +234,23 @@ class CashTransactionController extends Controller
             : $query->get();
 
         return response()->json($data);
+    }
+
+    /**
+     * Nilai filter tanggal hanya dipakai bila format Y-m-d valid;
+     * selain itu diabaikan (bukan error) — sesuai catatan review ARC-001.
+     */
+    private function validDate(mixed $value): ?string
+    {
+        if (
+            is_string($value)
+            && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)
+            && strtotime($value) !== false
+        ) {
+            return $value;
+        }
+
+        return null;
     }
 
     /**

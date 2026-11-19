@@ -11,9 +11,11 @@ import visitReports from '@/routes/admin/visit-reports';
 import branches from '@/routes/admin/branches';
 import groups from '@/routes/admin/groups';
 import kas from '@/routes/admin/kas';
+import { dashboard as adminDashboard } from '@/routes/admin';
 import fasilitatorPortal from '@/routes/fasilitator';
 import fasilitatorKas from '@/routes/fasilitator/kas';
 import fasilitatorGroup from '@/routes/fasilitator/group';
+import fasilitatorVisitReports from '@/routes/fasilitator/visit-reports';
 import permissions from '@/routes/admin/core/permissions';
 import districts from '@/routes/admin/core/regions/districts';
 import provinces from '@/routes/admin/core/regions/provinces';
@@ -29,39 +31,34 @@ import {
     CogIcon,
     CpuIcon,
     DatabaseIcon,
+    LayoutDashboardIcon,
     MapIcon,
     WalletIcon,
     UsersIcon,
     Building2Icon,
 } from 'lucide-react';
 
+/**
+ * Satu sumber kebenaran menu untuk SEMUA role (pola omatiq).
+ *
+ * - Item tanpa akses (roles/permission tidak cocok) DIBUANG oleh nav-main —
+ *   menu bukan pengaman: setiap route tetap authorize di server.
+ * - `hrefByRole`: href berbeda per role untuk item yang dipakai admin DAN
+ *   fasilitator (prefix /admin/... vs /fasilitator/...). nav-main memilih
+ *   href sesuai role user, jadi klik item yang tampil tidak akan 403.
+ */
 export const NavigationList = [
     {
-        title: 'Fasilitator',
-        roles: ['Fasilitator'],
+        title: 'Beranda',
         children: [
             {
                 title: 'Dashboard',
-                href: fasilitatorPortal.dashboard().url,
-                icon: ChevronRight,
-            },
-            {
-                title: 'Laporan Monitoring Evaluasi',
-                href: fasilitatorPortal.visitReports.index().url,
-                permission: 'view-visit-report',
-                icon: ClipboardListIcon,
-            },
-            {
-                title: 'Pencatatan Kas',
-                href: fasilitatorKas.index().url,
-                permission: 'view-cash-transaction',
-                icon: WalletIcon,
-            },
-            {
-                title: 'Kelompok Saya',
-                href: fasilitatorGroup.my().url,
-                permission: 'view-group',
-                icon: UsersIcon,
+                hrefByRole: {
+                    Administrators: adminDashboard().url,
+                    Editors: adminDashboard().url,
+                    Fasilitator: fasilitatorPortal.dashboard().url,
+                },
+                icon: LayoutDashboardIcon,
             },
         ],
     },
@@ -215,11 +212,14 @@ export const NavigationList = [
     },
     {
         title: 'Monitoring Evaluasi',
-        roles: ['Administrators', 'Editors'],
         children: [
             {
                 title: 'Monitoring Evaluasi',
-                href: visitReports.index().url,
+                hrefByRole: {
+                    Administrators: visitReports.index().url,
+                    Editors: visitReports.index().url,
+                    Fasilitator: fasilitatorVisitReports.index().url,
+                },
                 permission: 'view-visit-report',
                 icon: ClipboardListIcon,
             },
@@ -227,7 +227,6 @@ export const NavigationList = [
     },
     {
         title: 'Kas & Kelompok',
-        roles: ['Administrators', 'Editors'],
         children: [
             {
                 title: 'Cabang',
@@ -237,13 +236,21 @@ export const NavigationList = [
             },
             {
                 title: 'Kelompok Fasilitator',
-                href: groups.index().url,
+                hrefByRole: {
+                    Administrators: groups.index().url,
+                    Editors: groups.index().url,
+                    Fasilitator: fasilitatorGroup.my().url,
+                },
                 permission: 'view-group',
                 icon: UsersIcon,
             },
             {
                 title: 'Pencatatan Kas',
-                href: kas.index().url,
+                hrefByRole: {
+                    Administrators: kas.index().url,
+                    Editors: kas.index().url,
+                    Fasilitator: fasilitatorKas.index().url,
+                },
                 permission: 'view-cash-transaction',
                 icon: WalletIcon,
             },

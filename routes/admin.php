@@ -107,6 +107,9 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
         Route::put('{visitReport}/review', [VisitReportController::class, 'review'])->name('review');
         Route::get('data', [VisitReportController::class, 'getData'])->name('data');
         Route::get('/', [VisitReportController::class, 'index'])->name('index');
+        Route::get('{visitReport}/edit', [VisitReportController::class, 'edit'])->name('edit');
+        Route::put('{visitReport}', [VisitReportController::class, 'update'])->name('update');
+        Route::delete('{visitReport}', [VisitReportController::class, 'destroy'])->name('destroy');
         Route::get('{visitReport}', [VisitReportController::class, 'show'])->name('show');
     });
 
@@ -124,7 +127,11 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
     // Pencatatan kas (bagian sendiri, bukan Company Profile)
     Route::prefix('kas')->as('kas.')->group(function () {
         Route::get('data', [CashTransactionController::class, 'getData'])->name('data');
+        Route::get('create', [CashTransactionController::class, 'create'])->name('create');
+        Route::post('/', [CashTransactionController::class, 'store'])->name('store');
         Route::get('/', [CashTransactionController::class, 'index'])->name('index');
+        Route::get('{cashTransaction}/edit', [CashTransactionController::class, 'edit'])->name('edit');
+        Route::put('{cashTransaction}', [CashTransactionController::class, 'update'])->name('update');
         Route::delete('{cashTransaction}', [CashTransactionController::class, 'destroy'])->name('destroy');
     });
 

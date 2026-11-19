@@ -9,7 +9,7 @@ import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
 import { Link, usePage } from '@inertiajs/react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 
 export const MainNav = ({ items }: any) => {
@@ -19,7 +19,9 @@ export const MainNav = ({ items }: any) => {
     const roles = auth.user.roles || [];
     const permissions = auth.user.permissions || [];
 
-    const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+    const [manualOpenMenus, setManualOpenMenus] = useState<{
+        [key: string]: boolean;
+    }>({});
 
     const normalizePath = (path: string) =>
         '/' + path.replace(/^\/+|\/+$/g, '');
@@ -27,7 +29,10 @@ export const MainNav = ({ items }: any) => {
     const currentPath = normalizePath(currentUrl);
 
     const getPathname = (href: string) => {
-        if (!href) return '';
+        if (!href) {
+return '';
+}
+
         try {
             return normalizePath(
                 new URL(href, window.location.origin).pathname,
@@ -44,24 +49,44 @@ export const MainNav = ({ items }: any) => {
         requiredRoles.length === 0 ||
         requiredRoles.some((role) => roles.includes(role));
 
+    // hrefByRole: pilih href sesuai role user (item admin vs fasil punya
+    // prefix URL berbeda). Tanpa kecocokan role, item dianggap tanpa href.
+    const resolveHref = (item: any): string | undefined => {
+        if (item.hrefByRole) {
+            const match = roles.find(
+                (role: string) => item.hrefByRole[role],
+            );
+
+            return match ? item.hrefByRole[match] : undefined;
+        }
+
+        return item.href;
+    };
+
     const filterMenuByPermissions = (menus: any[]): any[] => {
         return menus
             .map((item) => {
                 const requiredRoles: string[] = item.roles ?? [];
 
-                if (requiredRoles.length > 0 && !hasRole(requiredRoles))
-                    return null;
-                if (item.permission && !hasPermission(item.permission))
-                    return null;
+                if (requiredRoles.length > 0 && !hasRole(requiredRoles)) {
+return null;
+}
+
+                if (item.permission && !hasPermission(item.permission)) {
+return null;
+}
 
                 const filteredChildren = Array.isArray(item.children)
                     ? filterMenuByPermissions(item.children)
                     : [];
 
-                if (!item.href && filteredChildren.length === 0) return null;
+                if (!resolveHref(item) && filteredChildren.length === 0) {
+return null;
+}
 
                 return {
                     ...item,
+                    href: resolveHref(item),
                     children: filteredChildren,
                 };
             })
@@ -96,10 +121,11 @@ export const MainNav = ({ items }: any) => {
     const isDashboard =
         currentPath === '/admin' || currentPath === '/admin/dashboard';
 
-    useEffect(() => {
+    // Auto-open submenu yang mengandung halaman aktif (derived, bukan
+    // setState di dalam effect) + toggle manual dari user menang di atasnya.
+    const autoOpenMenus = useMemo(() => {
         if (isDashboard) {
-            setOpenMenus({});
-            return;
+            return {};
         }
 
         const newOpenMenus: { [key: string]: boolean } = {};
@@ -127,11 +153,14 @@ export const MainNav = ({ items }: any) => {
         };
 
         traverse(filteredItems);
-        setOpenMenus(newOpenMenus);
-    }, [currentPath, filteredItems]);
+
+        return newOpenMenus;
+    }, [currentPath, filteredItems, isDashboard]);
+
+    const openMenus = { ...autoOpenMenus, ...manualOpenMenus };
 
     const toggleMenu = (key: string) => {
-        setOpenMenus((prev: any) => ({
+        setManualOpenMenus((prev: any) => ({
             ...prev,
             [key]: !prev[key],
         }));

@@ -1,6 +1,7 @@
 import { ButtonComponent } from '@/components/partials/button-component';
 import { DataTableComponent } from '@/components/partials/dataTables';
 import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDataTables';
+import { SelectComponent } from '@/components/partials/select-component';
 import {
     renderRowDate,
     renderRowHeader,
@@ -22,7 +23,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, TrashIcon } from 'lucide-react';
+import { FilterIcon, MoreHorizontal, RotateCcwIcon, TrashIcon } from 'lucide-react';
 import visitReports from '@/routes/fasilitator/visit-reports';
 import { renderStatusBadge } from '@/utils/visit-report-status';
 import { formatDate } from '@/utils/formatDate';
@@ -31,7 +32,9 @@ import { useState } from 'react';
 
 export default function ListPage() {
     const [refreshData, setRefreshData] = useState(false);
-    const [filterValue] = useState<object>({});
+    const [filterValue, setFilterValue] = useState<Record<string, any>>({});
+
+    const hasActiveFilter = Object.values(filterValue).some(Boolean);
 
     // Baris yang akan dihapus (konfirmasi lewat modal).
     const [deleterow, setDeleterow] = useState<any>(null);
@@ -74,6 +77,20 @@ export default function ListPage() {
                             >
                                 Detail
                             </DropdownMenuItem>
+                            {/* Shortcut Edit: hanya status yang masih boleh
+                                diedit menurut policy (draft/revised). Server
+                                tetap penentu — status lain tetap 403. */}
+                            {['draft', 'revised'].includes(data.status) ? (
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        router.visit(
+                                            visitReports.edit(data.id).url,
+                                        )
+                                    }
+                                >
+                                    Edit
+                                </DropdownMenuItem>
+                            ) : null}
                             <DropdownMenuItem
                                 onClick={() => setDeleterow(data)}
                             >
@@ -136,6 +153,43 @@ export default function ListPage() {
 
     return (
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            {/* Filter status (server-side via filterValue + whitelist di getData) */}
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-sidebar-border/70 p-3 dark:border-sidebar-border">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                    <FilterIcon className="h-3.5 w-3.5" />
+                    <span>Filter:</span>
+                </div>
+                <div className="w-44">
+                    <SelectComponent
+                        placeholder="Semua Status"
+                        data={[
+                            { value: '', label: 'Semua Status' },
+                            { value: 'draft', label: 'Draft' },
+                            { value: 'submitted', label: 'Submitted' },
+                            { value: 'revised', label: 'Revised' },
+                            { value: 'reviewed', label: 'Reviewed' },
+                        ]}
+                        dataSelected={filterValue.status ?? ''}
+                        handleOnChange={(value: string) =>
+                            setFilterValue((prev) => ({
+                                ...prev,
+                                status: value,
+                            }))
+                        }
+                    />
+                </div>
+                {hasActiveFilter ? (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 text-xs text-muted-foreground"
+                        onClick={() => setFilterValue({})}
+                    >
+                        <RotateCcwIcon className="mr-1.5 h-3.5 w-3.5" />
+                        Reset Filter
+                    </Button>
+                ) : null}
+            </div>
             <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
                 <DataTableProvider
                     columns={columns}

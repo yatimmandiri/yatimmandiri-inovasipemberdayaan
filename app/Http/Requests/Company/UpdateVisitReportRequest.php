@@ -27,15 +27,18 @@ class UpdateVisitReportRequest extends FormRequest
         // Fasilitator mengedit ulang laporan yang mungkin dibuat lama (mis. diminta
         // revisi setelah beberapa hari). Window 3 hari hanya ditegakkan bila tanggal
         // kunjungan DIUBAH dari nilai aslinya; tanggal asli tetap sah.
+        // Admin/Editor (koreksi data historis) bebas mengubah tanggal lama —
+        // larangan masa depan tetap berlaku untuk semua.
         $report = $this->route('visit_report');
         $originalDate = $report instanceof VisitReport
             ? $report->visit_date
             : null;
         $minDate = now()->subDays(3)->toDateString();
+        $isDataAdmin = $this->user()?->hasAnyRole(['Administrators', 'Editors']) ?? false;
 
         $visitDateRules = ['required', 'date', 'before_or_equal:today'];
 
-        if ($originalDate !== $this->input('visit_date')) {
+        if (! $isDataAdmin && $originalDate !== $this->input('visit_date')) {
             $visitDateRules[] = "after_or_equal:{$minDate}";
         }
 

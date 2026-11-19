@@ -5,6 +5,8 @@ import {
     renderRowDate,
     renderRowHeader,
 } from '@/components/partials/dataTables/utils/dataTable-utils';
+import { InputTextComponent } from '@/components/partials/input-component';
+import { SelectComponent } from '@/components/partials/select-component';
 import {
     Dialog,
     DialogContent,
@@ -24,7 +26,7 @@ import { Button } from '@/components/ui/button';
 import kas from '@/routes/admin/kas';
 import { Head } from '@inertiajs/react';
 import { usePage } from '@inertiajs/react';
-import { MoreHorizontal, TrashIcon } from 'lucide-react';
+import { FilterIcon, MoreHorizontal, RotateCcwIcon, TrashIcon } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -36,10 +38,13 @@ const formatRupiah = (value: any) =>
     }).format(Number(value ?? 0));
 
 export default function ListPage() {
-    const { summary, perGroup }: any = usePage<any>().props;
+    const { summary, perGroup, filterBranches, filterGroups }: any =
+        usePage<any>().props;
 
     const [refreshData, setRefreshData] = useState(false);
-    const [filterValue] = useState<object>({});
+    const [filterValue, setFilterValue] = useState<Record<string, any>>({});
+
+    const hasActiveFilter = Object.values(filterValue).some(Boolean);
 
     // Baris yang akan dihapus (konfirmasi lewat modal).
     const [deleterow, setDeleterow] = useState<any>(null);
@@ -75,6 +80,13 @@ export default function ListPage() {
                         <DropdownMenuContent align="start">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    router.visit(kas.edit(data.id).url)
+                                }
+                            >
+                                Edit
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => setDeleterow(data)}
                             >
@@ -148,6 +160,99 @@ export default function ListPage() {
         <>
             <Head title="Pencatatan Kas" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <div className="flex flex-wrap items-center justify-end gap-4">
+                    <Button
+                        className="inline-flex items-center gap-2"
+                        onClick={() => router.visit(kas.create().url)}
+                    >
+                        Tambah Transaksi Kas
+                    </Button>
+                </div>
+                {/* Filter toolbar (server-side via filterValue + whitelist) */}
+                <div className="flex flex-wrap items-center gap-3 rounded-xl border border-sidebar-border/70 p-3 dark:border-sidebar-border">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                        <FilterIcon className="h-3.5 w-3.5" />
+                        <span>Filter:</span>
+                    </div>
+                    <div className="w-48">
+                        <SelectComponent
+                            placeholder="Semua Cabang"
+                            data={[
+                                { value: '', label: 'Semua Cabang' },
+                                ...(filterBranches?.map((item: any) => ({
+                                    value: item.id,
+                                    label: item.label || item.name,
+                                })) ?? []),
+                            ]}
+                            dataSelected={filterValue.branch_id ?? ''}
+                            handleOnChange={(value: string) =>
+                                setFilterValue((prev) => ({
+                                    ...prev,
+                                    branch_id: value,
+                                }))
+                            }
+                        />
+                    </div>
+                    <div className="w-52">
+                        <SelectComponent
+                            placeholder="Semua Kelompok"
+                            data={[
+                                { value: '', label: 'Semua Kelompok' },
+                                ...(filterGroups?.map((item: any) => ({
+                                    value: item.id,
+                                    label: item.name,
+                                })) ?? []),
+                            ]}
+                            dataSelected={filterValue.group_id ?? ''}
+                            handleOnChange={(value: string) =>
+                                setFilterValue((prev) => ({
+                                    ...prev,
+                                    group_id: value,
+                                }))
+                            }
+                        />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <InputTextComponent
+                            type="date"
+                            label=""
+                            name="date_from"
+                            value={filterValue.date_from ?? ''}
+                            handleOnChange={(value: string) =>
+                                setFilterValue((prev) => ({
+                                    ...prev,
+                                    date_from: value,
+                                }))
+                            }
+                        />
+                        <span className="text-xs text-muted-foreground">
+                            s.d.
+                        </span>
+                        <InputTextComponent
+                            type="date"
+                            label=""
+                            name="date_to"
+                            value={filterValue.date_to ?? ''}
+                            handleOnChange={(value: string) =>
+                                setFilterValue((prev) => ({
+                                    ...prev,
+                                    date_to: value,
+                                }))
+                            }
+                        />
+                    </div>
+                    {hasActiveFilter ? (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 text-xs text-muted-foreground"
+                            onClick={() => setFilterValue({})}
+                        >
+                            <RotateCcwIcon className="mr-1.5 h-3.5 w-3.5" />
+                            Reset Filter
+                        </Button>
+                    ) : null}
+                </div>
                 {/* Ringkasan global */}
                 <div className="rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border">
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

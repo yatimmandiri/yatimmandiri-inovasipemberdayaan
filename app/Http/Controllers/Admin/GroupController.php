@@ -25,6 +25,7 @@ class GroupController extends Controller
 
         return Inertia::render('admin/groups/list', [
             'pageTitle' => 'Kelompok Fasilitator',
+            'filterBranches' => Branch::query()->orderBy('name')->get(['id', 'name', 'label']),
         ]);
     }
 

@@ -28,7 +28,9 @@ class StoreCashTransactionRequest extends FormRequest
     {
         return [
             'transaction_date' => ['required', 'date', 'before_or_equal:today'],
-            'branch_id' => ['required', 'integer', Rule::exists('branches', 'id')],
+            // branch_id SELALU diturunkan server dari kelompok (fasil maupun admin);
+            // input klien tidak dipercaya, jadi rule cukup nullable.
+            'branch_id' => ['nullable', 'integer', Rule::exists('branches', 'id')],
             'group_id' => ['required', 'integer', Rule::exists('groups', 'id')],
             'description' => ['required', 'string', 'min:3', 'max:500'],
             'debit' => ['nullable', 'numeric', 'min:0', 'max:9999999999999.99'],
