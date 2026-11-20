@@ -54,25 +54,31 @@ interface ButtonProps {
 }
 
 export const ButtonComponent = ({
-    buttonType = 'button',
-    buttonText = 'Button',
+    buttonType,
+    type,
+    buttonText,
     variant = 'solid',
     color = 'default',
     className = '',
     isProcessing = false,
+    disabled = false,
     addonLeft,
     addonRight,
+    children,
     ...props
 }: ButtonProps) => {
+    const finalType = buttonType || type || 'button';
+    const isDisabled = Boolean(isProcessing || disabled);
+
     return (
         <Button
-            type={buttonType}
-            disabled={isProcessing}
+            type={finalType}
+            disabled={isDisabled}
             className={cn(className, variants[variant][color])}
             {...props}
         >
             {addonLeft && createElement(addonLeft, { className: 'w-5 h-5' })}
-            <span>{buttonText}</span>
+            {children ? children : <span>{buttonText ?? 'Button'}</span>}
             {addonRight && createElement(addonRight, { className: 'w-5 h-5' })}
             {isProcessing && <Spinner className="animate-spin" />}
         </Button>

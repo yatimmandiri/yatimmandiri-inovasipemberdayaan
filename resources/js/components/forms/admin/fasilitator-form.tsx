@@ -327,13 +327,12 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
             {/* Submit Action */}
             <div className="flex justify-end gap-3 pt-2">
                 <ButtonComponent
-                    type="submit"
-                    disabled={processing}
+                    buttonType="submit"
+                    isProcessing={processing}
+                    addonLeft={SaveIcon}
+                    buttonText="Simpan Fasilitator"
                     className="flex items-center gap-2"
-                >
-                    <SaveIcon className="h-4 w-4" />
-                    Simpan Fasilitator
-                </ButtonComponent>
+                />
             </div>
         </Fieldset>
     );
