@@ -46,9 +46,9 @@ class Beneficiary extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logAll()
+            ->logFillable()
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->useLogName('System');
     }
 
     public function programs(): BelongsToMany

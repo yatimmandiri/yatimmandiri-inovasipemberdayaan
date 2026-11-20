@@ -46,9 +46,9 @@ class Group extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logAll()
+            ->logFillable()
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->useLogName('System');
     }
 
     public function fasilitator(): BelongsTo
