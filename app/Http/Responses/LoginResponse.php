@@ -24,10 +24,6 @@ class LoginResponse implements LoginResponseContract
             if ($user->hasAnyRole(['Administrators', 'Editors'])) {
                 return route('admin.dashboard');
             }
-
-            if ($user->hasRole('Fasilitator')) {
-                return route('fasilitator.dashboard');
-            }
         }
 
         // Role lain (Users/tanpa role) belum punya area khusus — arahkan ke beranda.

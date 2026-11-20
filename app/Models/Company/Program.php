@@ -50,6 +50,16 @@ class Program extends Model
         return $this->hasMany(Gallery::class, 'program_id');
     }
 
+    public function fasilitators(): HasMany
+    {
+        return $this->hasMany(Fasilitator::class, 'program_id');
+    }
+
+    public function beneficiaries(): HasMany
+    {
+        return $this->hasMany(Beneficiary::class, 'program_id');
+    }
+
     public function scopeSearch(Builder $query, ?string $search)
     {
         return $query->when($search, function ($q, $search) {

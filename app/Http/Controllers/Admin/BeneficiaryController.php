@@ -1,0 +1,209 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Concerns\Traits\LogActivity;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Company\StoreBeneficiaryRequest;
+use App\Http\Requests\Company\UpdateBeneficiaryRequest;
+use App\Models\Company\Beneficiary;
+use App\Models\Company\Fasilitator;
+use App\Models\Company\Program;
+use App\Models\Core\Region\Province;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class BeneficiaryController extends Controller
+{
+    use LogActivity;
+
+    /**
+     * Display a listing of beneficiaries.
+     */
+    public function index()
+    {
+        $this->authorize('viewAny', Beneficiary::class);
+
+        return Inertia::render('admin/beneficiaries/list', [
+            'pageTitle' => 'Master Data Penerima Manfaat',
+        ]);
+    }
+
+    /**
+     * Endpoint DataTable.
+     */
+    public function getData(Request $request)
+    {
+        $this->authorize('data-beneficiary', Beneficiary::class);
+
+        $perPage = $request->input('perPage', null);
+        $page = $request->input('page', null);
+        $globalSearch = $request->input('globalSearch', '');
+        $orderBy = $request->input('orderBy', 'id');
+        $orderDirection = strtolower($request->input('orderDirection', 'asc'));
+
+        $allowedSorts = ['id', 'name', 'nik', 'phone', 'status', 'created_at'];
+        if (! in_array($orderBy, $allowedSorts, true)) {
+            $orderBy = 'id';
+        }
+        if (! in_array($orderDirection, ['asc', 'desc'], true)) {
+            $orderDirection = 'asc';
+        }
+
+        $query = Beneficiary::query()
+            ->with(['program:id,name', 'fasilitator:id,name', 'province:id,name', 'regency:id,name'])
+            ->search($globalSearch)
+            ->orderBy($orderBy, $orderDirection);
+
+        $data = $perPage
+            ? $query->paginate((int) $perPage, ['*'], 'page', (int) $page)
+            : $query->get();
+
+        return response()->json($data);
+    }
+
+    /**
+     * Show the form for creating a new beneficiary.
+     */
+    public function create()
+    {
+        $this->authorize('create', Beneficiary::class);
+
+        return Inertia::render('admin/beneficiaries/create', [
+            'pageTitle' => 'Tambah Penerima Manfaat',
+            'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
+        ]);
+    }
+
+    /**
+     * Store a newly created beneficiary.
+     */
+    public function store(StoreBeneficiaryRequest $request)
+    {
+        $this->authorize('create', Beneficiary::class);
+
+        $data = $request->validated();
+        $data['status'] = $request->boolean('status', true);
+
+        $beneficiary = Beneficiary::create($data);
+
+        if ($beneficiary) {
+            $this->logSuccess('create-beneficiary', "Created Beneficiary #{$beneficiary->id} ({$beneficiary->name})", [
+                'beneficiary_id' => $beneficiary->id,
+                'new_data' => $beneficiary->toArray(),
+            ]);
+        } else {
+            $this->logError('create-beneficiary', 'Failed to create Beneficiary', [
+                'new_data' => $data,
+            ]);
+        }
+
+        return redirect()->route('admin.beneficiaries.index')
+            ->with('success', 'Penerima Manfaat Berhasil Ditambahkan');
+    }
+
+    /**
+     * Display the specified beneficiary.
+     */
+    public function show(Beneficiary $beneficiary)
+    {
+        $this->authorize('view', $beneficiary);
+
+        return Inertia::render('admin/beneficiaries/show', [
+            'pageTitle' => 'Detail Penerima Manfaat: '.$beneficiary->name,
+            'beneficiary' => $beneficiary->load([
+                'program:id,name',
+                'fasilitator:id,name,phone',
+                'province:id,name',
+                'regency:id,name',
+                'district:id,name',
+                'village:id,name',
+            ]),
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified beneficiary.
+     */
+    public function edit(Beneficiary $beneficiary)
+    {
+        $this->authorize('update', $beneficiary);
+
+        return Inertia::render('admin/beneficiaries/edit', [
+            'pageTitle' => 'Edit Penerima Manfaat: '.$beneficiary->name,
+            'beneficiary' => $beneficiary,
+            'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
+        ]);
+    }
+
+    /**
+     * Update the specified beneficiary.
+     */
+    public function update(UpdateBeneficiaryRequest $request, Beneficiary $beneficiary)
+    {
+        $this->authorize('update', $beneficiary);
+
+        $data = $request->validated();
+        $data['status'] = $request->boolean('status', true);
+
+        $oldData = $beneficiary->replicate();
+        $beneficiary->update($data);
+
+        if ($beneficiary) {
+            $this->logSuccess('update-beneficiary', "Updated Beneficiary #{$beneficiary->id} ({$beneficiary->name})", [
+                'beneficiary_id' => $beneficiary->id,
+                'old_data' => $oldData->toArray(),
+                'new_data' => $beneficiary->toArray(),
+            ]);
+        } else {
+            $this->logError('update-beneficiary', "Failed to update Beneficiary #{$beneficiary->id}", [
+                'beneficiary_id' => $beneficiary->id,
+                'old_data' => $oldData->toArray(),
+            ]);
+        }
+
+        return redirect()->route('admin.beneficiaries.index')
+            ->with('success', 'Penerima Manfaat Berhasil Diperbarui');
+    }
+
+    /**
+     * Remove the specified beneficiary.
+     */
+    public function destroy(Beneficiary $beneficiary)
+    {
+        $this->authorize('delete', $beneficiary);
+
+        $oldData = $beneficiary->replicate();
+        $beneficiary->delete();
+
+        if ($beneficiary) {
+            $this->logSuccess('delete-beneficiary', "Deleted Beneficiary #{$beneficiary->id} ({$beneficiary->name})", [
+                'beneficiary_id' => $beneficiary->id,
+                'old_data' => $oldData->toArray(),
+            ]);
+        } else {
+            $this->logError('delete-beneficiary', "Failed to delete Beneficiary #{$beneficiary->id}", [
+                'beneficiary_id' => $beneficiary->id,
+            ]);
+        }
+
+        return redirect()->route('admin.beneficiaries.index')
+            ->with('success', 'Penerima Manfaat Berhasil Dihapus');
+    }
+
+    /**
+     * Toggle status aktif penerima manfaat.
+     */
+    public function status(Beneficiary $beneficiary)
+    {
+        $this->authorize('update', $beneficiary);
+
+        $beneficiary->update(['status' => ! $beneficiary->status]);
+
+        return redirect()->back()->with('success', 'Status Penerima Manfaat Berhasil Diperbarui');
+    }
+}
