@@ -13,6 +13,7 @@ Breadcrumbs::for(
 require __DIR__ . '/admin/core-breadcrumbs.php';
 require __DIR__ . '/admin/company-breadcrumbs.php';
 require __DIR__ . '/admin/fasilitator-breadcrumbs.php';
+require __DIR__ . '/admin/group-breadcrumbs.php';
 require __DIR__ . '/admin/beneficiary-breadcrumbs.php';
 
 Breadcrumbs::for('admin.news.index', function (BreadcrumbTrail $trail) {

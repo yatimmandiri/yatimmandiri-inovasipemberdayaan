@@ -19,9 +19,29 @@ export default function ListPage() {
             accessorKey: 'name',
         },
         {
-            header: (info: any) => renderRowHeader(info, 'Program'),
-            accessorKey: 'program.name',
+            header: (info: any) => renderRowHeader(info, 'Kantor / Cabang'),
+            accessorKey: 'kantor_name',
             cell: (info: any) => info.getValue() || '-',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Program Pemberdayaan'),
+            accessorKey: 'programs',
+            cell: (info: any) => {
+                const programs = info.getValue() || [];
+                if (programs.length === 0) return '-';
+                return (
+                    <div className="flex flex-wrap gap-1">
+                        {programs.map((p: any) => (
+                            <span
+                                key={p.id}
+                                className="inline-flex rounded-md bg-muted px-2 py-0.5 text-xs font-medium"
+                            >
+                                {p.name}
+                            </span>
+                        ))}
+                    </div>
+                );
+            },
         },
         {
             header: (info: any) => renderRowHeader(info, 'No. HP / WA'),
@@ -64,7 +84,8 @@ export default function ListPage() {
         return data.map((item: any, i: number) => ({
             No: i + 1,
             Nama: item.name,
-            Program: item.program?.name || '-',
+            Kantor: item.kantor_name || '-',
+            Program: item.programs?.map((p: any) => p.name).join(', ') || '-',
             'No. HP': item.phone || '-',
             Email: item.email || '-',
             'Jml PM': item.beneficiaries_count || 0,

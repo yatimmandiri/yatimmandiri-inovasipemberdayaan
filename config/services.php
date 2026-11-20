@@ -44,4 +44,15 @@ return [
     'news_api' => [
         'posts_url' => env('NEWS_API_POSTS_URL', 'https://yatimmandiri.org/news/wp-json/ymapi/v2/posts'),
     ],
+
+    'sdm' => [
+        'url' => env('APP_SDM_URL', 'https://sdm.yatimmandiri.org'),
+        'base_url' => env('PASSPORT_SDM_BASE_URL', 'https://sdm.yatimmandiri.org'),
+    ],
+
+    'passport' => [
+        'client_id' => env('PASSPORT_CLIENT_ID'),
+        'client_secret' => env('PASSPORT_CLIENT_SECRET'),
+        'base_url' => env('PASSPORT_BASE_URL', 'https://nova.yatimmandiri.org'),
+    ],
 ];

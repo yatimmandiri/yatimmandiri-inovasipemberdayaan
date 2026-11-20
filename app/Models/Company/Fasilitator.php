@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
@@ -19,7 +20,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable([
     'user_id',
-    'program_id',
+    'kantor_id',
+    'kantor_name',
     'name',
     'phone',
     'email',
@@ -54,14 +56,19 @@ class Fasilitator extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function program(): BelongsTo
+    public function programs(): BelongsToMany
     {
-        return $this->belongsTo(Program::class);
+        return $this->belongsToMany(Program::class, 'fasilitator_program')->withTimestamps();
     }
 
     public function beneficiaries(): HasMany
     {
         return $this->hasMany(Beneficiary::class);
+    }
+
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class);
     }
 
     public function province(): BelongsTo
@@ -99,6 +106,7 @@ class Fasilitator extends Model
             $q->where('name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")
                 ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('kantor_name', 'like', "%{$search}%")
                 ->orWhere('address', 'like', "%{$search}%");
         });
     }

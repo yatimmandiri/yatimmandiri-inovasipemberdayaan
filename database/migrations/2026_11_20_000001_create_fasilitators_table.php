@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('fasilitators', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnUpdate()->nullOnDelete();
+            $table->unsignedBigInteger('kantor_id')->nullable();
+            $table->string('kantor_name')->nullable();
             $table->string('name');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
@@ -27,6 +29,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index('user_id');
+            $table->index('kantor_id');
             $table->index('status');
         });
     }

@@ -10,12 +10,16 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
-    const { fasilitator, programs, users, provinces }: any = usePage<any>().props;
+    const { fasilitator, programs, users, provinces, kantors }: any = usePage<any>().props;
+
+    const initialProgramIds: number[] = fasilitator?.programs?.map((p: any) => p.id) || [];
 
     const { data, setData, post, put, processing, errors, transform } = useForm({
         name: fasilitator?.name || '',
+        kantor_id: fasilitator?.kantor_id || '',
+        kantor_name: fasilitator?.kantor_name || '',
         user_id: fasilitator?.user_id || '',
-        program_id: fasilitator?.program_id || '',
+        program_ids: initialProgramIds,
         phone: fasilitator?.phone || '',
         email: fasilitator?.email || '',
         address: fasilitator?.address || '',
@@ -60,10 +64,19 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
         }
     }, [data.district_id]);
 
+    const handleProgramToggle = (id: number) => {
+        const current = data.program_ids || [];
+        if (current.includes(id)) {
+            setData('program_ids', current.filter((item) => item !== id));
+        } else {
+            setData('program_ids', [...current, id]);
+        }
+    };
+
     transform((formData: any) => ({
         ...formData,
+        kantor_id: formData.kantor_id ? Number(formData.kantor_id) : null,
         user_id: formData.user_id ? Number(formData.user_id) : null,
-        program_id: formData.program_id ? Number(formData.program_id) : null,
         status: Boolean(formData.status),
         ...(dataId && { _method: 'put' }),
     }));
@@ -93,14 +106,18 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
                 />
 
                 <SelectComponent
-                    label="Program Pemberdayaan Terkait"
-                    placeholder="Pilih Program"
-                    name="program_id"
-                    value={data.program_id}
-                    handleOnChange={(value: string) => setData('program_id', value)}
-                    color={errors.program_id ? 'danger' : 'default'}
-                    description={errors.program_id}
-                    data={programs?.map((item: any) => ({
+                    label="Kantor / Cabang"
+                    placeholder="Pilih Kantor / Cabang"
+                    name="kantor_id"
+                    value={data.kantor_id}
+                    handleOnChange={(value: string) => {
+                        const selected = kantors?.find((k: any) => String(k.id) === String(value));
+                        setData('kantor_id', value);
+                        setData('kantor_name', selected ? selected.name : '');
+                    }}
+                    color={errors.kantor_id ? 'danger' : 'default'}
+                    description={errors.kantor_id}
+                    data={kantors?.map((item: any) => ({
                         id: item.id,
                         label: item.name,
                     })) || []}
@@ -155,6 +172,37 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
                         { id: '0', label: 'Non-Aktif' },
                     ]}
                 />
+            </div>
+
+            {/* Multi Program Selection */}
+            <div className="space-y-2 rounded-lg border p-4">
+                <label className="text-sm font-semibold text-foreground">
+                    Program Pemberdayaan (Bisa Memilih Lebih dari Satu Program)
+                </label>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
+                    {programs?.map((program: any) => {
+                        const checked = data.program_ids.includes(program.id);
+                        return (
+                            <label
+                                key={program.id}
+                                className={`flex cursor-pointer items-center gap-2 rounded-md border p-2.5 text-sm transition-colors ${
+                                    checked ? 'border-primary bg-primary/10 font-medium text-primary' : 'border-sidebar-border hover:bg-muted'
+                                }`}
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => handleProgramToggle(program.id)}
+                                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                />
+                                <span>{program.name}</span>
+                            </label>
+                        );
+                    })}
+                </div>
+                {errors.program_ids && (
+                    <p className="text-xs text-rose-500">{errors.program_ids}</p>
+                )}
             </div>
 
             <TextareaComponent

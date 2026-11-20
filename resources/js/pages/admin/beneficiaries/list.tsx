@@ -19,18 +19,43 @@ export default function ListPage() {
             accessorKey: 'name',
         },
         {
+            header: (info: any) => renderRowHeader(info, 'Kantor / Cabang'),
+            accessorKey: 'kantor_name',
+            cell: (info: any) => info.getValue() || '-',
+        },
+        {
             header: (info: any) => renderRowHeader(info, 'NIK'),
             accessorKey: 'nik',
             cell: (info: any) => info.getValue() || '-',
         },
         {
-            header: (info: any) => renderRowHeader(info, 'Program'),
-            accessorKey: 'program.name',
-            cell: (info: any) => info.getValue() || '-',
+            header: (info: any) => renderRowHeader(info, 'Program yang Diikuti'),
+            accessorKey: 'programs',
+            cell: (info: any) => {
+                const programs = info.getValue() || [];
+                if (programs.length === 0) return '-';
+                return (
+                    <div className="flex flex-wrap gap-1">
+                        {programs.map((p: any) => (
+                            <span
+                                key={p.id}
+                                className="inline-flex rounded-md bg-muted px-2 py-0.5 text-xs font-medium"
+                            >
+                                {p.name}
+                            </span>
+                        ))}
+                    </div>
+                );
+            },
         },
         {
             header: (info: any) => renderRowHeader(info, 'Fasilitator'),
             accessorKey: 'fasilitator.name',
+            cell: (info: any) => info.getValue() || '-',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Kelompok'),
+            accessorKey: 'group.name',
             cell: (info: any) => info.getValue() || '-',
         },
         {
@@ -61,8 +86,10 @@ export default function ListPage() {
             No: i + 1,
             Nama: item.name,
             NIK: item.nik || '-',
-            Program: item.program?.name || '-',
+            Kantor: item.kantor_name || '-',
+            Program: item.programs?.map((p: any) => p.name).join(', ') || '-',
             Fasilitator: item.fasilitator?.name || '-',
+            Kelompok: item.group?.name || '-',
             'No. HP': item.phone || '-',
             Status: item.status ? 'Aktif' : 'Mandiri/Selesai',
             'Created At': formatDate(item.created_at),

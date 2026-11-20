@@ -14,7 +14,8 @@ class FasilitatorAndBeneficiaryTest extends TestCase
     use DatabaseTransactions;
 
     protected User $admin;
-    protected Program $program;
+    protected Program $programA;
+    protected Program $programB;
 
     protected function setUp(): void
     {
@@ -23,10 +24,17 @@ class FasilitatorAndBeneficiaryTest extends TestCase
         $this->admin = User::query()->where('email', 'scrum@yatimmandiri.org')->first()
             ?? User::factory()->create();
 
-        $this->program = Program::first()
+        $this->programA = Program::first()
             ?? Program::create([
                 'name' => 'Program Pemberdayaan Mandiri',
                 'slug' => 'program-pemberdayaan-mandiri',
+                'status' => true,
+            ]);
+
+        $this->programB = Program::skip(1)->first()
+            ?? Program::create([
+                'name' => 'Program Peternakan Berdaya',
+                'slug' => 'program-peternakan-berdaya',
                 'status' => true,
             ]);
     }
@@ -43,11 +51,11 @@ class FasilitatorAndBeneficiaryTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_admin_can_create_fasilitator(): void
+    public function test_admin_can_create_fasilitator_with_multiple_programs(): void
     {
         $payload = [
             'name' => 'Ahmad Fasilitator',
-            'program_id' => $this->program->id,
+            'program_ids' => [$this->programA->id, $this->programB->id],
             'phone' => '08123456789',
             'email' => 'ahmad@example.com',
             'address' => 'Jl. Pahlawan No. 12',
@@ -59,23 +67,24 @@ class FasilitatorAndBeneficiaryTest extends TestCase
 
         $this->assertDatabaseHas('fasilitators', [
             'name' => 'Ahmad Fasilitator',
-            'program_id' => $this->program->id,
             'email' => 'ahmad@example.com',
         ]);
+
+        $fasilitator = Fasilitator::where('email', 'ahmad@example.com')->first();
+        $this->assertCount(2, $fasilitator->programs);
     }
 
-    public function test_admin_can_create_beneficiary(): void
+    public function test_admin_can_create_beneficiary_with_multiple_programs(): void
     {
         $fasilitator = Fasilitator::create([
             'name' => 'Fasilitator Utama',
-            'program_id' => $this->program->id,
             'status' => true,
         ]);
 
         $payload = [
             'name' => 'Budi Santoso',
             'nik' => '3512345678900001',
-            'program_id' => $this->program->id,
+            'program_ids' => [$this->programA->id, $this->programB->id],
             'fasilitator_id' => $fasilitator->id,
             'phone' => '08987654321',
             'address' => 'Desa Binaan Mandiri',
@@ -90,7 +99,9 @@ class FasilitatorAndBeneficiaryTest extends TestCase
             'name' => 'Budi Santoso',
             'nik' => '3512345678900001',
             'fasilitator_id' => $fasilitator->id,
-            'program_id' => $this->program->id,
         ]);
+
+        $beneficiary = Beneficiary::where('nik', '3512345678900001')->first();
+        $this->assertCount(2, $beneficiary->programs);
     }
 }

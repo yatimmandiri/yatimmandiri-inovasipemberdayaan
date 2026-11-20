@@ -8,8 +8,10 @@ use App\Http\Requests\Company\StoreBeneficiaryRequest;
 use App\Http\Requests\Company\UpdateBeneficiaryRequest;
 use App\Models\Company\Beneficiary;
 use App\Models\Company\Fasilitator;
+use App\Models\Company\Group;
 use App\Models\Company\Program;
 use App\Models\Core\Region\Province;
+use App\Services\KantorService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -42,7 +44,7 @@ class BeneficiaryController extends Controller
         $orderBy = $request->input('orderBy', 'id');
         $orderDirection = strtolower($request->input('orderDirection', 'asc'));
 
-        $allowedSorts = ['id', 'name', 'nik', 'phone', 'status', 'created_at'];
+        $allowedSorts = ['id', 'name', 'nik', 'kantor_name', 'phone', 'status', 'created_at'];
         if (! in_array($orderBy, $allowedSorts, true)) {
             $orderBy = 'id';
         }
@@ -51,7 +53,7 @@ class BeneficiaryController extends Controller
         }
 
         $query = Beneficiary::query()
-            ->with(['program:id,name', 'fasilitator:id,name', 'province:id,name', 'regency:id,name'])
+            ->with(['programs:id,name', 'fasilitator:id,name', 'group:id,name', 'province:id,name', 'regency:id,name'])
             ->search($globalSearch)
             ->orderBy($orderBy, $orderDirection);
 
@@ -73,7 +75,9 @@ class BeneficiaryController extends Controller
             'pageTitle' => 'Tambah Penerima Manfaat',
             'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
             'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'groups' => Group::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
             'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
@@ -85,13 +89,18 @@ class BeneficiaryController extends Controller
         $this->authorize('create', Beneficiary::class);
 
         $data = $request->validated();
+        $programIds = $data['program_ids'] ?? [];
+        unset($data['program_ids']);
         $data['status'] = $request->boolean('status', true);
 
         $beneficiary = Beneficiary::create($data);
 
         if ($beneficiary) {
+            $beneficiary->programs()->sync($programIds);
+
             $this->logSuccess('create-beneficiary', "Created Beneficiary #{$beneficiary->id} ({$beneficiary->name})", [
                 'beneficiary_id' => $beneficiary->id,
+                'programs' => $programIds,
                 'new_data' => $beneficiary->toArray(),
             ]);
         } else {
@@ -114,8 +123,9 @@ class BeneficiaryController extends Controller
         return Inertia::render('admin/beneficiaries/show', [
             'pageTitle' => 'Detail Penerima Manfaat: '.$beneficiary->name,
             'beneficiary' => $beneficiary->load([
-                'program:id,name',
+                'programs:id,name',
                 'fasilitator:id,name,phone',
+                'group:id,name',
                 'province:id,name',
                 'regency:id,name',
                 'district:id,name',
@@ -133,10 +143,12 @@ class BeneficiaryController extends Controller
 
         return Inertia::render('admin/beneficiaries/edit', [
             'pageTitle' => 'Edit Penerima Manfaat: '.$beneficiary->name,
-            'beneficiary' => $beneficiary,
+            'beneficiary' => $beneficiary->load('programs:id,name'),
             'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
             'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'groups' => Group::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
             'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
@@ -148,14 +160,19 @@ class BeneficiaryController extends Controller
         $this->authorize('update', $beneficiary);
 
         $data = $request->validated();
+        $programIds = $data['program_ids'] ?? [];
+        unset($data['program_ids']);
         $data['status'] = $request->boolean('status', true);
 
         $oldData = $beneficiary->replicate();
         $beneficiary->update($data);
 
         if ($beneficiary) {
+            $beneficiary->programs()->sync($programIds);
+
             $this->logSuccess('update-beneficiary', "Updated Beneficiary #{$beneficiary->id} ({$beneficiary->name})", [
                 'beneficiary_id' => $beneficiary->id,
+                'programs' => $programIds,
                 'old_data' => $oldData->toArray(),
                 'new_data' => $beneficiary->toArray(),
             ]);

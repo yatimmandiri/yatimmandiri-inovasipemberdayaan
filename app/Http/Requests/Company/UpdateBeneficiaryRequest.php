@@ -16,8 +16,12 @@ class UpdateBeneficiaryRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'nik' => ['nullable', 'string', 'max:30'],
-            'program_id' => ['nullable', 'integer', 'exists:programs,id'],
+            'kantor_id' => ['nullable', 'integer'],
+            'kantor_name' => ['nullable', 'string', 'max:255'],
+            'program_ids' => ['nullable', 'array'],
+            'program_ids.*' => ['integer', 'exists:programs,id'],
             'fasilitator_id' => ['nullable', 'integer', 'exists:fasilitators,id'],
+            'group_id' => ['nullable', 'integer', 'exists:groups,id'],
             'phone' => ['nullable', 'string', 'max:30'],
             'address' => ['nullable', 'string'],
             'province_id' => ['nullable', 'string', 'max:2'],

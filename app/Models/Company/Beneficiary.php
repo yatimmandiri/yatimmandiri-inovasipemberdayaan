@@ -11,13 +11,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 #[Fillable([
-    'program_id',
     'fasilitator_id',
+    'group_id',
+    'kantor_id',
+    'kantor_name',
     'name',
     'nik',
     'phone',
@@ -48,14 +51,19 @@ class Beneficiary extends Model
             ->dontSubmitEmptyLogs();
     }
 
-    public function program(): BelongsTo
+    public function programs(): BelongsToMany
     {
-        return $this->belongsTo(Program::class);
+        return $this->belongsToMany(Program::class, 'beneficiary_program')->withTimestamps();
     }
 
     public function fasilitator(): BelongsTo
     {
         return $this->belongsTo(Fasilitator::class);
+    }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
     }
 
     public function province(): BelongsTo
@@ -93,6 +101,7 @@ class Beneficiary extends Model
             $q->where('name', 'like', "%{$search}%")
                 ->orWhere('nik', 'like', "%{$search}%")
                 ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('kantor_name', 'like', "%{$search}%")
                 ->orWhere('address', 'like', "%{$search}%");
         });
     }

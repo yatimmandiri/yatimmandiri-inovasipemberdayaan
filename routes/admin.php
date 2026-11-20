@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\Core\RoleController;
 use App\Http\Controllers\Admin\Core\UserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FasilitatorController;
+use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\Settings\LogActivityController;
 use App\Http\Controllers\Admin\Settings\SiteSettingsController;
@@ -104,6 +105,10 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
     Route::put('fasilitators/{fasilitator}/status', [FasilitatorController::class, 'status'])->name('fasilitators.status');
     Route::get('fasilitators/data', [FasilitatorController::class, 'getData'])->name('fasilitators.data');
     Route::resource('fasilitators', FasilitatorController::class);
+
+    Route::put('groups/{group}/status', [GroupController::class, 'status'])->name('groups.status');
+    Route::get('groups/data', [GroupController::class, 'getData'])->name('groups.data');
+    Route::resource('groups', GroupController::class);
 
     Route::put('beneficiaries/{beneficiary}/status', [BeneficiaryController::class, 'status'])->name('beneficiaries.status');
     Route::get('beneficiaries/data', [BeneficiaryController::class, 'getData'])->name('beneficiaries.data');

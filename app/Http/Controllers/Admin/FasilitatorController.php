@@ -10,6 +10,7 @@ use App\Models\Company\Fasilitator;
 use App\Models\Company\Program;
 use App\Models\Core\Region\Province;
 use App\Models\Core\User;
+use App\Services\KantorService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -42,7 +43,7 @@ class FasilitatorController extends Controller
         $orderBy = $request->input('orderBy', 'id');
         $orderDirection = strtolower($request->input('orderDirection', 'asc'));
 
-        $allowedSorts = ['id', 'name', 'email', 'phone', 'status', 'created_at'];
+        $allowedSorts = ['id', 'name', 'kantor_name', 'email', 'phone', 'status', 'created_at'];
         if (! in_array($orderBy, $allowedSorts, true)) {
             $orderBy = 'id';
         }
@@ -51,7 +52,7 @@ class FasilitatorController extends Controller
         }
 
         $query = Fasilitator::query()
-            ->with(['program:id,name', 'user:id,name,email', 'province:id,name', 'regency:id,name'])
+            ->with(['programs:id,name', 'user:id,name,email', 'province:id,name', 'regency:id,name'])
             ->withCount('beneficiaries')
             ->search($globalSearch)
             ->orderBy($orderBy, $orderDirection);
@@ -75,6 +76,7 @@ class FasilitatorController extends Controller
             'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
             'users' => User::query()->select(['id', 'name', 'email'])->orderBy('name')->get(),
             'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
@@ -86,13 +88,18 @@ class FasilitatorController extends Controller
         $this->authorize('create', Fasilitator::class);
 
         $data = $request->validated();
+        $programIds = $data['program_ids'] ?? [];
+        unset($data['program_ids']);
         $data['status'] = $request->boolean('status', true);
 
         $fasilitator = Fasilitator::create($data);
 
         if ($fasilitator) {
+            $fasilitator->programs()->sync($programIds);
+
             $this->logSuccess('create-fasilitator', "Created Fasilitator #{$fasilitator->id} ({$fasilitator->name})", [
                 'fasilitator_id' => $fasilitator->id,
+                'programs' => $programIds,
                 'new_data' => $fasilitator->toArray(),
             ]);
         } else {
@@ -115,13 +122,14 @@ class FasilitatorController extends Controller
         return Inertia::render('admin/fasilitators/show', [
             'pageTitle' => 'Detail Fasilitator: '.$fasilitator->name,
             'fasilitator' => $fasilitator->load([
-                'program:id,name',
+                'programs:id,name',
                 'user:id,name,email',
                 'province:id,name',
                 'regency:id,name',
                 'district:id,name',
                 'village:id,name',
-                'beneficiaries' => fn ($q) => $q->with('program:id,name')->latest(),
+                'groups:id,name,leader_name,phone',
+                'beneficiaries' => fn ($q) => $q->with('programs:id,name')->latest(),
             ]),
         ]);
     }
@@ -135,10 +143,11 @@ class FasilitatorController extends Controller
 
         return Inertia::render('admin/fasilitators/edit', [
             'pageTitle' => 'Edit Fasilitator: '.$fasilitator->name,
-            'fasilitator' => $fasilitator,
+            'fasilitator' => $fasilitator->load('programs:id,name'),
             'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
             'users' => User::query()->select(['id', 'name', 'email'])->orderBy('name')->get(),
             'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
@@ -150,14 +159,19 @@ class FasilitatorController extends Controller
         $this->authorize('update', $fasilitator);
 
         $data = $request->validated();
+        $programIds = $data['program_ids'] ?? [];
+        unset($data['program_ids']);
         $data['status'] = $request->boolean('status', true);
 
         $oldData = $fasilitator->replicate();
         $fasilitator->update($data);
 
         if ($fasilitator) {
+            $fasilitator->programs()->sync($programIds);
+
             $this->logSuccess('update-fasilitator', "Updated Fasilitator #{$fasilitator->id} ({$fasilitator->name})", [
                 'fasilitator_id' => $fasilitator->id,
+                'programs' => $programIds,
                 'old_data' => $oldData->toArray(),
                 'new_data' => $fasilitator->toArray(),
             ]);

@@ -17,6 +17,7 @@ import users from '@/routes/admin/core/users';
 import activities from '@/routes/admin/logs/activities';
 import site from '@/routes/admin/settings/site';
 import fasilitators from '@/routes/admin/fasilitators';
+import groups from '@/routes/admin/groups';
 import beneficiaries from '@/routes/admin/beneficiaries';
 import {
     ChevronRight,
@@ -25,6 +26,7 @@ import {
     DatabaseIcon,
     MapIcon,
     UsersIcon,
+    UsersRoundIcon,
     HeartHandshakeIcon,
 } from 'lucide-react';
 
@@ -186,6 +188,12 @@ export const NavigationList = [
                 href: fasilitators.index().url,
                 permission: 'view-fasilitator',
                 icon: UsersIcon,
+            },
+            {
+                title: 'Kelompok Binaan',
+                href: groups.index().url,
+                permission: 'view-group',
+                icon: UsersRoundIcon,
             },
             {
                 title: 'Penerima Manfaat',

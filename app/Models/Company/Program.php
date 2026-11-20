@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -50,14 +51,14 @@ class Program extends Model
         return $this->hasMany(Gallery::class, 'program_id');
     }
 
-    public function fasilitators(): HasMany
+    public function fasilitators(): BelongsToMany
     {
-        return $this->hasMany(Fasilitator::class, 'program_id');
+        return $this->belongsToMany(Fasilitator::class, 'fasilitator_program')->withTimestamps();
     }
 
-    public function beneficiaries(): HasMany
+    public function beneficiaries(): BelongsToMany
     {
-        return $this->hasMany(Beneficiary::class, 'program_id');
+        return $this->belongsToMany(Beneficiary::class, 'beneficiary_program')->withTimestamps();
     }
 
     public function scopeSearch(Builder $query, ?string $search)

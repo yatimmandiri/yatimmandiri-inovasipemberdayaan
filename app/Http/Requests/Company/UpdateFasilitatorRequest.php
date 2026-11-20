@@ -15,8 +15,11 @@ class UpdateFasilitatorRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'kantor_id' => ['nullable', 'integer'],
+            'kantor_name' => ['nullable', 'string', 'max:255'],
             'user_id' => ['nullable', 'integer', 'exists:users,id'],
-            'program_id' => ['nullable', 'integer', 'exists:programs,id'],
+            'program_ids' => ['nullable', 'array'],
+            'program_ids.*' => ['integer', 'exists:programs,id'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'address' => ['nullable', 'string'],

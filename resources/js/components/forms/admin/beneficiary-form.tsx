@@ -10,13 +10,18 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
-    const { beneficiary, programs, fasilitators, provinces }: any = usePage<any>().props;
+    const { beneficiary, programs, fasilitators, groups: groupList, provinces, kantors }: any = usePage<any>().props;
+
+    const initialProgramIds: number[] = beneficiary?.programs?.map((p: any) => p.id) || [];
 
     const { data, setData, post, put, processing, errors, transform } = useForm({
         name: beneficiary?.name || '',
         nik: beneficiary?.nik || '',
-        program_id: beneficiary?.program_id || '',
+        kantor_id: beneficiary?.kantor_id || '',
+        kantor_name: beneficiary?.kantor_name || '',
+        program_ids: initialProgramIds,
         fasilitator_id: beneficiary?.fasilitator_id || '',
+        group_id: beneficiary?.group_id || '',
         phone: beneficiary?.phone || '',
         address: beneficiary?.address || '',
         province_id: beneficiary?.province_id || '',
@@ -61,10 +66,20 @@ export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
         }
     }, [data.district_id]);
 
+    const handleProgramToggle = (id: number) => {
+        const current = data.program_ids || [];
+        if (current.includes(id)) {
+            setData('program_ids', current.filter((item) => item !== id));
+        } else {
+            setData('program_ids', [...current, id]);
+        }
+    };
+
     transform((formData: any) => ({
         ...formData,
-        program_id: formData.program_id ? Number(formData.program_id) : null,
+        kantor_id: formData.kantor_id ? Number(formData.kantor_id) : null,
         fasilitator_id: formData.fasilitator_id ? Number(formData.fasilitator_id) : null,
+        group_id: formData.group_id ? Number(formData.group_id) : null,
         status: Boolean(formData.status),
         ...(dataId && { _method: 'put' }),
     }));
@@ -105,14 +120,18 @@ export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
                 />
 
                 <SelectComponent
-                    label="Program Pemberdayaan"
-                    placeholder="Pilih Program"
-                    name="program_id"
-                    value={data.program_id}
-                    handleOnChange={(value: string) => setData('program_id', value)}
-                    color={errors.program_id ? 'danger' : 'default'}
-                    description={errors.program_id}
-                    data={programs?.map((item: any) => ({
+                    label="Kantor / Cabang"
+                    placeholder="Pilih Kantor / Cabang"
+                    name="kantor_id"
+                    value={data.kantor_id}
+                    handleOnChange={(value: string) => {
+                        const selected = kantors?.find((k: any) => String(k.id) === String(value));
+                        setData('kantor_id', value);
+                        setData('kantor_name', selected ? selected.name : '');
+                    }}
+                    color={errors.kantor_id ? 'danger' : 'default'}
+                    description={errors.kantor_id}
+                    data={kantors?.map((item: any) => ({
                         id: item.id,
                         label: item.name,
                     })) || []}
@@ -127,6 +146,20 @@ export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
                     color={errors.fasilitator_id ? 'danger' : 'default'}
                     description={errors.fasilitator_id}
                     data={fasilitators?.map((item: any) => ({
+                        id: item.id,
+                        label: item.name,
+                    })) || []}
+                />
+
+                <SelectComponent
+                    label="Kelompok Binaan (Opsional)"
+                    placeholder="Pilih Kelompok"
+                    name="group_id"
+                    value={data.group_id}
+                    handleOnChange={(value: string) => setData('group_id', value)}
+                    color={errors.group_id ? 'danger' : 'default'}
+                    description={errors.group_id}
+                    data={groupList?.map((item: any) => ({
                         id: item.id,
                         label: item.name,
                     })) || []}
@@ -156,6 +189,37 @@ export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
                         { id: '0', label: 'Mandiri / Selesai' },
                     ]}
                 />
+            </div>
+
+            {/* Multi Program Selection */}
+            <div className="space-y-2 rounded-lg border p-4">
+                <label className="text-sm font-semibold text-foreground">
+                    Program yang Diikuti (Bisa Memilih Lebih dari Satu Program)
+                </label>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
+                    {programs?.map((program: any) => {
+                        const checked = data.program_ids.includes(program.id);
+                        return (
+                            <label
+                                key={program.id}
+                                className={`flex cursor-pointer items-center gap-2 rounded-md border p-2.5 text-sm transition-colors ${
+                                    checked ? 'border-primary bg-primary/10 font-medium text-primary' : 'border-sidebar-border hover:bg-muted'
+                                }`}
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => handleProgramToggle(program.id)}
+                                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                />
+                                <span>{program.name}</span>
+                            </label>
+                        );
+                    })}
+                </div>
+                {errors.program_ids && (
+                    <p className="text-xs text-rose-500">{errors.program_ids}</p>
+                )}
             </div>
 
             <TextareaComponent
