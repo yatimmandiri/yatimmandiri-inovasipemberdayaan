@@ -3,6 +3,9 @@ import { InputTextComponent } from '@/components/partials/input-component';
 import { SelectComponent } from '@/components/partials/select-component';
 import { TextAreaComponent } from '@/components/partials/textarea-component';
 import fasilitators from '@/routes/admin/fasilitators';
+import districtsRoute from '@/routes/admin/core/regions/districts';
+import regenciesRoute from '@/routes/admin/core/regions/regencies';
+import villagesRoute from '@/routes/admin/core/regions/villages';
 import { Fieldset } from '@headlessui/react';
 import { useForm, usePage } from '@inertiajs/react';
 import { BookOpenIcon, MapPinIcon, SaveIcon, UserIcon } from 'lucide-react';
@@ -34,9 +37,21 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
 
     useEffect(() => {
         if (data.province_id) {
-            axios.get(`/api/regions/regencies?province_id=${data.province_id}`).then((res) => {
-                setRegencies(res.data || []);
-            }).catch(() => {});
+            axios
+                .get(regenciesRoute.data().url, {
+                    params: {
+                        filterValue: {
+                            province_id: data.province_id,
+                        },
+                    },
+                })
+                .then((res) => {
+                    const rows = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+                    setRegencies(rows);
+                })
+                .catch(() => {
+                    setRegencies([]);
+                });
         } else {
             setRegencies([]);
         }
@@ -44,9 +59,21 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
 
     useEffect(() => {
         if (data.regency_id) {
-            axios.get(`/api/regions/districts?regency_id=${data.regency_id}`).then((res) => {
-                setDistricts(res.data || []);
-            }).catch(() => {});
+            axios
+                .get(districtsRoute.data().url, {
+                    params: {
+                        filterValue: {
+                            regency_id: data.regency_id,
+                        },
+                    },
+                })
+                .then((res) => {
+                    const rows = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+                    setDistricts(rows);
+                })
+                .catch(() => {
+                    setDistricts([]);
+                });
         } else {
             setDistricts([]);
         }
@@ -54,9 +81,21 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
 
     useEffect(() => {
         if (data.district_id) {
-            axios.get(`/api/regions/villages?district_id=${data.district_id}`).then((res) => {
-                setVillages(res.data || []);
-            }).catch(() => {});
+            axios
+                .get(villagesRoute.data().url, {
+                    params: {
+                        filterValue: {
+                            district_id: data.district_id,
+                        },
+                    },
+                })
+                .then((res) => {
+                    const rows = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+                    setVillages(rows);
+                })
+                .catch(() => {
+                    setVillages([]);
+                });
         } else {
             setVillages([]);
         }
