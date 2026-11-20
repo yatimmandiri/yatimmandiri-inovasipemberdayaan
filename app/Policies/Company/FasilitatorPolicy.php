@@ -32,6 +32,11 @@ class FasilitatorPolicy
         return $user->can('delete-fasilitator');
     }
 
+    public function createUser(User $user, Fasilitator $fasilitator): bool
+    {
+        return $user->can('update-fasilitator');
+    }
+
     public function getData(User $user): bool
     {
         return $user->can('data-fasilitator');

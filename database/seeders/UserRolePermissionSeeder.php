@@ -26,6 +26,7 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'Administrators', 'guard_name' => 'web'],
             ['name' => 'Editors', 'guard_name' => 'web'],
             ['name' => 'Users', 'guard_name' => 'web'],
+            ['name' => 'Fasilitator', 'guard_name' => 'web'],
         ])->each(fn ($role) => Role::firstOrCreate($role));
 
         collect([

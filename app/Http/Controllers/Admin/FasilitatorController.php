@@ -9,9 +9,14 @@ use App\Http\Requests\Company\UpdateFasilitatorRequest;
 use App\Models\Company\Fasilitator;
 use App\Models\Company\Program;
 use App\Models\Core\Region\Province;
+use App\Models\Core\Role;
 use App\Models\Core\User;
 use App\Services\KantorService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
 class FasilitatorController extends Controller
@@ -221,5 +226,59 @@ class FasilitatorController extends Controller
         $fasilitator->update(['status' => ! $fasilitator->status]);
 
         return redirect()->back()->with('success', 'Status Fasilitator Berhasil Diperbarui');
+    }
+
+    /**
+     * Buat akun user login untuk fasilitator.
+     */
+    public function createUser(Request $request, Fasilitator $fasilitator)
+    {
+        $this->authorize('createUser', $fasilitator);
+
+        if ($fasilitator->user_id) {
+            return redirect()->back()->with('error', 'Fasilitator ini sudah memiliki akun login.');
+        }
+
+        $validated = $request->validate([
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email'),
+            ],
+            'password' => [
+                'required',
+                'string',
+                Password::defaults(),
+                'confirmed',
+            ],
+        ]);
+
+        DB::transaction(function () use ($fasilitator, $validated) {
+            $user = User::create([
+                'name' => $fasilitator->name,
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'email_verified_at' => now(),
+            ]);
+
+            // Pastikan role Fasilitator ada
+            Role::firstOrCreate(['name' => 'Fasilitator', 'guard_name' => 'web']);
+            $user->assignRole('Fasilitator');
+
+            $fasilitator->update([
+                'user_id' => $user->id,
+                'email' => $validated['email'],
+            ]);
+
+            $this->logSuccess('create-user-fasilitator', "Created user account for Fasilitator #{$fasilitator->id} ({$user->email})", [
+                'fasilitator_id' => $fasilitator->id,
+                'user_id' => $user->id,
+                'email' => $user->email,
+            ]);
+        });
+
+        return redirect()->back()->with('success', 'Akun user untuk fasilitator berhasil dibuat.');
     }
 }

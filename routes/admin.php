@@ -102,6 +102,7 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
         Route::resource('galleries', GalleryController::class);
     });
 
+    Route::post('fasilitators/{fasilitator}/create-user', [FasilitatorController::class, 'createUser'])->name('fasilitators.create-user');
     Route::put('fasilitators/{fasilitator}/status', [FasilitatorController::class, 'status'])->name('fasilitators.status');
     Route::get('fasilitators/data', [FasilitatorController::class, 'getData'])->name('fasilitators.data');
     Route::resource('fasilitators', FasilitatorController::class);
