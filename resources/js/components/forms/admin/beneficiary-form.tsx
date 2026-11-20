@@ -222,7 +222,7 @@ export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
                 )}
             </div>
 
-            <TextareaComponent
+            <TextAreaComponent
                 label="Alamat Lengkap"
                 placeholder="Alamat domisili penerima manfaat"
                 name="address"
@@ -302,7 +302,7 @@ export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
                 />
             </div>
 
-            <TextareaComponent
+            <TextAreaComponent
                 label="Catatan Perkembangan / Keterangan"
                 placeholder="Catatan tambahan mengenai kondisi penerima manfaat"
                 name="notes"

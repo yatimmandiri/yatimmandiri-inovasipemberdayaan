@@ -205,7 +205,7 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
                 )}
             </div>
 
-            <TextareaComponent
+            <TextAreaComponent
                 label="Alamat Lengkap"
                 placeholder="Alamat domisili / wilayah penugasan"
                 name="address"

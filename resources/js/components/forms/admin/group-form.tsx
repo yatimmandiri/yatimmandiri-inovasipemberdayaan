@@ -179,7 +179,7 @@ export const GroupForm = ({ dataId }: { dataId?: number }) => {
                 />
             </div>
 
-            <TextareaComponent
+            <TextAreaComponent
                 label="Alamat Sekretariat / Lokasi Kelompok"
                 placeholder="Alamat lengkap kelompok"
                 name="address"
@@ -259,7 +259,7 @@ export const GroupForm = ({ dataId }: { dataId?: number }) => {
                 />
             </div>
 
-            <TextareaComponent
+            <TextAreaComponent
                 label="Deskripsi / Catatan Kelompok"
                 placeholder="Profil singkat atau keterangan kegiatan kelompok"
                 name="description"
