@@ -28,7 +28,8 @@ class AccessTokenService
             return $token;
         }
 
-        $token = Cache::get('perbankan_client_access_token');
+        $token = Cache::get('client_access_token');
+
         if (! empty($token)) {
             return $token;
         }
@@ -50,7 +51,7 @@ class AccessTokenService
             ]);
 
             if ($response->successful() && $token = $response->json('access_token')) {
-                Cache::put('perbankan_client_access_token', $token, now()->addMinutes(50));
+                Cache::put('client_access_token', $token, now()->addMinutes(50));
 
                 return $token;
             }
