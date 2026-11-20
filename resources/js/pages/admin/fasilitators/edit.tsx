@@ -127,16 +127,8 @@ export default function EditPage() {
                                     </div>
                                     <h4 className="font-semibold text-foreground">Belum Ada Kelompok</h4>
                                     <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                                        Fasilitator ini belum memiliki kelompok binaan. Klik tombol di bawah untuk menambahkan.
+                                        Fasilitator ini belum memiliki kelompok binaan. Klik tombol "Tambah Kelompok" di atas untuk menambahkan.
                                     </p>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => setGroupModalOpen(true)}
-                                        className="mt-4 flex items-center gap-1.5"
-                                    >
-                                        <PlusIcon className="h-4 w-4" />
-                                        Tambah Kelompok Sekarang
-                                    </Button>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -218,16 +210,8 @@ export default function EditPage() {
                                     </div>
                                     <h4 className="font-semibold text-foreground">Belum Ada Penerima Manfaat</h4>
                                     <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                                        Fasilitator ini belum memiliki penerima manfaat yang didampingi. Klik tombol di bawah untuk menambahkan.
+                                        Fasilitator ini belum memiliki penerima manfaat yang didampingi. Klik tombol "Tambah PM" di atas untuk menambahkan.
                                     </p>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => setBeneficiaryModalOpen(true)}
-                                        className="mt-4 flex items-center gap-1.5"
-                                    >
-                                        <PlusIcon className="h-4 w-4" />
-                                        Tambah Penerima Manfaat Sekarang
-                                    </Button>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
