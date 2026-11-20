@@ -28,7 +28,6 @@ export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
         regency_id: beneficiary?.regency_id || '',
         district_id: beneficiary?.district_id || '',
         village_id: beneficiary?.village_id || '',
-        status: beneficiary?.status ?? true,
         notes: beneficiary?.notes || '',
     });
 
@@ -80,7 +79,6 @@ export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
         kantor_id: formData.kantor_id ? Number(formData.kantor_id) : null,
         fasilitator_id: formData.fasilitator_id ? Number(formData.fasilitator_id) : null,
         group_id: formData.group_id ? Number(formData.group_id) : null,
-        status: Boolean(formData.status),
         ...(dataId && { _method: 'put' }),
     }));
 
@@ -176,19 +174,6 @@ export const BeneficiaryForm = ({ dataId }: { dataId?: number }) => {
                     description={errors.phone}
                 />
 
-                <SelectComponent
-                    label="Status Pemberdayaan"
-                    placeholder="Pilih Status"
-                    name="status"
-                    value={data.status ? '1' : '0'}
-                    handleOnChange={(value: string) => setData('status', value === '1')}
-                    color={errors.status ? 'danger' : 'default'}
-                    description={errors.status}
-                    data={[
-                        { id: '1', label: 'Aktif' },
-                        { id: '0', label: 'Mandiri / Selesai' },
-                    ]}
-                />
             </div>
 
             {/* Multi Program Selection */}

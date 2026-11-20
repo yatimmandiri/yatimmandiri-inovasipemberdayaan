@@ -27,7 +27,6 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
         regency_id: fasilitator?.regency_id || '',
         district_id: fasilitator?.district_id || '',
         village_id: fasilitator?.village_id || '',
-        status: fasilitator?.status ?? true,
     });
 
     const [regencies, setRegencies] = useState<any[]>([]);
@@ -77,7 +76,6 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
         ...formData,
         kantor_id: formData.kantor_id ? Number(formData.kantor_id) : null,
         user_id: formData.user_id ? Number(formData.user_id) : null,
-        status: Boolean(formData.status),
         ...(dataId && { _method: 'put' }),
     }));
 
@@ -159,19 +157,6 @@ export const FasilitatorForm = ({ dataId }: { dataId?: number }) => {
                     description={errors.email}
                 />
 
-                <SelectComponent
-                    label="Status"
-                    placeholder="Pilih Status"
-                    name="status"
-                    value={data.status ? '1' : '0'}
-                    handleOnChange={(value: string) => setData('status', value === '1')}
-                    color={errors.status ? 'danger' : 'default'}
-                    description={errors.status}
-                    data={[
-                        { id: '1', label: 'Aktif' },
-                        { id: '0', label: 'Non-Aktif' },
-                    ]}
-                />
             </div>
 
             {/* Multi Program Selection */}

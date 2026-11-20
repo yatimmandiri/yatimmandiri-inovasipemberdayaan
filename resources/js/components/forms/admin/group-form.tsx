@@ -25,7 +25,6 @@ export const GroupForm = ({ dataId }: { dataId?: number }) => {
         regency_id: group?.regency_id || '',
         district_id: group?.district_id || '',
         village_id: group?.village_id || '',
-        status: group?.status ?? true,
         description: group?.description || '',
     });
 
@@ -68,7 +67,6 @@ export const GroupForm = ({ dataId }: { dataId?: number }) => {
         kantor_id: formData.kantor_id ? Number(formData.kantor_id) : null,
         fasilitator_id: formData.fasilitator_id ? Number(formData.fasilitator_id) : null,
         program_id: formData.program_id ? Number(formData.program_id) : null,
-        status: Boolean(formData.status),
         ...(dataId && { _method: 'put' }),
     }));
 
@@ -164,19 +162,6 @@ export const GroupForm = ({ dataId }: { dataId?: number }) => {
                     description={errors.phone}
                 />
 
-                <SelectComponent
-                    label="Status Kelompok"
-                    placeholder="Pilih Status"
-                    name="status"
-                    value={data.status ? '1' : '0'}
-                    handleOnChange={(value: string) => setData('status', value === '1')}
-                    color={errors.status ? 'danger' : 'default'}
-                    description={errors.status}
-                    data={[
-                        { id: '1', label: 'Aktif' },
-                        { id: '0', label: 'Non-Aktif' },
-                    ]}
-                />
             </div>
 
             <TextAreaComponent

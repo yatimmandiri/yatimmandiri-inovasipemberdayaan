@@ -1,5 +1,4 @@
 import { ButtonComponent } from '@/components/partials/button-component';
-import { CheckboxComponent } from '@/components/partials/checkbox-component';
 import { InputTextComponent } from '@/components/partials/input-component';
 import { TextAreaComponent } from '@/components/partials/textarea-component';
 import { Fieldset } from '@headlessui/react';
@@ -18,12 +17,10 @@ export const VideoForm = ({ dataId }: { dataId?: number }) => {
         published_at: video?.published_at
             ? video.published_at.slice(0, 10)
             : '',
-        status: video?.status ?? true,
     });
 
     transform((data: any) => ({
         ...data,
-        status: data.status ? '1' : '0',
         ...(dataId && { _method: 'put' }),
     }));
 
@@ -122,13 +119,7 @@ export const VideoForm = ({ dataId }: { dataId?: number }) => {
                         helperText={errors.description}
                     />
                 </div>
-                <CheckboxComponent
-                    label="Active"
-                    checked={Boolean(data.status)}
-                    setChecked={(checked: boolean) =>
-                        setData('status', checked)
-                    }
-                />
+
             </div>
             <div className="flex justify-end space-x-4">
                 <ButtonComponent
