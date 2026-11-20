@@ -233,7 +233,7 @@ export const SelectComponent = ({
                                 {resultData.map((item: any, i: number) => (
                                     <CommandItem
                                         key={i}
-                                        value={item.label}
+                                        value={`${item.label} ${item.value}`}
                                         onSelect={() =>
                                             toggleSelect(item.value)
                                         }

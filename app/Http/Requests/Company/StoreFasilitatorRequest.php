@@ -23,10 +23,10 @@ class StoreFasilitatorRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'address' => ['nullable', 'string'],
-            'province_id' => ['nullable', 'string', 'max:2'],
-            'regency_id' => ['nullable', 'string', 'max:4'],
-            'district_id' => ['nullable', 'string', 'max:7'],
-            'village_id' => ['nullable', 'string', 'max:10'],
+            'province_id' => ['nullable', 'string', 'max:10'],
+            'regency_id' => ['nullable', 'string', 'max:10'],
+            'district_id' => ['nullable', 'string', 'max:15'],
+            'village_id' => ['nullable', 'string', 'max:20'],
             'status' => ['nullable', 'boolean'],
         ];
     }
