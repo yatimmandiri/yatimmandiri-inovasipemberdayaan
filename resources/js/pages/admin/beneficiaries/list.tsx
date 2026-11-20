@@ -1,17 +1,55 @@
 import { DataTableComponent } from '@/components/partials/dataTables';
 import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDataTables';
 import {
-    renderRowBoolean,
     renderRowDate,
     renderRowHeader,
 } from '@/components/partials/dataTables/utils/dataTable-utils';
+import { Badge } from '@/components/ui/badge';
 import beneficiaries from '@/routes/admin/beneficiaries';
 import { formatDate } from '@/utils/formatDate';
+import { router } from '@inertiajs/react';
+import { BadgeCheckIcon, BadgeXIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ListPage() {
     const [refreshData, setRefreshData] = useState(false);
     const [filterValue, setFilterValue] = useState({});
+
+    const renderRowStatus = (info: any) => {
+        const handleStatus = (id: number) => {
+            router.put(
+                beneficiaries.status(id).url,
+                {},
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        setRefreshData(true);
+                        router.reload({ only: ['flash'] });
+                    },
+                },
+            );
+        };
+
+        return info.getValue() ? (
+            <Badge
+                className="cursor-pointer bg-blue-500 text-white dark:bg-blue-600"
+                onClick={() => handleStatus(info.row.original.id)}
+                variant="default"
+            >
+                <BadgeCheckIcon className="mr-1 h-3.5 w-3.5" />
+                Active
+            </Badge>
+        ) : (
+            <Badge
+                className="cursor-pointer"
+                onClick={() => handleStatus(info.row.original.id)}
+                variant="destructive"
+            >
+                <BadgeXIcon className="mr-1 h-3.5 w-3.5" />
+                Deactive
+            </Badge>
+        );
+    };
 
     const columns = [
         {
@@ -71,8 +109,7 @@ export default function ListPage() {
         {
             header: (info: any) => renderRowHeader(info, 'Status'),
             accessorKey: 'status',
-            cell: (info: any) =>
-                renderRowBoolean(info.row.original, 'status', beneficiaries.status(info.row.original.id).url, setRefreshData),
+            cell: (info: any) => renderRowStatus(info),
         },
         {
             header: (info: any) => renderRowHeader(info, 'Created At'),

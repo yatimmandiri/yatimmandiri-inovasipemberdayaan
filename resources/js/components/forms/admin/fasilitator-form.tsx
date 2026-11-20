@@ -1,7 +1,7 @@
 import { ButtonComponent } from '@/components/partials/button-component';
 import { InputTextComponent } from '@/components/partials/input-component';
 import { SelectComponent } from '@/components/partials/select-component';
-import { TextareaComponent } from '@/components/partials/textarea-component';
+import { TextAreaComponent } from '@/components/partials/textarea-component';
 import fasilitators from '@/routes/admin/fasilitators';
 import { Fieldset } from '@headlessui/react';
 import { useForm, usePage } from '@inertiajs/react';
