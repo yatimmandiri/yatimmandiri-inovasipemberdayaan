@@ -148,7 +148,11 @@ class FasilitatorController extends Controller
 
         return Inertia::render('admin/fasilitators/edit', [
             'pageTitle' => 'Edit Fasilitator: '.$fasilitator->name,
-            'fasilitator' => $fasilitator->load('programs:id,name'),
+            'fasilitator' => $fasilitator->load([
+                'programs:id,name',
+                'groups' => fn ($q) => $q->with('program:id,name')->withCount('beneficiaries')->latest(),
+                'beneficiaries' => fn ($q) => $q->with(['programs:id,name', 'group:id,name'])->latest(),
+            ]),
             'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
             'users' => User::query()->select(['id', 'name', 'email'])->orderBy('name')->get(),
             'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
