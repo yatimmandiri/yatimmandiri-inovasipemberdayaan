@@ -42,8 +42,26 @@ export const DataTableComponent = ({
                         {table.getHeaderGroups().map((headerGroup: any) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header: any) => {
+                                    const colId = header.column.id;
+                                    const isSelect = colId === 'select';
+                                    const isAction = colId === 'actions';
+                                    const isNumber =
+                                        colId === 'row_number' ||
+                                        colId === 'id';
+
                                     return (
-                                        <TableHead key={header.id}>
+                                        <TableHead
+                                            key={header.id}
+                                            className={
+                                                isSelect
+                                                    ? 'w-10 px-2'
+                                                    : isAction
+                                                      ? 'w-16 px-2'
+                                                      : isNumber
+                                                        ? 'w-14 px-2'
+                                                        : ''
+                                            }
+                                        >
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -87,14 +105,34 @@ export const DataTableComponent = ({
                                         row.getIsSelected() && 'selected'
                                     }
                                 >
-                                    {row.getVisibleCells().map((cell: any) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </TableCell>
-                                    ))}
+                                    {row.getVisibleCells().map((cell: any) => {
+                                        const colId = cell.column.id;
+                                        const isSelect = colId === 'select';
+                                        const isAction = colId === 'actions';
+                                        const isNumber =
+                                            colId === 'row_number' ||
+                                            colId === 'id';
+
+                                        return (
+                                            <TableCell
+                                                key={cell.id}
+                                                className={
+                                                    isSelect
+                                                        ? 'w-10 px-2'
+                                                        : isAction
+                                                          ? 'w-16 px-2'
+                                                          : isNumber
+                                                            ? 'w-14 px-2'
+                                                            : ''
+                                                }
+                                            >
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )}
+                                            </TableCell>
+                                        );
+                                    })}
                                 </TableRow>
                             ))
                         )}

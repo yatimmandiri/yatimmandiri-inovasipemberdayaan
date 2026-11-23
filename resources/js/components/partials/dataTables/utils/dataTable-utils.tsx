@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { formatDate } from '@/utils/formatDate';
+import { maskPhoneNumber } from '@/utils/formatNumber';
 import { router } from '@inertiajs/react';
 import {
     ChevronDownIcon,
@@ -107,6 +108,12 @@ export const renderRowImage = (
             loading="lazy"
         />
     );
+};
+
+export const renderRowPhone = (value: any) => {
+    if (!value) return '-';
+
+    return maskPhoneNumber(value);
 };
 
 export const renderRowActions = (info: any, setRefreshData: any) => {

@@ -142,49 +142,51 @@ export const DataTableProvider = ({
     }, [filterValue]);
 
     const initialColumns = useMemo(() => {
-        const baseStartColumns = [
-            {
-                id: 'select',
-                header: ({ table }: any) => (
-                    <Checkbox
-                        checked={
-                            table.getIsAllPageRowsSelected() ||
-                            (table.getIsSomePageRowsSelected() &&
-                                'indeterminate')
-                        }
-                        onCheckedChange={(value: any) =>
-                            table.toggleAllPageRowsSelected(!!value)
-                        }
-                        aria-label="Select all"
-                    />
-                ),
-                cell: ({ row }: any) => (
-                    <Checkbox
-                        checked={row.getIsSelected()}
-                        onCheckedChange={(value: any) =>
-                            row.toggleSelected(!!value)
-                        }
-                        aria-label="Select row"
-                    />
-                ),
-                enableSorting: false,
-                enableHiding: false,
-            },
-            {
-                header: () => (
-                    <div className="flex cursor-pointer flex-row items-center justify-between">
-                        <span>No</span>
-                    </div>
-                ),
-                accessorKey: 'id',
-                cell: (info: any) => {
-                    const pageIndex = table.getState().pagination.pageIndex; // 0-based
-                    const pageSize = table.getState().pagination.pageSize;
+        const selectColumn = {
+            id: 'select',
+            header: ({ table }: any) => (
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && 'indeterminate')
+                    }
+                    onCheckedChange={(value: any) =>
+                        table.toggleAllPageRowsSelected(!!value)
+                    }
+                    aria-label="Select all"
+                />
+            ),
+            cell: ({ row }: any) => (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value: any) =>
+                        row.toggleSelected(!!value)
+                    }
+                    aria-label="Select row"
+                />
+            ),
+            enableSorting: false,
+            enableHiding: false,
+            size: 40,
+        };
 
-                    return pageIndex * pageSize + info.row.index + 1;
-                },
+        const numberColumn = {
+            id: 'row_number',
+            header: () => (
+                <div className="flex cursor-pointer flex-row items-center justify-between">
+                    <span>No</span>
+                </div>
+            ),
+            accessorKey: 'id',
+            cell: (info: any) => {
+                const pageIndex = table.getState().pagination.pageIndex; // 0-based
+                const pageSize = table.getState().pagination.pageSize;
+
+                return pageIndex * pageSize + info.row.index + 1;
             },
-        ];
+            size: 50,
+            enableSorting: false,
+        };
 
         const baseEndColumns = [
             {
@@ -213,15 +215,24 @@ export const DataTableProvider = ({
                           renderRowActions(info, setRefreshData),
                       enableSorting: false,
                       enableHiding: false,
+                      size: 60,
                   }
                 : null;
 
-        // Gabungkan baseStart + custom + baseEnd
+        const actionColumn = hasCustomAction
+            ? columns.find(
+                  (c: any) => c.accessorKey === 'actions' || c.id === 'actions',
+              )
+            : defaultActionColumn;
+
+        // Gabungkan dengan urutan: select -> actions -> no -> dst (custom columns) -> created at -> updated at
         const tempColumns = [
+            selectColumn,
+            ...(actionColumn ? [actionColumn] : []),
+            numberColumn,
             ...columns.filter(
-                (c: any) => c.accessorKey !== 'actions' && c.id !== 'actions', // exclude action dulu
+                (c: any) => c.accessorKey !== 'actions' && c.id !== 'actions', // exclude action
             ),
-            ...baseStartColumns,
             ...baseEndColumns,
         ];
 
@@ -242,16 +253,6 @@ export const DataTableProvider = ({
                 mergedColumns[idx] = col; // replace existing
             }
         });
-
-        // Taruh kolom Action di paling awal (custom jika ada, default jika tidak)
-        if (hasCustomAction) {
-            const customAction = columns.find(
-                (c: any) => c.accessorKey === 'actions' || c.id === 'actions',
-            );
-            mergedColumns.unshift(customAction);
-        } else if (defaultActionColumn) {
-            mergedColumns.unshift(defaultActionColumn);
-        }
 
         return mergedColumns;
     }, [columns]);

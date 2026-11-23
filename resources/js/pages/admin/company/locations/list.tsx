@@ -3,6 +3,7 @@ import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDat
 import {
     renderRowDate,
     renderRowHeader,
+    renderRowPhone,
 } from '@/components/partials/dataTables/utils/dataTable-utils';
 import locations from '@/routes/admin/companies/locations';
 import { formatDate } from '@/utils/formatDate';
@@ -24,6 +25,7 @@ export default function ListPage() {
         {
             header: (info: any) => renderRowHeader(info, 'Phone'),
             accessorKey: 'phone',
+            cell: (info: any) => renderRowPhone(info.getValue()),
         },
         {
             header: (info: any) => renderRowHeader(info, 'Program'),

@@ -1,3 +1,35 @@
+export const maskPhoneNumber = (value: string | null | undefined): string => {
+    if (!value) return '-';
+
+    const str = String(value).trim();
+    if (str.length <= 4) return str;
+
+    // Simpan 3-4 karakter pertama dan 2-3 karakter terakhir, sisanya disamarkan dengan asterisk (*)
+    // Contoh: 08123456789 -> 0812****789 atau (031) 8283 488 -> (031) **** 488
+    const digitsOnly = str.replace(/\D/g, '');
+    if (digitsOnly.length >= 7) {
+        const visibleStart = digitsOnly.length > 9 ? 4 : 3;
+        const visibleEnd = 3;
+        const maskedDigits =
+            digitsOnly.slice(0, visibleStart) +
+            '*'.repeat(
+                Math.max(0, digitsOnly.length - visibleStart - visibleEnd),
+            ) +
+            digitsOnly.slice(-visibleEnd);
+
+        // Pertahankan format jika ada prefix kode area, atau tampilkan maskedDigits
+        return maskedDigits;
+    }
+
+    const start = Math.ceil(str.length / 3);
+    const end = Math.floor(str.length / 3);
+    return (
+        str.slice(0, start) +
+        '*'.repeat(Math.max(0, str.length - start - end)) +
+        str.slice(-end)
+    );
+};
+
 export const formatNumberWhatsapp = (value: string) => {
     if (!value) return '';
 

@@ -52,15 +52,15 @@ export const HomeHeaderComponent = () => {
                         ) : (
                             <Fragment>
                                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary font-black text-white shadow-lg">
-                                    E
+                                    I
                                 </div>
                                 <div className="text-white">
                                     <h1 className="text-lg font-black">
-                                        Growth YM
+                                        Inovasi Pemberdayaan
                                     </h1>
 
                                     <p className="text-xs text-white/60">
-                                        Inovasi & Pemberdayaan
+                                        Yatim Mandiri
                                     </p>
                                 </div>
                             </Fragment>
