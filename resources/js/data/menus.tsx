@@ -19,6 +19,7 @@ import site from "@/routes/admin/settings/site";
 import fasilitators from "@/routes/admin/fasilitators";
 import groups from "@/routes/admin/groups";
 import beneficiaries from "@/routes/admin/beneficiaries";
+import activityReports from "@/routes/admin/activity-reports";
 import {
   ChevronRight,
   CogIcon,
@@ -204,6 +205,12 @@ export const NavigationList = [
             title: "Penerima Manfaat",
             href: beneficiaries.index().url,
             permission: "view-beneficiary",
+            icon: ChevronRight,
+          },
+          {
+            title: "Laporan Aktivitas",
+            href: activityReports.index().url,
+            permission: "view-activity-report",
             icon: ChevronRight,
           },
         ],

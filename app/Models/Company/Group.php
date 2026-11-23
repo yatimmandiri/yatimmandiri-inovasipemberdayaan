@@ -66,6 +66,11 @@ class Group extends Model
         return $this->hasMany(Beneficiary::class);
     }
 
+    public function activityReports(): HasMany
+    {
+        return $this->hasMany(ActivityReport::class);
+    }
+
     public function province(): BelongsTo
     {
         return $this->belongsTo(Province::class);

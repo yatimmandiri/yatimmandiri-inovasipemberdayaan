@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityReportController;
 use App\Http\Controllers\Admin\BeneficiaryController;
 use App\Http\Controllers\Admin\Company\CategoryController;
 use App\Http\Controllers\Admin\Company\GalleryController;
@@ -114,6 +115,10 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
     Route::put('beneficiaries/{beneficiary}/status', [BeneficiaryController::class, 'status'])->name('beneficiaries.status');
     Route::get('beneficiaries/data', [BeneficiaryController::class, 'getData'])->name('beneficiaries.data');
     Route::resource('beneficiaries', BeneficiaryController::class);
+
+    Route::put('activity-reports/{activity_report}/status', [ActivityReportController::class, 'status'])->name('activity-reports.status');
+    Route::get('activity-reports/data', [ActivityReportController::class, 'getData'])->name('activity-reports.data');
+    Route::resource('activity-reports', ActivityReportController::class);
 
     Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');
     Route::resource('news', NewsController::class)->only(['index']);

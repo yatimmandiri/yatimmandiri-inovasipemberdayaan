@@ -15,6 +15,7 @@ require __DIR__ . '/admin/company-breadcrumbs.php';
 require __DIR__ . '/admin/fasilitator-breadcrumbs.php';
 require __DIR__ . '/admin/group-breadcrumbs.php';
 require __DIR__ . '/admin/beneficiary-breadcrumbs.php';
+require __DIR__ . '/admin/activity-report-breadcrumbs.php';
 
 Breadcrumbs::for('admin.news.index', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.dashboard')->push('Berita', route('admin.news.index'));

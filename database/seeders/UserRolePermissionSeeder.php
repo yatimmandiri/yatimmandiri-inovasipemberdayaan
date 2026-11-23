@@ -133,6 +133,11 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'update-beneficiary'],
             ['name' => 'delete-beneficiary'],
             ['name' => 'data-beneficiary'],
+            ['name' => 'view-activity-report'],
+            ['name' => 'create-activity-report'],
+            ['name' => 'update-activity-report'],
+            ['name' => 'delete-activity-report'],
+            ['name' => 'data-activity-report'],
         ])->each(fn ($permission) => Permission::firstOrCreate($permission)->assignRole(['Administrators', 'Editors']));
 
         // Admin default: idempoten by email agar seeder aman dijalankan ulang di DB hidup.
