@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\BranchController;
-use App\Http\Controllers\Admin\CashTransactionController;
+use App\Http\Controllers\Admin\ActivityReportController;
+use App\Http\Controllers\Admin\BeneficiaryController;
 use App\Http\Controllers\Admin\Company\CategoryController;
 use App\Http\Controllers\Admin\Company\GalleryController;
 use App\Http\Controllers\Admin\Company\LocationController;
@@ -11,7 +11,6 @@ use App\Http\Controllers\Admin\Company\ProgramController;
 use App\Http\Controllers\Admin\Company\ReviewController;
 use App\Http\Controllers\Admin\Company\SliderController;
 use App\Http\Controllers\Admin\Company\TestimonialController;
-use App\Http\Controllers\Admin\Company\VisitReportController;
 use App\Http\Controllers\Admin\Core\PermissionController;
 use App\Http\Controllers\Admin\Core\Region\DistrictController;
 use App\Http\Controllers\Admin\Core\Region\ProvinceController;
@@ -20,6 +19,7 @@ use App\Http\Controllers\Admin\Core\Region\VillageController;
 use App\Http\Controllers\Admin\Core\RoleController;
 use App\Http\Controllers\Admin\Core\UserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FasilitatorController;
 use App\Http\Controllers\Admin\GroupController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\Settings\LogActivityController;
@@ -103,37 +103,22 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
         Route::resource('galleries', GalleryController::class);
     });
 
-    Route::prefix('visit-reports')->as('visit-reports.')->group(function () {
-        Route::put('{visitReport}/review', [VisitReportController::class, 'review'])->name('review');
-        Route::get('data', [VisitReportController::class, 'getData'])->name('data');
-        Route::get('/', [VisitReportController::class, 'index'])->name('index');
-        Route::get('{visitReport}/edit', [VisitReportController::class, 'edit'])->name('edit');
-        Route::put('{visitReport}', [VisitReportController::class, 'update'])->name('update');
-        Route::delete('{visitReport}', [VisitReportController::class, 'destroy'])->name('destroy');
-        Route::get('{visitReport}', [VisitReportController::class, 'show'])->name('show');
-    });
+    Route::post('fasilitators/{fasilitator}/create-user', [FasilitatorController::class, 'createUser'])->name('fasilitators.create-user');
+    Route::put('fasilitators/{fasilitator}/status', [FasilitatorController::class, 'status'])->name('fasilitators.status');
+    Route::get('fasilitators/data', [FasilitatorController::class, 'getData'])->name('fasilitators.data');
+    Route::resource('fasilitators', FasilitatorController::class);
 
-    // Master cabang (seed JSON + CRUD admin + import JSON).
-    // create/edit memakai dialog di halaman list, jadi resource hanya butuh
-    // index/store/update/destroy (controller tidak punya method create/edit).
-    Route::post('branches/import', [BranchController::class, 'import'])->name('branches.import');
-    Route::get('branches/data', [BranchController::class, 'getData'])->name('branches.data');
-    Route::resource('branches', BranchController::class)->only(['index', 'store', 'update', 'destroy']);
-
-    // Master kelompok fasilitator
+    Route::put('groups/{group}/status', [GroupController::class, 'status'])->name('groups.status');
     Route::get('groups/data', [GroupController::class, 'getData'])->name('groups.data');
     Route::resource('groups', GroupController::class);
 
-    // Pencatatan kas (bagian sendiri, bukan Company Profile)
-    Route::prefix('kas')->as('kas.')->group(function () {
-        Route::get('data', [CashTransactionController::class, 'getData'])->name('data');
-        Route::get('create', [CashTransactionController::class, 'create'])->name('create');
-        Route::post('/', [CashTransactionController::class, 'store'])->name('store');
-        Route::get('/', [CashTransactionController::class, 'index'])->name('index');
-        Route::get('{cashTransaction}/edit', [CashTransactionController::class, 'edit'])->name('edit');
-        Route::put('{cashTransaction}', [CashTransactionController::class, 'update'])->name('update');
-        Route::delete('{cashTransaction}', [CashTransactionController::class, 'destroy'])->name('destroy');
-    });
+    Route::put('beneficiaries/{beneficiary}/status', [BeneficiaryController::class, 'status'])->name('beneficiaries.status');
+    Route::get('beneficiaries/data', [BeneficiaryController::class, 'getData'])->name('beneficiaries.data');
+    Route::resource('beneficiaries', BeneficiaryController::class);
+
+    Route::put('activity-reports/{activity_report}/status', [ActivityReportController::class, 'status'])->name('activity-reports.status');
+    Route::get('activity-reports/data', [ActivityReportController::class, 'getData'])->name('activity-reports.data');
+    Route::resource('activity-reports', ActivityReportController::class);
 
     Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');
     Route::resource('news', NewsController::class)->only(['index']);

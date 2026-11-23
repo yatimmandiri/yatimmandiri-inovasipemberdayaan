@@ -6,9 +6,11 @@ use App\Concerns\Traits\LogActivity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Company\StoreGroupRequest;
 use App\Http\Requests\Company\UpdateGroupRequest;
-use App\Models\Company\Branch;
+use App\Models\Company\Fasilitator;
 use App\Models\Company\Group;
-use App\Models\Core\User;
+use App\Models\Company\Program;
+use App\Models\Core\Region\Province;
+use App\Services\KantorService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -17,44 +19,78 @@ class GroupController extends Controller
     use LogActivity;
 
     /**
-     * Display a listing of kelompok.
+     * Display a listing of groups.
      */
     public function index()
     {
         $this->authorize('viewAny', Group::class);
 
         return Inertia::render('admin/groups/list', [
-            'pageTitle' => 'Kelompok Fasilitator',
-            'filterBranches' => Branch::query()->orderBy('name')->get(['id', 'name', 'label']),
+            'pageTitle' => 'Master Data Kelompok',
         ]);
     }
 
     /**
-     * Show the form for creating a new kelompok.
+     * Endpoint DataTable.
+     */
+    public function getData(Request $request)
+    {
+        $this->authorize('data-group', Group::class);
+
+        $perPage = $request->input('perPage', null);
+        $page = $request->input('page', null);
+        $globalSearch = $request->input('globalSearch', '');
+        $orderBy = $request->input('orderBy', 'id');
+        $orderDirection = strtolower($request->input('orderDirection', 'asc'));
+
+        $allowedSorts = ['id', 'name', 'kantor_name', 'leader_name', 'phone', 'status', 'created_at'];
+        if (! in_array($orderBy, $allowedSorts, true)) {
+            $orderBy = 'id';
+        }
+        if (! in_array($orderDirection, ['asc', 'desc'], true)) {
+            $orderDirection = 'asc';
+        }
+
+        $query = Group::query()
+            ->with(['fasilitator:id,name', 'program:id,name', 'province:id,name', 'regency:id,name'])
+            ->withCount('beneficiaries')
+            ->search($globalSearch)
+            ->orderBy($orderBy, $orderDirection);
+
+        $data = $perPage
+            ? $query->paginate((int) $perPage, ['*'], 'page', (int) $page)
+            : $query->get();
+
+        return response()->json($data);
+    }
+
+    /**
+     * Show the form for creating a new group.
      */
     public function create()
     {
         $this->authorize('create', Group::class);
 
         return Inertia::render('admin/groups/create', [
-            'pageTitle' => 'Buat Kelompok',
-            'branches' => Branch::query()->orderBy('name')->get(['id', 'name', 'label']),
-            'fasilitators' => $this->fasilitatorOptions(),
+            'pageTitle' => 'Tambah Kelompok',
+            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
     /**
-     * Store a newly created kelompok.
+     * Store a newly created group.
      */
     public function store(StoreGroupRequest $request)
     {
         $this->authorize('create', Group::class);
 
-        $data = $request->only(['branch_id', 'name', 'fasilitator_id']);
+        $data = $request->validated();
+        $data['status'] = $request->boolean('status', true);
 
         $group = Group::create($data);
-
-        $this->syncPms($group, $request->input('pms', []));
 
         if ($group) {
             $this->logSuccess('create-group', "Created Group #{$group->id} ({$group->name})", [
@@ -72,51 +108,55 @@ class GroupController extends Controller
     }
 
     /**
-     * Display the specified kelompok.
+     * Display the specified group.
      */
     public function show(Group $group)
     {
         $this->authorize('view', $group);
 
-        $group->load(['branch', 'facilitator', 'pms']);
-
         return Inertia::render('admin/groups/show', [
-            'group' => $group,
-            'pageTitle' => 'Kelompok: '.$group->name,
+            'pageTitle' => 'Detail Kelompok: '.$group->name,
+            'group' => $group->load([
+                'fasilitator:id,name,phone',
+                'program:id,name',
+                'province:id,name',
+                'regency:id,name',
+                'district:id,name',
+                'village:id,name',
+                'beneficiaries' => fn ($q) => $q->with('programs:id,name')->latest(),
+            ]),
         ]);
     }
 
     /**
-     * Show the form for editing the specified kelompok.
+     * Show the form for editing the specified group.
      */
     public function edit(Group $group)
     {
         $this->authorize('update', $group);
 
-        $group->load(['pms']);
-
         return Inertia::render('admin/groups/edit', [
+            'pageTitle' => 'Edit Kelompok: '.$group->name,
             'group' => $group,
-            'pageTitle' => 'Edit Kelompok',
-            'branches' => Branch::query()->orderBy('name')->get(['id', 'name', 'label']),
-            'fasilitators' => $this->fasilitatorOptions(),
+            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
     /**
-     * Update the specified kelompok.
+     * Update the specified group.
      */
     public function update(UpdateGroupRequest $request, Group $group)
     {
         $this->authorize('update', $group);
 
-        $data = $request->only(['branch_id', 'name', 'fasilitator_id']);
+        $data = $request->validated();
+        $data['status'] = $request->boolean('status', true);
 
         $oldData = $group->replicate();
-
         $group->update($data);
-
-        $this->syncPms($group, $request->input('pms'));
 
         if ($group) {
             $this->logSuccess('update-group', "Updated Group #{$group->id} ({$group->name})", [
@@ -136,18 +176,19 @@ class GroupController extends Controller
     }
 
     /**
-     * Remove the specified kelompok (diblokir bila masih dipakai laporan/kas).
+     * Remove the specified group.
      */
     public function destroy(Group $group)
     {
         $this->authorize('delete', $group);
 
+        $oldData = $group->replicate();
         $group->delete();
 
         if ($group) {
-            $this->logSuccess('delete-group', "Delete Group #{$group->id} ({$group->name})", [
+            $this->logSuccess('delete-group', "Deleted Group #{$group->id} ({$group->name})", [
                 'group_id' => $group->id,
-                'old_data' => $group->toArray(),
+                'old_data' => $oldData->toArray(),
             ]);
         } else {
             $this->logError('delete-group', "Failed to delete Group #{$group->id}", [
@@ -160,72 +201,14 @@ class GroupController extends Controller
     }
 
     /**
-     * Endpoint DataTable.
+     * Toggle status aktif kelompok.
      */
-    public function getData(Request $request)
+    public function status(Group $group)
     {
-        $this->authorize('data-group', Group::class);
+        $this->authorize('update', $group);
 
-        $perPage = $request->input('perPage', null);
-        $page = $request->input('page', null);
-        $globalSearch = $request->input('globalSearch', '');
-        $orderBy = $request->input('orderBy', 'id');
-        $orderDirection = strtolower($request->input('orderDirection', 'asc'));
+        $group->update(['status' => ! $group->status]);
 
-        $allowedSorts = ['id', 'name', 'branch_id', 'fasilitator_id', 'created_at'];
-        if (! in_array($orderBy, $allowedSorts, true)) {
-            $orderBy = 'id';
-        }
-        if (! in_array($orderDirection, ['asc', 'desc'], true)) {
-            $orderDirection = 'asc';
-        }
-
-        $filterValue = (array) $request->input('filterValue', []);
-
-        $query = Group::query()
-            ->with(['branch', 'facilitator'])
-            ->withCount('pms')
-            ->search($globalSearch)
-            ->when($filterValue['branch_id'] ?? null, fn ($q, $branchId) => $q->where('branch_id', $branchId))
-            ->orderBy($orderBy, $orderDirection);
-
-        $data = $perPage
-            ? $query->paginate((int) $perPage, ['*'], 'page', (int) $page)
-            : $query->get();
-
-        return response()->json($data);
-    }
-
-    /**
-     * Opsi fasilitator untuk dropdown assign (role Fasilitator).
-     */
-    private function fasilitatorOptions()
-    {
-        return User::query()
-            ->whereHas('roles', fn ($q) => $q->where('name', 'Fasilitator'))
-            ->orderBy('name')
-            ->get(['id', 'name']);
-    }
-
-    /**
-     * Sinkronkan daftar nama PM kelompok.
-     */
-    private function syncPms(Group $group, mixed $pms): void
-    {
-        if (! is_array($pms)) {
-            return;
-        }
-
-        $names = collect($pms)
-            ->map(fn ($pm) => trim((string) ($pm['name'] ?? $pm ?? '')))
-            ->filter(fn ($name) => $name !== '')
-            ->unique()
-            ->values();
-
-        $group->pms()->whereNotIn('name', $names->all())->delete();
-
-        foreach ($names as $name) {
-            $group->pms()->firstOrCreate(['name' => $name]);
-        }
+        return redirect()->back()->with('success', 'Status Kelompok Berhasil Diperbarui');
     }
 }

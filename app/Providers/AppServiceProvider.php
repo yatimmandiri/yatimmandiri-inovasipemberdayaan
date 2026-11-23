@@ -51,14 +51,23 @@ class AppServiceProvider extends ServiceProvider
         );
 
         View::composer('*', function ($view) {
-            $settings = app(SiteSettings::class);
+            try {
+                $settings = app(SiteSettings::class);
 
-            $view->with('settings', [
-                'site_name' => $settings->site_name,
-                'site_description' => $settings->site_description,
-                'logo' => $settings->logo ? asset('storage/' . $settings->logo) : null,
-                'favicon' => $settings->favicon ? asset('storage/' . $settings->favicon) : null,
-            ]);
+                $view->with('settings', [
+                    'site_name' => $settings->site_name,
+                    'site_description' => $settings->site_description,
+                    'logo' => $settings->logo ? asset('storage/' . $settings->logo) : null,
+                    'favicon' => $settings->favicon ? asset('storage/' . $settings->favicon) : null,
+                ]);
+            } catch (\Throwable) {
+                $view->with('settings', [
+                    'site_name' => config('app.name', 'Laravel'),
+                    'site_description' => null,
+                    'logo' => null,
+                    'favicon' => null,
+                ]);
+            }
         });
     }
 }

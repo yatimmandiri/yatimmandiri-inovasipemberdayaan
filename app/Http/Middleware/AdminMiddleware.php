@@ -18,10 +18,8 @@ class AdminMiddleware
     {
         $user = $request->user();
 
-        // Role yang hanya boleh memakai area publik, tidak boleh masuk /admin
-        $blockedRoles = ['Users', 'Fasilitator'];
-
-        if (Auth::check() && $user->hasAnyRole($blockedRoles)) {
+        // Jika user role-nya 'User', tolak akses
+        if (Auth::check() && $user->hasRole('Users')) {
             abort(403, 'User does not have the right roles.');
         }
 

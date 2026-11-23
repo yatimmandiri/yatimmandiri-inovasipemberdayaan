@@ -6,15 +6,16 @@ use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 // Dashboard Admin (root)
 Breadcrumbs::for(
     'admin.index',
-    fn (BreadcrumbTrail $trail) => $trail->parent('admin.dashboard')->push('Dashboard', route('admin.index'))
+    fn(BreadcrumbTrail $trail) =>
+    $trail->parent('admin.dashboard')->push('Dashboard', route('admin.index'))
 );
 
-require __DIR__.'/admin/core-breadcrumbs.php';
-require __DIR__.'/admin/company-breadcrumbs.php';
-require __DIR__.'/admin/visit-report-breadcrumbs.php';
-require __DIR__.'/admin/branch-breadcrumbs.php';
-require __DIR__.'/admin/group-breadcrumbs.php';
-require __DIR__.'/admin/kas-breadcrumbs.php';
+require __DIR__ . '/admin/core-breadcrumbs.php';
+require __DIR__ . '/admin/company-breadcrumbs.php';
+require __DIR__ . '/admin/fasilitator-breadcrumbs.php';
+require __DIR__ . '/admin/group-breadcrumbs.php';
+require __DIR__ . '/admin/beneficiary-breadcrumbs.php';
+require __DIR__ . '/admin/activity-report-breadcrumbs.php';
 
 Breadcrumbs::for('admin.news.index', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.dashboard')->push('Berita', route('admin.news.index'));

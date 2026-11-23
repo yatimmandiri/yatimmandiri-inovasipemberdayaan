@@ -29,11 +29,13 @@ interface SelectComponentProps {
     placeholder?: string;
     data?: any;
     dataSelected?: any;
+    value?: any;
     label?: string;
     errors?: any;
     helperText?: any;
     multiple?: boolean;
     handleOnChange?: any;
+    onChange?: any;
     fetchDataUrl?: string;
     color?: 'default' | 'info' | 'success' | 'warning' | 'danger';
     [key: string]: any;
@@ -42,31 +44,53 @@ interface SelectComponentProps {
 export const SelectComponent = ({
     placeholder = 'Select option...',
     data,
-    dataSelected,
+    dataSelected: propDataSelected,
+    value: propValue,
     label,
     errors,
     helperText,
     multiple,
-    handleOnChange,
+    handleOnChange: propHandleOnChange,
+    onChange: propOnChange,
     fetchDataUrl,
     color = 'default',
     ...props
 }: SelectComponentProps) => {
+    const dataSelected = propDataSelected !== undefined ? propDataSelected : propValue;
+    const triggerChange = (val: any) => {
+        if (typeof propHandleOnChange === 'function') {
+            propHandleOnChange(val);
+        }
+        if (typeof propOnChange === 'function') {
+            propOnChange(val);
+        }
+    };
+
+    const normalizeItem = (item: any) => {
+        if (typeof item === 'object' && item !== null) {
+            const val = item.value !== undefined ? item.value : item.id;
+            const lbl = item.label !== undefined ? item.label : (item.name ?? String(val));
+            return { value: val, label: lbl };
+        }
+        return { value: item, label: String(item) };
+    };
+
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState('');
-    const [resultData, setResultData] = useState(data ?? []);
+    const [resultData, setResultData] = useState(() => (data ?? []).map(normalizeItem));
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
         if (!fetchDataUrl) {
-            setResultData(data ?? []);
+            setResultData((data ?? []).map(normalizeItem));
         }
     }, [data, fetchDataUrl]);
 
-    const isSelected = (value: string) => {
-        return Array.isArray(dataSelected)
-            ? dataSelected.includes(value)
-            : dataSelected === value;
+    const isSelected = (val: any) => {
+        if (Array.isArray(dataSelected)) {
+            return dataSelected.some((selected) => String(selected) === String(val));
+        }
+        return dataSelected !== undefined && dataSelected !== null && dataSelected !== '' && String(dataSelected) === String(val);
     };
 
     const toggleSelect = (value: any) => {
@@ -75,7 +99,7 @@ export const SelectComponent = ({
                 ? [...dataSelected]
                 : [];
 
-            const index = selectedArray.indexOf(value);
+            const index = selectedArray.findIndex((selected) => String(selected) === String(value));
 
             if (index >= 0) {
                 selectedArray.splice(index, 1);
@@ -83,9 +107,9 @@ export const SelectComponent = ({
                 selectedArray.push(value);
             }
 
-            handleOnChange(selectedArray);
+            triggerChange(selectedArray);
         } else {
-            handleOnChange(value);
+            triggerChange(value);
             setOpen(false);
         }
     };
@@ -95,7 +119,7 @@ export const SelectComponent = ({
             const selectedLabels = resultData
                 .filter((item: any) =>
                     Array.isArray(dataSelected)
-                        ? dataSelected.includes(item.value)
+                        ? dataSelected.some((selected) => String(selected) === String(item.value))
                         : false,
                 )
                 .map((item: any) => item.label);
@@ -105,7 +129,7 @@ export const SelectComponent = ({
                 : placeholder;
         } else {
             const selectedLabel = resultData.find(
-                (item: any) => item.value === dataSelected,
+                (item: any) => String(item.value) === String(dataSelected),
             )?.label;
 
             return selectedLabel || placeholder;
@@ -209,7 +233,7 @@ export const SelectComponent = ({
                                 {resultData.map((item: any, i: number) => (
                                     <CommandItem
                                         key={i}
-                                        value={item.label}
+                                        value={`${item.label} ${item.value}`}
                                         onSelect={() =>
                                             toggleSelect(item.value)
                                         }
