@@ -24,19 +24,19 @@ return [
                     'children' => [
                         [
                             'title' => 'Permissions',
-                            'route' => 'admin.permissions.index',
+                            'route' => 'admin.core.permissions.index',
                             'permission' => 'view-permission',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Roles',
-                            'route' => 'admin.roles.index',
+                            'route' => 'admin.core.roles.index',
                             'permission' => 'view-role',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Users',
-                            'route' => 'admin.users.index',
+                            'route' => 'admin.core.users.index',
                             'permission' => 'view-user',
                             'icon' => 'ChevronRight',
                         ],
@@ -47,25 +47,25 @@ return [
                             'children' => [
                                 [
                                     'title' => 'Provinces',
-                                    'route' => 'admin.provinces.index',
+                                    'route' => 'admin.core.regions.provinces.index',
                                     'permission' => 'view-province',
                                     'icon' => 'ChevronRight',
                                 ],
                                 [
                                     'title' => 'Regencies',
-                                    'route' => 'admin.regencies.index',
+                                    'route' => 'admin.core.regions.regencies.index',
                                     'permission' => 'view-regency',
                                     'icon' => 'ChevronRight',
                                 ],
                                 [
                                     'title' => 'Districts',
-                                    'route' => 'admin.districts.index',
+                                    'route' => 'admin.core.regions.districts.index',
                                     'permission' => 'view-district',
                                     'icon' => 'ChevronRight',
                                 ],
                                 [
                                     'title' => 'Villages',
-                                    'route' => 'admin.villages.index',
+                                    'route' => 'admin.core.regions.villages.index',
                                     'permission' => 'view-village',
                                     'icon' => 'ChevronRight',
                                 ],
@@ -80,13 +80,13 @@ return [
                     'children' => [
                         [
                             'title' => 'Site',
-                            'route' => 'admin.site.edit',
+                            'route' => 'admin.settings.site.edit',
                             'permission' => 'view-settings-site',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Log Activity',
-                            'route' => 'admin.activities.index',
+                            'route' => 'admin.logs.activities.index',
                             'permission' => 'view-log-activity',
                             'icon' => 'ChevronRight',
                         ],
@@ -105,55 +105,55 @@ return [
                     'children' => [
                         [
                             'title' => 'Categories',
-                            'route' => 'admin.categories.index',
+                            'route' => 'admin.companies.categories.index',
                             'permission' => 'view-category',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Programs',
-                            'route' => 'admin.programs.index',
+                            'route' => 'admin.companies.programs.index',
                             'permission' => 'view-program',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Locations',
-                            'route' => 'admin.locations.index',
+                            'route' => 'admin.companies.locations.index',
                             'permission' => 'view-location',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Products',
-                            'route' => 'admin.products.index',
+                            'route' => 'admin.companies.products.index',
                             'permission' => 'view-product',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Sliders',
-                            'route' => 'admin.sliders.index',
+                            'route' => 'admin.companies.sliders.index',
                             'permission' => 'view-slider',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Mitra',
-                            'route' => 'admin.mitras.index',
+                            'route' => 'admin.companies.mitras.index',
                             'permission' => 'view-mitra',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Gallery',
-                            'route' => 'admin.galleries.index',
+                            'route' => 'admin.companies.galleries.index',
                             'permission' => 'view-gallery',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Reviews',
-                            'route' => 'admin.reviews.index',
+                            'route' => 'admin.companies.reviews.index',
                             'permission' => 'view-review',
                             'icon' => 'ChevronRight',
                         ],
                         [
                             'title' => 'Testimonials',
-                            'route' => 'admin.testimonials.index',
+                            'route' => 'admin.companies.testimonials.index',
                             'permission' => 'view-testimonial',
                             'icon' => 'ChevronRight',
                         ],
