@@ -1,181 +1,180 @@
-import { DataTableComponent } from '@/components/partials/dataTables';
-import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDataTables';
-import { SelectComponent } from '@/components/partials/select-component';
+import { DataTableComponent } from "@/components/partials/dataTables";
+import { DataTableProvider } from "@/components/partials/dataTables/hooks/useDataTables";
+import { SelectComponent } from "@/components/partials/select-component";
 import {
-    renderRowDate,
-    renderRowHeader,
-} from '@/components/partials/dataTables/utils/dataTable-utils';
-import { Badge } from '@/components/ui/badge';
-import beneficiaries from '@/routes/admin/beneficiaries';
-import { formatDate } from '@/utils/formatDate';
-import { router, usePage } from '@inertiajs/react';
-import { BadgeCheckIcon, BadgeXIcon } from 'lucide-react';
-import { useState } from 'react';
+  renderRowDate,
+  renderRowHeader,
+} from "@/components/partials/dataTables/utils/dataTable-utils";
+import { Badge } from "@/components/ui/badge";
+import beneficiaries from "@/routes/admin/beneficiaries";
+import { formatDate } from "@/utils/formatDate";
+import { router, usePage } from "@inertiajs/react";
+import { BadgeCheckIcon, BadgeXIcon } from "lucide-react";
+import { useState } from "react";
 
 export default function ListPage() {
-    const { kantors }: any = usePage<any>().props;
-    const [refreshData, setRefreshData] = useState(false);
-    const [filterValue, setFilterValue] = useState<any>({});
+  const { kantors }: any = usePage<any>().props;
+  const [refreshData, setRefreshData] = useState(false);
+  const [filterValue, setFilterValue] = useState<any>({});
 
-    const renderRowStatus = (info: any) => {
-        const handleStatus = (id: number) => {
-            router.put(
-                beneficiaries.status(id).url,
-                {},
-                {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        setRefreshData(true);
-                        router.reload({ only: ['flash'] });
-                    },
-                },
-            );
-        };
-
-        return info.getValue() ? (
-            <Badge
-                className="cursor-pointer bg-blue-500 text-white dark:bg-blue-600"
-                onClick={() => handleStatus(info.row.original.id)}
-                variant="default"
-            >
-                <BadgeCheckIcon className="mr-1 h-3.5 w-3.5" />
-                Active
-            </Badge>
-        ) : (
-            <Badge
-                className="cursor-pointer"
-                onClick={() => handleStatus(info.row.original.id)}
-                variant="destructive"
-            >
-                <BadgeXIcon className="mr-1 h-3.5 w-3.5" />
-                Deactive
-            </Badge>
-        );
+  const renderRowStatus = (info: any) => {
+    const handleStatus = (id: number) => {
+      router.put(
+        beneficiaries.status(id).url,
+        {},
+        {
+          preserveScroll: true,
+          onSuccess: () => {
+            setRefreshData(true);
+            router.reload({ only: ["flash"] });
+          },
+        },
+      );
     };
 
-    const columns = [
-        {
-            header: (info: any) => renderRowHeader(info, 'Nama Penerima Manfaat'),
-            accessorKey: 'name',
-        },
-        {
-            header: (info: any) => renderRowHeader(info, 'Kantor / Cabang'),
-            accessorKey: 'kantor_name',
-            cell: (info: any) => info.getValue() || '-',
-        },
-        {
-            header: (info: any) => renderRowHeader(info, 'NIK'),
-            accessorKey: 'nik',
-            cell: (info: any) => info.getValue() || '-',
-        },
-        {
-            header: (info: any) => renderRowHeader(info, 'Program yang Diikuti'),
-            accessorKey: 'programs',
-            cell: (info: any) => {
-                const programs = info.getValue() || [];
-                if (programs.length === 0) return '-';
-                return (
-                    <div className="flex flex-wrap gap-1">
-                        {programs.map((p: any) => (
-                            <span
-                                key={p.id}
-                                className="inline-flex rounded-md bg-muted px-2 py-0.5 text-xs font-medium"
-                            >
-                                {p.name}
-                            </span>
-                        ))}
-                    </div>
-                );
-            },
-        },
-        {
-            header: (info: any) => renderRowHeader(info, 'Fasilitator'),
-            accessorKey: 'fasilitator.name',
-            cell: (info: any) => info.getValue() || '-',
-        },
-        {
-            header: (info: any) => renderRowHeader(info, 'Kelompok'),
-            accessorKey: 'group.name',
-            cell: (info: any) => info.getValue() || '-',
-        },
-        {
-            header: (info: any) => renderRowHeader(info, 'No. Kontak'),
-            accessorKey: 'phone',
-            cell: (info: any) => info.getValue() || '-',
-        },
-        {
-            header: (info: any) => renderRowHeader(info, 'Kabupaten/Kota'),
-            accessorKey: 'regency.name',
-            cell: (info: any) => info.getValue() || '-',
-        },
-        {
-            header: (info: any) => renderRowHeader(info, 'Status'),
-            accessorKey: 'status',
-            cell: (info: any) => renderRowStatus(info),
-        },
-        {
-            header: (info: any) => renderRowHeader(info, 'Created At'),
-            accessorKey: 'created_at',
-            cell: (info: any) => renderRowDate(info.getValue()),
-        },
-    ];
-
-    const formatDataExport = (data: any) => {
-        return data.map((item: any, i: number) => ({
-            No: i + 1,
-            Nama: item.name,
-            NIK: item.nik || '-',
-            Kantor: item.kantor_name || '-',
-            Program: item.programs?.map((p: any) => p.name).join(', ') || '-',
-            Fasilitator: item.fasilitator?.name || '-',
-            Kelompok: item.group?.name || '-',
-            'No. HP': item.phone || '-',
-            Status: item.status ? 'Aktif' : 'Mandiri/Selesai',
-            'Created At': formatDate(item.created_at),
-        }));
-    };
-
-    return (
-        <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 shadow-xs">
-                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                    <span className="text-sm font-medium text-foreground whitespace-nowrap">Filter Kantor:</span>
-                    <div className="w-full sm:w-72">
-                        <SelectComponent
-                            placeholder="Pilih Kantor Cabang..."
-                            value={filterValue?.kantor_id || ''}
-                            onChange={(val: any) => {
-                                setFilterValue((prev: any) => ({
-                                    ...prev,
-                                    kantor_id: val || undefined,
-                                }));
-                            }}
-                            data={(kantors || []).map((k: any) => ({
-                                value: k.id,
-                                label: k.name || k.nama,
-                            }))}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                <DataTableProvider
-                    columns={columns}
-                    filterValue={filterValue}
-                    refreshData={refreshData}
-                    setRefreshData={setRefreshData}
-                    urlFetchData={beneficiaries.data().url}
-                    formatDataExport={formatDataExport}
-                >
-                    <DataTableComponent
-                        buttonActive={{
-                            create: true,
-                            export: true,
-                        }}
-                    />
-                </DataTableProvider>
-            </div>
-        </div>
+    return info.getValue() ? (
+      <Badge
+        className="cursor-pointer bg-blue-500 text-white dark:bg-blue-600"
+        onClick={() => handleStatus(info.row.original.id)}
+        variant="default"
+      >
+        <BadgeCheckIcon className="mr-1 h-3.5 w-3.5" />
+        Active
+      </Badge>
+    ) : (
+      <Badge
+        className="cursor-pointer"
+        onClick={() => handleStatus(info.row.original.id)}
+        variant="destructive"
+      >
+        <BadgeXIcon className="mr-1 h-3.5 w-3.5" />
+        Deactive
+      </Badge>
     );
+  };
+
+  const columns = [
+    {
+      header: (info: any) => renderRowHeader(info, "Nama Penerima Manfaat"),
+      accessorKey: "name",
+    },
+    {
+      header: (info: any) => renderRowHeader(info, "Kantor / Cabang"),
+      accessorKey: "kantor_name",
+      cell: (info: any) => info.getValue() || "-",
+    },
+    {
+      header: (info: any) => renderRowHeader(info, "NIK"),
+      accessorKey: "nik",
+      cell: (info: any) => info.getValue() || "-",
+    },
+    {
+      header: (info: any) => renderRowHeader(info, "Program yang Diikuti"),
+      accessorKey: "programs",
+      cell: (info: any) => {
+        const programs = info.getValue() || [];
+        if (programs.length === 0) return "-";
+        return (
+          <div className="flex flex-wrap gap-1">
+            {programs.map((p: any) => (
+              <span
+                key={p.id}
+                className="inline-flex rounded-md bg-muted px-2 py-0.5 text-xs font-medium"
+              >
+                {p.name}
+              </span>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      header: (info: any) => renderRowHeader(info, "Fasilitator"),
+      accessorKey: "fasilitator.name",
+      cell: (info: any) => info.getValue() || "-",
+    },
+    {
+      header: (info: any) => renderRowHeader(info, "Kelompok"),
+      accessorKey: "group.name",
+      cell: (info: any) => info.getValue() || "-",
+    },
+    {
+      header: (info: any) => renderRowHeader(info, "No. Kontak"),
+      accessorKey: "phone",
+      cell: (info: any) => info.getValue() || "-",
+    },
+    {
+      header: (info: any) => renderRowHeader(info, "Kabupaten/Kota"),
+      accessorKey: "regency.name",
+      cell: (info: any) => info.getValue() || "-",
+    },
+    {
+      header: (info: any) => renderRowHeader(info, "Status"),
+      accessorKey: "status",
+      cell: (info: any) => renderRowStatus(info),
+    },
+    {
+      header: (info: any) => renderRowHeader(info, "Created At"),
+      accessorKey: "created_at",
+      cell: (info: any) => renderRowDate(info.getValue()),
+    },
+  ];
+
+  const formatDataExport = (data: any) => {
+    return data.map((item: any, i: number) => ({
+      No: i + 1,
+      Nama: item.name,
+      NIK: item.nik || "-",
+      Kantor: item.kantor_name || "-",
+      Program: item.programs?.map((p: any) => p.name).join(", ") || "-",
+      Fasilitator: item.fasilitator?.name || "-",
+      Kelompok: item.group?.name || "-",
+      "No. HP": item.phone || "-",
+      Status: item.status ? "Aktif" : "Mandiri/Selesai",
+      "Created At": formatDate(item.created_at),
+    }));
+  };
+
+  return (
+    <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 shadow-xs">
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <div className="w-full sm:w-72">
+            <SelectComponent
+              placeholder="Pilih Kantor Cabang..."
+              value={filterValue?.kantor_id || ""}
+              onChange={(val: any) => {
+                setFilterValue((prev: any) => ({
+                  ...prev,
+                  kantor_id: val || undefined,
+                }));
+              }}
+              data={(kantors || []).map((k: any) => ({
+                value: k.id,
+                label: k.name || k.nama,
+              }))}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
+        <DataTableProvider
+          columns={columns}
+          filterValue={filterValue}
+          refreshData={refreshData}
+          setRefreshData={setRefreshData}
+          urlFetchData={beneficiaries.data().url}
+          formatDataExport={formatDataExport}
+        >
+          <DataTableComponent
+            buttonActive={{
+              create: true,
+              export: true,
+            }}
+          />
+        </DataTableProvider>
+      </div>
+    </div>
+  );
 }
