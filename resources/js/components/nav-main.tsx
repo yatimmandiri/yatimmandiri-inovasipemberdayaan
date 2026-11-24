@@ -8,16 +8,52 @@ import {
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
 import { Link, usePage } from '@inertiajs/react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import {
+    BarChart3Icon,
+    ChevronDown,
+    ChevronRight,
+    CogIcon,
+    CpuIcon,
+    DatabaseIcon,
+    HeartHandshakeIcon,
+    MapIcon,
+    UsersIcon,
+    UsersRoundIcon,
+} from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+    CpuIcon,
+    CogIcon,
+    DatabaseIcon,
+    MapIcon,
+    UsersIcon,
+    UsersRoundIcon,
+    HeartHandshakeIcon,
+    BarChart3Icon,
+    ChevronRight,
+};
+
+const resolveIcon = (icon: any) => {
+    if (!icon) return null;
+    if (typeof icon === 'string') {
+        const Comp = ICON_MAP[icon] || ChevronRight;
+        return <Comp className="mr-2 h-4 w-4" />;
+    }
+    const IconComp = icon;
+    return <IconComp className="mr-2 h-4 w-4" />;
+};
+
 export const MainNav = ({ items }: any) => {
-    const { auth } = usePage<any>().props;
+    const { auth, menus: serverMenus } = usePage<any>().props;
     const { currentUrl } = useCurrentUrl();
 
-    const roles = auth.user.roles || [];
-    const permissions = auth.user.permissions || [];
+    // Prioritaskan menu dari server config/menu.php, fallback ke items
+    const menuSource = (serverMenus && serverMenus.length > 0) ? serverMenus : items;
+
+    const roles = auth?.user?.roles || [];
+    const permissions = auth?.user?.permissions || [];
 
     const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
 
@@ -45,7 +81,7 @@ export const MainNav = ({ items }: any) => {
         requiredRoles.some((role) => roles.includes(role));
 
     const filterMenuByPermissions = (menus: any[]): any[] => {
-        return menus
+        return (menus || [])
             .map((item) => {
                 const requiredRoles: string[] = item.roles ?? [];
 
@@ -69,8 +105,8 @@ export const MainNav = ({ items }: any) => {
     };
 
     const filteredItems = useMemo(() => {
-        return filterMenuByPermissions(items);
-    }, [items, permissions, roles]);
+        return filterMenuByPermissions(menuSource);
+    }, [menuSource, permissions, roles]);
 
     const getMenuKey = (item: any, parents: string[] = []) => {
         return [...parents, item.title].join(' > ');
@@ -80,7 +116,6 @@ export const MainNav = ({ items }: any) => {
         return children?.some((child) => {
             const childPath = getPathname(child.href || '');
 
-            // cocokkan exact atau prefix match
             const isMatch =
                 currentPath === childPath ||
                 currentPath.startsWith(childPath + '/');
@@ -106,21 +141,22 @@ export const MainNav = ({ items }: any) => {
 
         const traverse = (menus: any[], parents: string[] = []) => {
             menus.forEach((item) => {
-                const hasMatchChild = hasExactMatchingChild(
-                    item.children || [],
-                );
+                const itemPath = getPathname(item.href || '');
+                const hasMatchingChild =
+                    item.children && hasExactMatchingChild(item.children);
 
-                if (hasMatchChild) {
-                    [...parents, item.title].forEach((_, idx, arr) => {
-                        const key = getMenuKey(
-                            { title: arr[idx] },
-                            arr.slice(0, idx),
-                        );
+                if (
+                    currentPath === itemPath ||
+                    currentPath.startsWith(itemPath + '/') ||
+                    hasMatchingChild
+                ) {
+                    parents.forEach((key) => {
                         newOpenMenus[key] = true;
                     });
+                    newOpenMenus[getMenuKey(item, parents)] = true;
                 }
 
-                if (item.children?.length) {
+                if (item.children) {
                     traverse(item.children, [...parents, item.title]);
                 }
             });
@@ -130,10 +166,10 @@ export const MainNav = ({ items }: any) => {
         setOpenMenus(newOpenMenus);
     }, [currentPath, filteredItems]);
 
-    const toggleMenu = (key: string) => {
+    const toggleMenu = (menuKey: string) => {
         setOpenMenus((prev: any) => ({
             ...prev,
-            [key]: !prev[key],
+            [menuKey]: !prev[menuKey],
         }));
     };
 
@@ -171,9 +207,7 @@ export const MainNav = ({ items }: any) => {
                             }}
                         >
                             <Link href={item.href || '#'} prefetch>
-                                {item.icon && (
-                                    <item.icon className="mr-2 h-4 w-4" />
-                                )}
+                                {resolveIcon(item.icon)}
                                 <span className="flex-1 truncate text-left">
                                     {item.title}
                                 </span>

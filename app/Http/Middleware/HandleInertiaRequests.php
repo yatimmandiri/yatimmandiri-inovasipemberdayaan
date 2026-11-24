@@ -79,7 +79,33 @@ class HandleInertiaRequests extends Middleware
                     ...array_values($request->route()->parameters())
                 )
                 : [],
+            'menus' => $this->resolveNavigationMenus(config('menu.navigation', [])),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }
+
+    /**
+     * Resolve URL route untuk setiap item navigasi menu.
+     *
+     * @param  array<int, mixed>  $items
+     * @return array<int, mixed>
+     */
+    protected function resolveNavigationMenus(array $items): array
+    {
+        return array_values(array_map(function ($item) {
+            if (isset($item['route'])) {
+                try {
+                    $item['href'] = route($item['route']);
+                } catch (\Throwable) {
+                    $item['href'] = '#';
+                }
+            }
+
+            if (! empty($item['children']) && is_array($item['children'])) {
+                $item['children'] = $this->resolveNavigationMenus($item['children']);
+            }
+
+            return $item;
+        }, $items));
     }
 }
