@@ -29,6 +29,8 @@ import {
   CpuIcon,
   DatabaseIcon,
   MapIcon,
+  PrinterIcon,
+  ShoppingCartIcon,
   UsersIcon,
   UsersRoundIcon,
   HeartHandshakeIcon,
@@ -210,6 +212,13 @@ export const NavigationList = [
             permission: "view-beneficiary",
             icon: ChevronRight,
           },
+        ],
+      },
+      {
+        title: "Transactions",
+        roles: ["Administrators", "Editors"],
+        icon: ShoppingCartIcon,
+        children: [
           {
             title: "Laporan Aktivitas",
             href: activityReports.index().url,
@@ -222,6 +231,13 @@ export const NavigationList = [
             permission: "view-cash-transaction",
             icon: ChevronRight,
           },
+        ],
+      },
+      {
+        title: "Reports",
+        roles: ["Administrators", "Editors"],
+        icon: PrinterIcon,
+        children: [
           {
             title: "Report Data Pemberdayaan",
             href: reports.index().url,

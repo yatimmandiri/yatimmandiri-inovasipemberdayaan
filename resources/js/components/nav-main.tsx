@@ -17,6 +17,10 @@ import {
     DatabaseIcon,
     HeartHandshakeIcon,
     MapIcon,
+    Printer,
+    PrinterIcon,
+    ShoppingCart,
+    ShoppingCartIcon,
     UsersIcon,
     UsersRoundIcon,
 } from 'lucide-react';
@@ -33,6 +37,11 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
     HeartHandshakeIcon,
     BarChart3Icon,
     ChevronRight,
+    ShoppingCart,
+    ShoppingCartIcon,
+    Printer,
+    PrinterIcon,
+    PrintIcon: PrinterIcon || Printer,
 };
 
 const resolveIcon = (icon: any) => {
@@ -57,11 +66,8 @@ export const MainNav = ({ items }: any) => {
 
     const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
 
-    const normalizePath = (path: string) => {
-        if (!path) return '';
-        const trimmed = path.trim().replace(/^\/+|\/+$/g, '');
-        return trimmed ? '/' + trimmed : '/';
-    };
+    const normalizePath = (path: string) =>
+        '/' + (path || '').replace(/^\/+|\/+$/g, '');
 
     const currentPath = normalizePath(currentUrl);
 
@@ -74,17 +80,6 @@ export const MainNav = ({ items }: any) => {
         } catch {
             return normalizePath(href);
         }
-    };
-
-    const isPathActive = (href: string) => {
-        const itemPath = getPathname(href);
-        if (!itemPath || itemPath === '/' || itemPath === '/admin') {
-            return currentPath === itemPath;
-        }
-        return (
-            currentPath === itemPath ||
-            currentPath.startsWith(itemPath + '/')
-        );
     };
 
     const hasPermission = (permission: string) =>
@@ -128,12 +123,22 @@ export const MainNav = ({ items }: any) => {
 
     const hasExactMatchingChild = (children: any[]): boolean => {
         return children?.some((child) => {
-            if (child.href && isPathActive(child.href)) {
-                return true;
+            const childPath = getPathname(child.href || '');
+            if (!childPath) {
+                return (
+                    child.children?.length &&
+                    hasExactMatchingChild(child.children)
+                );
             }
+
+            const isMatch =
+                currentPath === childPath ||
+                currentPath.startsWith(childPath + '/');
+
             return (
-                child.children?.length > 0 &&
-                hasExactMatchingChild(child.children)
+                isMatch ||
+                (child.children?.length &&
+                    hasExactMatchingChild(child.children))
             );
         });
     };
@@ -151,18 +156,21 @@ export const MainNav = ({ items }: any) => {
 
         const traverse = (menus: any[], parents: string[] = []) => {
             menus.forEach((item) => {
-                const isDirectMatch = item.href && isPathActive(item.href);
-                const hasMatchingChild =
-                    item.children && hasExactMatchingChild(item.children);
+                const hasMatchChild = hasExactMatchingChild(
+                    item.children || [],
+                );
 
-                if (isDirectMatch || hasMatchingChild) {
-                    parents.forEach((key) => {
+                if (hasMatchChild) {
+                    [...parents, item.title].forEach((_, idx, arr) => {
+                        const key = getMenuKey(
+                            { title: arr[idx] },
+                            arr.slice(0, idx),
+                        );
                         newOpenMenus[key] = true;
                     });
-                    newOpenMenus[getMenuKey(item, parents)] = true;
                 }
 
-                if (item.children) {
+                if (item.children?.length) {
                     traverse(item.children, [...parents, item.title]);
                 }
             });
@@ -172,10 +180,10 @@ export const MainNav = ({ items }: any) => {
         setOpenMenus(newOpenMenus);
     }, [currentPath, filteredItems]);
 
-    const toggleMenu = (menuKey: string) => {
+    const toggleMenu = (key: string) => {
         setOpenMenus((prev: any) => ({
             ...prev,
-            [menuKey]: !prev[menuKey],
+            [key]: !prev[key],
         }));
     };
 
@@ -186,7 +194,7 @@ export const MainNav = ({ items }: any) => {
     ) => {
         return menuItems.map((item) => {
             const itemPath = getPathname(item.href || '');
-            const isActive = currentPath === itemPath;
+            const isActive = itemPath !== '' && currentPath === itemPath;
             const hasChildren = !!item.children?.length;
             const menuKey = getMenuKey(item, parents);
             const isOpen = openMenus[menuKey] || false;
@@ -201,29 +209,41 @@ export const MainNav = ({ items }: any) => {
                     })}
                 >
                     <div className="flex w-full items-center justify-between">
-                        <SidebarMenuButton
-                            asChild
-                            isActive={isActive}
-                            tooltip={{ children: item.title }}
-                            onClick={(e) => {
-                                if (hasChildren) {
-                                    e.preventDefault();
-                                    toggleMenu(menuKey);
-                                }
-                            }}
-                        >
-                            <Link href={item.href || '#'} prefetch>
+                        {hasChildren ? (
+                            <SidebarMenuButton
+                                isActive={isActive}
+                                tooltip={{ children: item.title }}
+                                onClick={() => toggleMenu(menuKey)}
+                                className="cursor-pointer"
+                            >
                                 {resolveIcon(item.icon)}
                                 <span className="flex-1 truncate text-left">
                                     {item.title}
                                 </span>
-                            </Link>
-                        </SidebarMenuButton>
+                            </SidebarMenuButton>
+                        ) : (
+                            <SidebarMenuButton
+                                asChild
+                                isActive={isActive}
+                                tooltip={{ children: item.title }}
+                            >
+                                <Link href={item.href || '#'} prefetch>
+                                    {resolveIcon(item.icon)}
+                                    <span className="flex-1 truncate text-left">
+                                        {item.title}
+                                    </span>
+                                </Link>
+                            </SidebarMenuButton>
+                        )}
 
                         {hasChildren && (
                             <button
-                                onClick={() => toggleMenu(menuKey)}
-                                className="focus:outline-none"
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleMenu(menuKey);
+                                }}
+                                className="p-1 focus:outline-none cursor-pointer"
                             >
                                 {isOpen ? (
                                     <ChevronDown className="h-4 w-4" />
