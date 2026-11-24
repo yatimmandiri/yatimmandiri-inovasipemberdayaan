@@ -271,4 +271,198 @@ class ReportController extends Controller
             'cashTransactionsList' => $cashTransactionsList,
         ]);
     }
+
+    /**
+     * Report Buku Besar Kas (General Ledger)
+     * Menghitung saldo awal (kumulatif transaksi sebelum periode/bulan dipilih), mutasi kas masuk/keluar, dan saldo akhir.
+     */
+    public function ledger(Request $request)
+    {
+        $kantorId = $request->query('kantor_id');
+        $fasilitatorId = $request->query('fasilitator_id');
+        $groupId = $request->query('group_id');
+        $month = $request->query('month', now()->format('Y-m'));
+
+        // Menentukan rentang tanggal periode bulan
+        $startDate = $request->query('start_date') ?: ($month ? "{$month}-01" : now()->startOfMonth()->toDateString());
+        $endDate = $request->query('end_date') ?: ($month ? \Carbon\Carbon::parse("{$month}-01")->endOfMonth()->toDateString() : now()->endOfMonth()->toDateString());
+
+        $kantors = KantorService::getActive();
+        $fasilitators = Fasilitator::query()->active()->select(['id', 'name', 'kantor_id', 'kantor_name'])->orderBy('name')->get();
+        $groups = Group::query()->active()->select(['id', 'name', 'fasilitator_id', 'kantor_id', 'leader_name'])->orderBy('name')->get();
+
+        // Base filter query callback
+        $applyScope = function ($q) use ($kantorId, $fasilitatorId, $groupId) {
+            $q->when($kantorId, function ($sub) use ($kantorId) {
+                $sub->where(function ($s) use ($kantorId) {
+                    $s->whereHas('group', fn ($g) => $g->where('kantor_id', $kantorId))
+                        ->orWhereHas('fasilitator', fn ($f) => $f->where('kantor_id', $kantorId));
+                });
+            })
+            ->when($fasilitatorId, fn ($sub) => $sub->where('fasilitator_id', $fasilitatorId))
+            ->when($groupId, fn ($sub) => $sub->where('group_id', $groupId));
+        };
+
+        // 1. Saldo Awal: seluruh transaksi SEBELUM $startDate (akhir bulan lalu / sebelum periode)
+        $priorIn = (float) CashTransaction::query()
+            ->tap($applyScope)
+            ->whereDate('transaction_date', '<', $startDate)
+            ->where('type', 'in')
+            ->sum('amount');
+
+        $priorOut = (float) CashTransaction::query()
+            ->tap($applyScope)
+            ->whereDate('transaction_date', '<', $startDate)
+            ->where('type', 'out')
+            ->sum('amount');
+
+        $openingBalance = $priorIn - $priorOut;
+
+        // 2. Mutasi Periode Ini
+        $periodIn = (float) CashTransaction::query()
+            ->tap($applyScope)
+            ->whereDate('transaction_date', '>=', $startDate)
+            ->whereDate('transaction_date', '<=', $endDate)
+            ->where('type', 'in')
+            ->sum('amount');
+
+        $periodOut = (float) CashTransaction::query()
+            ->tap($applyScope)
+            ->whereDate('transaction_date', '>=', $startDate)
+            ->whereDate('transaction_date', '<=', $endDate)
+            ->where('type', 'out')
+            ->sum('amount');
+
+        $closingBalance = $openingBalance + $periodIn - $periodOut;
+
+        return Inertia::render('admin/reports/ledger', [
+            'pageTitle' => 'Report Buku Besar Kas',
+            'kantors' => $kantors,
+            'fasilitators' => $fasilitators,
+            'groups' => $groups,
+            'filters' => [
+                'kantor_id' => $kantorId,
+                'fasilitator_id' => $fasilitatorId,
+                'group_id' => $groupId,
+                'month' => $month,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+            ],
+            'summary' => [
+                'opening_balance' => $openingBalance,
+                'period_in' => $periodIn,
+                'period_out' => $periodOut,
+                'closing_balance' => $closingBalance,
+            ],
+        ]);
+    }
+
+    /**
+     * Data table endpoint for General Ledger report list.
+     */
+    public function getLedgerData(Request $request)
+    {
+        $perPage = $request->input('perPage', null);
+        $page = $request->input('page', 1);
+        $globalSearch = $request->input('globalSearch', '');
+
+        $filterValue = $request->input('filterValue', []);
+        if (is_string($filterValue)) {
+            $filterValue = json_decode($filterValue, true) ?? [];
+        }
+
+        $kantorId = $filterValue['kantor_id'] ?? null;
+        $fasilitatorId = $filterValue['fasilitator_id'] ?? null;
+        $groupId = $filterValue['group_id'] ?? null;
+        $month = $filterValue['month'] ?? now()->format('Y-m');
+
+        $startDate = ! empty($filterValue['start_date']) ? $filterValue['start_date'] : ($month ? "{$month}-01" : now()->startOfMonth()->toDateString());
+        $endDate = ! empty($filterValue['end_date']) ? $filterValue['end_date'] : ($month ? \Carbon\Carbon::parse("{$month}-01")->endOfMonth()->toDateString() : now()->endOfMonth()->toDateString());
+
+        $applyScope = function ($q) use ($kantorId, $fasilitatorId, $groupId) {
+            $q->when($kantorId, function ($sub) use ($kantorId) {
+                $sub->where(function ($s) use ($kantorId) {
+                    $s->whereHas('group', fn ($g) => $g->where('kantor_id', $kantorId))
+                        ->orWhereHas('fasilitator', fn ($f) => $f->where('kantor_id', $kantorId));
+                });
+            })
+            ->when($fasilitatorId, fn ($sub) => $sub->where('fasilitator_id', $fasilitatorId))
+            ->when($groupId, fn ($sub) => $sub->where('group_id', $groupId));
+        };
+
+        // Saldo Awal sebelum $startDate
+        $priorIn = (float) CashTransaction::query()
+            ->tap($applyScope)
+            ->whereDate('transaction_date', '<', $startDate)
+            ->where('type', 'in')
+            ->sum('amount');
+
+        $priorOut = (float) CashTransaction::query()
+            ->tap($applyScope)
+            ->whereDate('transaction_date', '<', $startDate)
+            ->where('type', 'out')
+            ->sum('amount');
+
+        $openingBalance = $priorIn - $priorOut;
+
+        // Ambil seluruh transaksi periode secara kronologis (ASC) untuk menghitung running balance
+        $transactions = CashTransaction::query()
+            ->with(['fasilitator:id,name,kantor_id,kantor_name', 'group:id,name,kantor_id,kantor_name'])
+            ->tap($applyScope)
+            ->whereDate('transaction_date', '>=', $startDate)
+            ->whereDate('transaction_date', '<=', $endDate)
+            ->when(! empty($globalSearch), fn ($q) => $q->search($globalSearch))
+            ->orderBy('transaction_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $running = $openingBalance;
+        $rows = collect();
+
+        foreach ($transactions as $idx => $tx) {
+            $in = $tx->type === 'in' ? (float) $tx->amount : 0;
+            $out = $tx->type === 'out' ? (float) $tx->amount : 0;
+            $running = $running + $in - $out;
+
+            $rows->push([
+                'id' => $tx->id,
+                'row_number' => $idx + 1,
+                'transaction_date' => $tx->transaction_date?->format('Y-m-d'),
+                'type' => $tx->type,
+                'category' => $tx->category,
+                'description' => $tx->description,
+                'group' => $tx->group ? ['id' => $tx->group->id, 'name' => $tx->group->name] : null,
+                'fasilitator' => $tx->fasilitator ? ['id' => $tx->fasilitator->id, 'name' => $tx->fasilitator->name] : null,
+                'cash_in' => $in,
+                'cash_out' => $out,
+                'running_balance' => $running,
+                'created_at' => $tx->created_at?->format('Y-m-d H:i:s'),
+            ]);
+        }
+
+        $total = $rows->count();
+        if ($perPage) {
+            $perPage = (int) $perPage;
+            $page = (int) $page;
+            $pagedData = $rows->forPage($page, $perPage)->values();
+
+            return response()->json([
+                'current_page' => $page,
+                'data' => $pagedData,
+                'from' => $total > 0 ? (($page - 1) * $perPage) + 1 : 0,
+                'to' => min($page * $perPage, $total),
+                'per_page' => $perPage,
+                'total' => $total,
+                'opening_balance' => $openingBalance,
+                'closing_balance' => $running,
+            ]);
+        }
+
+        return response()->json([
+            'data' => $rows,
+            'total' => $total,
+            'opening_balance' => $openingBalance,
+            'closing_balance' => $running,
+        ]);
+    }
 }

@@ -34,6 +34,14 @@ Breadcrumbs::for('admin.reports.cash.data', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.reports.cash')->push('Data', route('admin.reports.cash.data'));
 });
 
+Breadcrumbs::for('admin.reports.ledger', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.dashboard')->push('Buku Besar Kas', route('admin.reports.ledger'));
+});
+
+Breadcrumbs::for('admin.reports.ledger.data', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.reports.ledger')->push('Data', route('admin.reports.ledger.data'));
+});
+
 Breadcrumbs::for('admin.news.index', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.dashboard')->push('Berita', route('admin.news.index'));
 });

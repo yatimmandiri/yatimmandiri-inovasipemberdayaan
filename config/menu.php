@@ -226,6 +226,12 @@ return [
                             'permission' => 'view-cash-transaction',
                             'icon' => 'ChevronRight',
                         ],
+                        [
+                            'title' => 'Buku Besar Kas',
+                            'route' => 'admin.reports.ledger',
+                            'permission' => 'view-cash-transaction',
+                            'icon' => 'ChevronRight',
+                        ],
                     ],
                 ],
             ],

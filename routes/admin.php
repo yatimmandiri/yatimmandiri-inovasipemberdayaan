@@ -131,6 +131,8 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
         Route::get('activities', [ReportController::class, 'activities'])->name('activities');
         Route::get('cash/data', [ReportController::class, 'getCashData'])->name('cash.data');
         Route::get('cash', [ReportController::class, 'cash'])->name('cash');
+        Route::get('ledger/data', [ReportController::class, 'getLedgerData'])->name('ledger.data');
+        Route::get('ledger', [ReportController::class, 'ledger'])->name('ledger');
     });
 
     Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');

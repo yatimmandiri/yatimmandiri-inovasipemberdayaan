@@ -249,6 +249,12 @@ export const NavigationList = [
             permission: "view-cash-transaction",
             icon: ChevronRight,
           },
+          {
+            title: "Buku Besar Kas",
+            href: "/admin/reports/ledger",
+            permission: "view-cash-transaction",
+            icon: ChevronRight,
+          },
         ],
       },
     ],
