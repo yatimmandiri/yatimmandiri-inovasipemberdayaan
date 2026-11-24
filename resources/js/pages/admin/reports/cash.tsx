@@ -1,7 +1,10 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { DataTableComponent } from '@/components/partials/dataTables';
+import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDataTables';
 import { DatePickerComponent } from '@/components/partials/datePicker-component';
 import { SelectComponent } from '@/components/partials/select-component';
+import { renderRowHeader } from '@/components/partials/dataTables/utils/dataTable-utils';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -15,7 +18,6 @@ import { router, usePage } from '@inertiajs/react';
 import {
     ArrowDownLeftIcon,
     ArrowUpRightIcon,
-    DollarSignIcon,
     FilterIcon,
     PrinterIcon,
     RefreshCwIcon,
@@ -40,9 +42,9 @@ export default function CashReportPage() {
         filters,
         summary,
         groupsSummary,
-        cashTransactionsList,
     }: any = usePage<any>().props;
 
+    const [refreshData, setRefreshData] = useState(false);
     const [kantorId, setKantorId] = useState(filters?.kantor_id || '');
     const [fasilitatorId, setFasilitatorId] = useState(filters?.fasilitator_id || '');
     const [groupId, setGroupId] = useState(filters?.group_id || '');
@@ -71,20 +73,27 @@ export default function CashReportPage() {
         return result;
     }, [groups, kantorId, fasilitatorId]);
 
+    const filterValue = useMemo(() => {
+        return {
+            ...(kantorId && { kantor_id: kantorId }),
+            ...(fasilitatorId && { fasilitator_id: fasilitatorId }),
+            ...(groupId && { group_id: groupId }),
+            ...(startDate && { start_date: startDate }),
+            ...(endDate && { end_date: endDate }),
+        };
+    }, [kantorId, fasilitatorId, groupId, startDate, endDate]);
+
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
             '/admin/reports/cash',
-            {
-                ...(kantorId && { kantor_id: kantorId }),
-                ...(fasilitatorId && { fasilitator_id: fasilitatorId }),
-                ...(groupId && { group_id: groupId }),
-                ...(startDate && { start_date: startDate }),
-                ...(endDate && { end_date: endDate }),
-            },
+            filterValue,
             {
                 preserveState: true,
                 preserveScroll: true,
+                onSuccess: () => {
+                    setRefreshData(true);
+                },
             },
         );
     };
@@ -95,7 +104,106 @@ export default function CashReportPage() {
         setGroupId('');
         setStartDate('');
         setEndDate('');
-        router.get('/admin/reports/cash', {}, { preserveState: true });
+        router.get(
+            '/admin/reports/cash',
+            {},
+            {
+                preserveState: true,
+                onSuccess: () => {
+                    setRefreshData(true);
+                },
+            },
+        );
+    };
+
+    const columns = [
+        {
+            header: (info: any) => renderRowHeader(info, 'Tanggal'),
+            accessorKey: 'transaction_date',
+            cell: (info: any) => (
+                <span className="whitespace-nowrap font-medium">
+                    {formatDate(info.getValue())}
+                </span>
+            ),
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Jenis'),
+            accessorKey: 'type',
+            cell: (info: any) => {
+                const isIncome = info.getValue() === 'in';
+                return (
+                    <Badge
+                        className={`text-xs ${
+                            isIncome
+                                ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                                : 'bg-rose-500 text-white hover:bg-rose-600'
+                        }`}
+                    >
+                        {isIncome ? 'Masuk' : 'Keluar'}
+                    </Badge>
+                );
+            },
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Kategori'),
+            accessorKey: 'category',
+            cell: (info: any) => info.getValue() || '-',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Kelompok'),
+            accessorKey: 'group_name',
+            cell: (info: any) => (
+                <span className="font-semibold text-foreground">
+                    {info.row.original.group?.name || '-'}
+                </span>
+            ),
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Fasilitator'),
+            accessorKey: 'fasilitator_name',
+            cell: (info: any) => info.row.original.fasilitator?.name || '-',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Keterangan'),
+            accessorKey: 'description',
+            cell: (info: any) => (
+                <span className="text-sm max-w-[280px] line-clamp-2">
+                    {info.getValue() || '-'}
+                </span>
+            ),
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Nominal'),
+            accessorKey: 'amount',
+            cell: (info: any) => {
+                const isIncome = info.row.original.type === 'in';
+                return (
+                    <span
+                        className={`font-bold whitespace-nowrap ${
+                            isIncome
+                                ? 'text-emerald-600 dark:text-emerald-400'
+                                : 'text-rose-600 dark:text-rose-400'
+                        }`}
+                    >
+                        {isIncome ? '+ ' : '- '}
+                        {formatRupiah(info.getValue())}
+                    </span>
+                );
+            },
+        },
+    ];
+
+    const formatDataExport = (data: any) => {
+        return data.map((item: any, i: number) => ({
+            No: i + 1,
+            Tanggal: formatDate(item.transaction_date),
+            Jenis: item.type === 'in' ? 'Kas Masuk' : 'Kas Keluar',
+            Kategori: item.category || '-',
+            Kelompok: item.group?.name || '-',
+            Fasilitator: item.fasilitator?.name || '-',
+            Keterangan: item.description || '-',
+            Nominal: item.amount,
+        }));
     };
 
     return (
@@ -105,7 +213,7 @@ export default function CashReportPage() {
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-4 border-b border-sidebar-border/50 pb-4">
                     <div>
                         <div className="flex items-center gap-2">
-                            <WalletIcon className="h-5 w-5 text-primary" />
+                            <WalletIcon className="h-5 w-5 text-emerald-600" />
                             <h2 className="text-xl font-bold tracking-tight text-foreground">
                                 Report Data Kas Kelompok
                             </h2>
@@ -127,7 +235,8 @@ export default function CashReportPage() {
                     </Button>
                 </div>
 
-                <form onSubmit={handleFilter} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 items-end">
+                {/* 4 Kolom Grid Filter */}
+                <form onSubmit={handleFilter} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end">
                     <div>
                         <SelectComponent
                             label="Kantor Cabang"
@@ -174,25 +283,23 @@ export default function CashReportPage() {
                         />
                     </div>
 
-                    <div>
+                    {/* Rentang Tanggal di Kolom ke-4 */}
+                    <div className="grid grid-cols-2 gap-2">
                         <DatePickerComponent
                             label="Dari Tanggal"
                             placeholder="Mulai"
                             value={startDate}
                             onChange={(val: any) => setStartDate(val || '')}
                         />
-                    </div>
-
-                    <div>
                         <DatePickerComponent
-                            label="Sampai Tanggal"
+                            label="Sampai"
                             placeholder="Selesai"
                             value={endDate}
                             onChange={(val: any) => setEndDate(val || '')}
                         />
                     </div>
 
-                    <div className="flex gap-2 sm:col-span-2 lg:col-span-5 justify-end pt-2">
+                    <div className="flex gap-2 sm:col-span-2 lg:col-span-4 justify-end pt-2">
                         <Button type="submit" size="default" className="gap-1.5 px-6">
                             <FilterIcon className="h-4 w-4" />
                             Terapkan Filter
@@ -211,7 +318,7 @@ export default function CashReportPage() {
                 </form>
             </div>
 
-            {/* Stat Cards Keuangan */}
+            {/* Stat Cards */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="rounded-xl border border-sidebar-border/70 bg-card p-5 shadow-xs">
                     <div className="flex items-center justify-between">
@@ -220,10 +327,10 @@ export default function CashReportPage() {
                             <ArrowDownLeftIcon className="h-5 w-5" />
                         </div>
                     </div>
-                    <div className="mt-3 text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+                    <div className="mt-3 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                         {formatRupiah(summary?.total_cash_in || 0)}
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">Penyaluran modal, hasil penjualan, & iuran kelompok</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Akumulasi seluruh pemasukan / iuran kas kelompok</p>
                 </div>
 
                 <div className="rounded-xl border border-sidebar-border/70 bg-card p-5 shadow-xs">
@@ -233,35 +340,33 @@ export default function CashReportPage() {
                             <ArrowUpRightIcon className="h-5 w-5" />
                         </div>
                     </div>
-                    <div className="mt-3 text-3xl font-bold text-rose-600 dark:text-rose-400">
+                    <div className="mt-3 text-2xl font-bold text-rose-600 dark:text-rose-400">
                         {formatRupiah(summary?.total_cash_out || 0)}
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">Pembelian bahan baku, biaya operasional, & bagi hasil</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Akumulasi seluruh pengeluaran operasional / pinjaman kas</p>
                 </div>
 
                 <div className="rounded-xl border border-sidebar-border/70 bg-card p-5 shadow-xs">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-muted-foreground uppercase">Saldo Kas Tersedia</span>
-                        <div className="rounded-md bg-blue-500/10 p-2 text-blue-600 dark:text-blue-400">
-                            <DollarSignIcon className="h-5 w-5" />
+                        <span className="text-xs font-medium text-muted-foreground uppercase">Saldo Kas Berjalan</span>
+                        <div className="rounded-md bg-primary/10 p-2 text-primary">
+                            <WalletIcon className="h-5 w-5" />
                         </div>
                     </div>
-                    <div className={`mt-3 text-3xl font-bold ${
-                        (summary?.cash_balance || 0) >= 0
-                            ? 'text-foreground'
-                            : 'text-destructive'
+                    <div className={`mt-3 text-2xl font-bold ${
+                        (summary?.cash_balance || 0) >= 0 ? 'text-foreground' : 'text-destructive'
                     }`}>
                         {formatRupiah(summary?.cash_balance || 0)}
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">Akumulasi saldo kas bersih saat ini</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Total saldo kas tersisa dari seluruh kelompok terpilih</p>
                 </div>
             </div>
 
-            {/* Rekapitulasi Keuangan per Kelompok */}
+            {/* Rekapitulasi Kas per Kelompok */}
             <div className="rounded-xl border border-sidebar-border/70 bg-card shadow-xs">
                 <div className="border-b border-sidebar-border/50 p-5">
                     <h3 className="text-base font-semibold text-foreground">
-                        Rekapitulasi Saldo Keuangan per Kelompok Binaan
+                        Rekapitulasi Saldo Kas per Kelompok Binaan
                     </h3>
                 </div>
 
@@ -313,7 +418,7 @@ export default function CashReportPage() {
                 </div>
             </div>
 
-            {/* Daftar Lengkap Transaksi Kas */}
+            {/* Rincian Seluruh Riwayat Kas dengan DataTableComponent */}
             <div className="rounded-xl border border-sidebar-border/70 bg-card shadow-xs">
                 <div className="border-b border-sidebar-border/50 p-5">
                     <h3 className="text-base font-semibold text-foreground">
@@ -321,66 +426,23 @@ export default function CashReportPage() {
                     </h3>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-12 text-center">No</TableHead>
-                                <TableHead>Tanggal</TableHead>
-                                <TableHead>Jenis</TableHead>
-                                <TableHead>Kategori</TableHead>
-                                <TableHead>Kelompok</TableHead>
-                                <TableHead>Fasilitator</TableHead>
-                                <TableHead>Keterangan</TableHead>
-                                <TableHead className="text-right">Nominal</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {(cashTransactionsList || []).length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
-                                        Tidak ada data mutasi kas.
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                cashTransactionsList.map((tx: any, idx: number) => (
-                                    <TableRow key={tx.id}>
-                                        <TableCell className="text-center font-medium">{idx + 1}</TableCell>
-                                        <TableCell className="whitespace-nowrap font-medium">
-                                            {formatDate(tx.transaction_date)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge
-                                                className={`text-xs ${
-                                                    tx.type === 'in'
-                                                        ? 'bg-emerald-500 text-white'
-                                                        : 'bg-rose-500 text-white'
-                                                }`}
-                                            >
-                                                {tx.type === 'in' ? 'Masuk' : 'Keluar'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>{tx.category || '-'}</TableCell>
-                                        <TableCell className="font-semibold text-foreground">
-                                            {tx.group?.name || '-'}
-                                        </TableCell>
-                                        <TableCell>{tx.fasilitator?.name || '-'}</TableCell>
-                                        <TableCell className="text-sm max-w-[280px]">
-                                            {tx.description || '-'}
-                                        </TableCell>
-                                        <TableCell className={`text-right font-bold whitespace-nowrap ${
-                                            tx.type === 'in'
-                                                ? 'text-emerald-600 dark:text-emerald-400'
-                                                : 'text-rose-600 dark:text-rose-400'
-                                        }`}>
-                                            {tx.type === 'in' ? '+ ' : '- '}
-                                            {formatRupiah(tx.amount)}
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
+                <div className="relative overflow-hidden">
+                    <DataTableProvider
+                        columns={columns}
+                        filterValue={filterValue}
+                        refreshData={refreshData}
+                        setRefreshData={setRefreshData}
+                        urlFetchData="/admin/reports/cash/data"
+                        formatDataExport={formatDataExport}
+                        withActions={false}
+                    >
+                        <DataTableComponent
+                            buttonActive={{
+                                create: false,
+                                export: true,
+                            }}
+                        />
+                    </DataTableProvider>
                 </div>
             </div>
         </div>

@@ -1,7 +1,10 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { DataTableComponent } from '@/components/partials/dataTables';
+import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDataTables';
 import { DatePickerComponent } from '@/components/partials/datePicker-component';
 import { SelectComponent } from '@/components/partials/select-component';
+import { renderRowHeader } from '@/components/partials/dataTables/utils/dataTable-utils';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -15,7 +18,6 @@ import { router, usePage } from '@inertiajs/react';
 import {
     ActivityIcon,
     CalendarDaysIcon,
-    DownloadIcon,
     FilterIcon,
     PrinterIcon,
     RefreshCwIcon,
@@ -31,9 +33,9 @@ export default function ActivitiesReportPage() {
         filters,
         summary,
         groupsSummary,
-        activitiesList,
     }: any = usePage<any>().props;
 
+    const [refreshData, setRefreshData] = useState(false);
     const [kantorId, setKantorId] = useState(filters?.kantor_id || '');
     const [fasilitatorId, setFasilitatorId] = useState(filters?.fasilitator_id || '');
     const [groupId, setGroupId] = useState(filters?.group_id || '');
@@ -62,20 +64,27 @@ export default function ActivitiesReportPage() {
         return result;
     }, [groups, kantorId, fasilitatorId]);
 
+    const filterValue = useMemo(() => {
+        return {
+            ...(kantorId && { kantor_id: kantorId }),
+            ...(fasilitatorId && { fasilitator_id: fasilitatorId }),
+            ...(groupId && { group_id: groupId }),
+            ...(startDate && { start_date: startDate }),
+            ...(endDate && { end_date: endDate }),
+        };
+    }, [kantorId, fasilitatorId, groupId, startDate, endDate]);
+
     const handleFilter = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
             '/admin/reports/activities',
-            {
-                ...(kantorId && { kantor_id: kantorId }),
-                ...(fasilitatorId && { fasilitator_id: fasilitatorId }),
-                ...(groupId && { group_id: groupId }),
-                ...(startDate && { start_date: startDate }),
-                ...(endDate && { end_date: endDate }),
-            },
+            filterValue,
             {
                 preserveState: true,
                 preserveScroll: true,
+                onSuccess: () => {
+                    setRefreshData(true);
+                },
             },
         );
     };
@@ -86,7 +95,79 @@ export default function ActivitiesReportPage() {
         setGroupId('');
         setStartDate('');
         setEndDate('');
-        router.get('/admin/reports/activities', {}, { preserveState: true });
+        router.get(
+            '/admin/reports/activities',
+            {},
+            {
+                preserveState: true,
+                onSuccess: () => {
+                    setRefreshData(true);
+                },
+            },
+        );
+    };
+
+    const columns = [
+        {
+            header: (info: any) => renderRowHeader(info, 'Tanggal'),
+            accessorKey: 'activity_date',
+            cell: (info: any) => (
+                <span className="whitespace-nowrap font-medium">
+                    {formatDate(info.getValue())}
+                </span>
+            ),
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Judul Kegiatan'),
+            accessorKey: 'title',
+            cell: (info: any) => (
+                <span className="font-semibold text-foreground">
+                    {info.getValue()}
+                </span>
+            ),
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Jenis Kegiatan'),
+            accessorKey: 'type',
+            cell: (info: any) => info.getValue() || '-',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Kelompok'),
+            accessorKey: 'group_name',
+            cell: (info: any) => info.row.original.group?.name || '-',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Fasilitator'),
+            accessorKey: 'fasilitator_name',
+            cell: (info: any) => info.row.original.fasilitator?.name || '-',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Lokasi'),
+            accessorKey: 'location',
+            cell: (info: any) => info.getValue() || '-',
+        },
+        {
+            header: (info: any) => renderRowHeader(info, 'Peserta'),
+            accessorKey: 'participants_count',
+            cell: (info: any) => (
+                <Badge variant="secondary" className="font-medium">
+                    {info.getValue() || 0} Orang
+                </Badge>
+            ),
+        },
+    ];
+
+    const formatDataExport = (data: any) => {
+        return data.map((item: any, i: number) => ({
+            No: i + 1,
+            Tanggal: formatDate(item.activity_date),
+            'Judul Kegiatan': item.title,
+            Jenis: item.type || '-',
+            Kelompok: item.group?.name || '-',
+            Fasilitator: item.fasilitator?.name || '-',
+            Lokasi: item.location || '-',
+            'Jumlah Peserta': item.participants_count || 0,
+        }));
     };
 
     return (
@@ -118,7 +199,8 @@ export default function ActivitiesReportPage() {
                     </Button>
                 </div>
 
-                <form onSubmit={handleFilter} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 items-end">
+                {/* 4 Kolom Grid Filter */}
+                <form onSubmit={handleFilter} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end">
                     <div>
                         <SelectComponent
                             label="Kantor Cabang"
@@ -165,25 +247,23 @@ export default function ActivitiesReportPage() {
                         />
                     </div>
 
-                    <div>
+                    {/* Rentang Tanggal di Kolom ke-4 */}
+                    <div className="grid grid-cols-2 gap-2">
                         <DatePickerComponent
                             label="Dari Tanggal"
                             placeholder="Mulai"
                             value={startDate}
                             onChange={(val: any) => setStartDate(val || '')}
                         />
-                    </div>
-
-                    <div>
                         <DatePickerComponent
-                            label="Sampai Tanggal"
+                            label="Sampai"
                             placeholder="Selesai"
                             value={endDate}
                             onChange={(val: any) => setEndDate(val || '')}
                         />
                     </div>
 
-                    <div className="flex gap-2 sm:col-span-2 lg:col-span-5 justify-end pt-2">
+                    <div className="flex gap-2 sm:col-span-2 lg:col-span-4 justify-end pt-2">
                         <Button type="submit" size="default" className="gap-1.5 px-6">
                             <FilterIcon className="h-4 w-4" />
                             Terapkan Filter
@@ -279,7 +359,7 @@ export default function ActivitiesReportPage() {
                 </div>
             </div>
 
-            {/* Rincian Seluruh Riwayat Kegiatan */}
+            {/* Rincian Seluruh Riwayat Kegiatan dengan DataTableComponent */}
             <div className="rounded-xl border border-sidebar-border/70 bg-card shadow-xs">
                 <div className="border-b border-sidebar-border/50 p-5">
                     <h3 className="text-base font-semibold text-foreground">
@@ -287,51 +367,23 @@ export default function ActivitiesReportPage() {
                     </h3>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-12 text-center">No</TableHead>
-                                <TableHead>Tanggal</TableHead>
-                                <TableHead>Judul Kegiatan</TableHead>
-                                <TableHead>Jenis</TableHead>
-                                <TableHead>Kelompok</TableHead>
-                                <TableHead>Fasilitator</TableHead>
-                                <TableHead>Lokasi</TableHead>
-                                <TableHead className="text-center">Peserta</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {(activitiesList || []).length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
-                                        Tidak ada data kegiatan.
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                activitiesList.map((act: any, idx: number) => (
-                                    <TableRow key={act.id}>
-                                        <TableCell className="text-center font-medium">{idx + 1}</TableCell>
-                                        <TableCell className="whitespace-nowrap font-medium">
-                                            {formatDate(act.activity_date)}
-                                        </TableCell>
-                                        <TableCell className="font-semibold text-foreground">
-                                            {act.title}
-                                        </TableCell>
-                                        <TableCell>{act.type || '-'}</TableCell>
-                                        <TableCell>{act.group?.name || '-'}</TableCell>
-                                        <TableCell>{act.fasilitator?.name || '-'}</TableCell>
-                                        <TableCell>{act.location || '-'}</TableCell>
-                                        <TableCell className="text-center">
-                                            <Badge variant="secondary">
-                                                {act.participants_count || 0} Orang
-                                            </Badge>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
+                <div className="relative overflow-hidden">
+                    <DataTableProvider
+                        columns={columns}
+                        filterValue={filterValue}
+                        refreshData={refreshData}
+                        setRefreshData={setRefreshData}
+                        urlFetchData="/admin/reports/activities/data"
+                        formatDataExport={formatDataExport}
+                        withActions={false}
+                    >
+                        <DataTableComponent
+                            buttonActive={{
+                                create: false,
+                                export: true,
+                            }}
+                        />
+                    </DataTableProvider>
                 </div>
             </div>
         </div>

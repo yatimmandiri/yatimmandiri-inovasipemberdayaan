@@ -91,6 +91,99 @@ class ReportController extends Controller
     }
 
     /**
+     * Data table endpoint for activities report list.
+     */
+    public function getActivitiesData(Request $request)
+    {
+        $perPage = $request->input('perPage', null);
+        $page = $request->input('page', null);
+        $globalSearch = $request->input('globalSearch', '');
+        $orderBy = $request->input('orderBy', 'activity_date');
+        $orderDirection = strtolower($request->input('orderDirection', 'desc'));
+
+        $allowedSorts = ['id', 'title', 'type', 'activity_date', 'participants_count', 'created_at'];
+        if (! in_array($orderBy, $allowedSorts, true)) {
+            $orderBy = 'activity_date';
+        }
+        if (! in_array($orderDirection, ['asc', 'desc'], true)) {
+            $orderDirection = 'desc';
+        }
+
+        $filterValue = $request->input('filterValue', []);
+        if (is_string($filterValue)) {
+            $filterValue = json_decode($filterValue, true) ?? [];
+        }
+
+        $query = ActivityReport::query()
+            ->with(['fasilitator:id,name,kantor_id,kantor_name', 'group:id,name,kantor_id,kantor_name'])
+            ->when(! empty($globalSearch), fn ($q) => $q->search($globalSearch))
+            ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
+                $q->where(function ($sub) use ($filterValue) {
+                    $sub->whereHas('group', fn ($g) => $g->where('kantor_id', $filterValue['kantor_id']))
+                        ->orWhereHas('fasilitator', fn ($f) => $f->where('kantor_id', $filterValue['kantor_id']));
+                });
+            })
+            ->when(! empty($filterValue['fasilitator_id']), fn ($q) => $q->where('fasilitator_id', $filterValue['fasilitator_id']))
+            ->when(! empty($filterValue['group_id']), fn ($q) => $q->where('group_id', $filterValue['group_id']))
+            ->when(! empty($filterValue['start_date']), fn ($q) => $q->whereDate('activity_date', '>=', $filterValue['start_date']))
+            ->when(! empty($filterValue['end_date']), fn ($q) => $q->whereDate('activity_date', '<=', $filterValue['end_date']))
+            ->orderBy($orderBy, $orderDirection);
+
+        $data = $perPage
+            ? $query->paginate((int) $perPage, ['*'], 'page', (int) $page)
+            : $query->get();
+
+        return response()->json($data);
+    }
+
+    /**
+     * Data table endpoint for cash transactions report list.
+     */
+    public function getCashData(Request $request)
+    {
+        $perPage = $request->input('perPage', null);
+        $page = $request->input('page', null);
+        $globalSearch = $request->input('globalSearch', '');
+        $orderBy = $request->input('orderBy', 'transaction_date');
+        $orderDirection = strtolower($request->input('orderDirection', 'desc'));
+
+        $allowedSorts = ['id', 'transaction_date', 'type', 'amount', 'category', 'created_at'];
+        if (! in_array($orderBy, $allowedSorts, true)) {
+            $orderBy = 'transaction_date';
+        }
+        if (! in_array($orderDirection, ['asc', 'desc'], true)) {
+            $orderDirection = 'desc';
+        }
+
+        $filterValue = $request->input('filterValue', []);
+        if (is_string($filterValue)) {
+            $filterValue = json_decode($filterValue, true) ?? [];
+        }
+
+        $query = CashTransaction::query()
+            ->with(['fasilitator:id,name,kantor_id,kantor_name', 'group:id,name,kantor_id,kantor_name'])
+            ->when(! empty($globalSearch), fn ($q) => $q->search($globalSearch))
+            ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
+                $q->where(function ($sub) use ($filterValue) {
+                    $sub->whereHas('group', fn ($g) => $g->where('kantor_id', $filterValue['kantor_id']))
+                        ->orWhereHas('fasilitator', fn ($f) => $f->where('kantor_id', $filterValue['kantor_id']));
+                });
+            })
+            ->when(! empty($filterValue['type']), fn ($q) => $q->where('type', $filterValue['type']))
+            ->when(! empty($filterValue['fasilitator_id']), fn ($q) => $q->where('fasilitator_id', $filterValue['fasilitator_id']))
+            ->when(! empty($filterValue['group_id']), fn ($q) => $q->where('group_id', $filterValue['group_id']))
+            ->when(! empty($filterValue['start_date']), fn ($q) => $q->whereDate('transaction_date', '>=', $filterValue['start_date']))
+            ->when(! empty($filterValue['end_date']), fn ($q) => $q->whereDate('transaction_date', '<=', $filterValue['end_date']))
+            ->orderBy($orderBy, $orderDirection);
+
+        $data = $perPage
+            ? $query->paginate((int) $perPage, ['*'], 'page', (int) $page)
+            : $query->get();
+
+        return response()->json($data);
+    }
+
+    /**
      * Report Data Kas Masuk / Keluar (Rekap Kas & Saldo per Kelompok per Fasilitator)
      */
     public function cash(Request $request)

@@ -127,7 +127,9 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
     Route::resource('cash-transactions', CashTransactionController::class);
 
     Route::prefix('reports')->as('reports.')->group(function () {
+        Route::get('activities/data', [ReportController::class, 'getActivitiesData'])->name('activities.data');
         Route::get('activities', [ReportController::class, 'activities'])->name('activities');
+        Route::get('cash/data', [ReportController::class, 'getCashData'])->name('cash.data');
         Route::get('cash', [ReportController::class, 'cash'])->name('cash');
     });
 
