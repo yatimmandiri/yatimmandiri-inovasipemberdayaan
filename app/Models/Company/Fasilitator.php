@@ -76,6 +76,11 @@ class Fasilitator extends Model
         return $this->hasMany(ActivityReport::class);
     }
 
+    public function cashTransactions(): HasMany
+    {
+        return $this->hasMany(CashTransaction::class);
+    }
+
     public function province(): BelongsTo
     {
         return $this->belongsTo(Province::class);

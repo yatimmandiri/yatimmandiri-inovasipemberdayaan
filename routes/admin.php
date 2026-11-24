@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ActivityReportController;
 use App\Http\Controllers\Admin\BeneficiaryController;
+use App\Http\Controllers\Admin\CashTransactionController;
 use App\Http\Controllers\Admin\Company\CategoryController;
 use App\Http\Controllers\Admin\Company\GalleryController;
 use App\Http\Controllers\Admin\Company\LocationController;
@@ -119,6 +120,10 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
     Route::put('activity-reports/{activity_report}/status', [ActivityReportController::class, 'status'])->name('activity-reports.status');
     Route::get('activity-reports/data', [ActivityReportController::class, 'getData'])->name('activity-reports.data');
     Route::resource('activity-reports', ActivityReportController::class);
+
+    Route::put('cash-transactions/{cash_transaction}/status', [CashTransactionController::class, 'status'])->name('cash-transactions.status');
+    Route::get('cash-transactions/data', [CashTransactionController::class, 'getData'])->name('cash-transactions.data');
+    Route::resource('cash-transactions', CashTransactionController::class);
 
     Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');
     Route::resource('news', NewsController::class)->only(['index']);

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             MitraSeeder::class,
             SliderSeeder::class,
             ProductSeeder::class,
+            PemberdayaanSeeder::class,
         ]);
     }
 }
