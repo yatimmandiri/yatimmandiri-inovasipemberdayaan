@@ -43,6 +43,9 @@ class CashTransactionController extends Controller
         return Inertia::render('admin/cash-transactions/list', [
             'pageTitle' => 'Laporan Kas Kelompok',
             'kantors' => KantorService::getActive(),
+            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name', 'kantor_id'])->orderBy('name')->get(),
+            'groups' => Group::query()->active()->select(['id', 'name', 'fasilitator_id', 'kantor_id'])->orderBy('name')->get(),
+            'categories' => self::CATEGORIES,
         ]);
     }
 
@@ -81,6 +84,15 @@ class CashTransactionController extends Controller
             })
             ->when(isset($filterValue['group_id']) && ! empty($filterValue['group_id']), function ($q) use ($filterValue) {
                 $q->where('group_id', $filterValue['group_id']);
+            })
+            ->when(! empty($filterValue['category']), function ($q) use ($filterValue) {
+                $q->where('category', $filterValue['category']);
+            })
+            ->when(! empty($filterValue['start_date']), function ($q) use ($filterValue) {
+                $q->whereDate('transaction_date', '>=', $filterValue['start_date']);
+            })
+            ->when(! empty($filterValue['end_date']), function ($q) use ($filterValue) {
+                $q->whereDate('transaction_date', '<=', $filterValue['end_date']);
             })
             ->when(isset($filterValue['status']) && $filterValue['status'] !== 'all' && $filterValue['status'] !== '', function ($q) use ($filterValue) {
                 $q->where('status', filter_var($filterValue['status'], FILTER_VALIDATE_BOOLEAN));

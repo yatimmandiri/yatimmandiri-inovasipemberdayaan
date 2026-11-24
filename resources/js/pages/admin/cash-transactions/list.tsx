@@ -1,8 +1,10 @@
 import { DataTableComponent } from '@/components/partials/dataTables';
 import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDataTables';
+import { DatePickerComponent } from '@/components/partials/datePicker-component';
 import { SelectComponent } from '@/components/partials/select-component';
 import { renderRowHeader } from '@/components/partials/dataTables/utils/dataTable-utils';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import cashTransactions from '@/routes/admin/cash-transactions';
 import { formatDate } from '@/utils/formatDate';
 import { router, usePage } from '@inertiajs/react';
@@ -11,8 +13,10 @@ import {
     ArrowUpRightIcon,
     BadgeCheckIcon,
     BadgeXIcon,
+    FilterIcon,
+    RefreshCwIcon,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const formatRupiah = (val: number | string) => {
     const num = Number(val || 0);
@@ -24,9 +28,31 @@ const formatRupiah = (val: number | string) => {
 };
 
 export default function ListPage() {
-    const { kantors }: any = usePage<any>().props;
+    const { kantors, fasilitators, groups, categories }: any = usePage<any>().props;
     const [refreshData, setRefreshData] = useState(false);
     const [filterValue, setFilterValue] = useState<any>({});
+
+    const filteredFasilitators = useMemo(() => {
+        if (!filterValue?.kantor_id) return fasilitators || [];
+        return (fasilitators || []).filter(
+            (f: any) => String(f.kantor_id) === String(filterValue.kantor_id),
+        );
+    }, [fasilitators, filterValue?.kantor_id]);
+
+    const filteredGroups = useMemo(() => {
+        let result = groups || [];
+        if (filterValue?.kantor_id) {
+            result = result.filter(
+                (g: any) => String(g.kantor_id) === String(filterValue.kantor_id),
+            );
+        }
+        if (filterValue?.fasilitator_id) {
+            result = result.filter(
+                (g: any) => String(g.fasilitator_id) === String(filterValue.fasilitator_id),
+            );
+        }
+        return result;
+    }, [groups, filterValue?.kantor_id, filterValue?.fasilitator_id]);
 
     const renderRowStatus = (info: any) => {
         const handleStatus = (id: number) => {
@@ -159,25 +185,123 @@ export default function ListPage() {
         }));
     };
 
+    const handleResetFilter = () => {
+        setFilterValue({});
+    };
+
     return (
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 shadow-xs">
-                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                    <span className="text-sm font-medium text-foreground whitespace-nowrap">Filter Kantor:</span>
-                    <div className="w-full sm:w-72">
-                        <SelectComponent
-                            placeholder="Pilih Kantor Cabang..."
-                            value={filterValue?.kantor_id || ''}
+            {/* Filter Toolbar */}
+            <div className="rounded-xl border border-sidebar-border/70 bg-card p-4 shadow-xs">
+                <div className="mb-3 flex items-center justify-between border-b border-sidebar-border/50 pb-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                        <FilterIcon className="h-4 w-4 text-primary" />
+                        <span>Filter Transaksi Kas</span>
+                    </div>
+                    {Object.keys(filterValue).length > 0 && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleResetFilter}
+                            className="h-7 text-xs text-muted-foreground gap-1 hover:text-foreground"
+                        >
+                            <RefreshCwIcon className="h-3 w-3" />
+                            Reset Filter
+                        </Button>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                    <SelectComponent
+                        label="Kantor Cabang"
+                        placeholder="Semua Kantor"
+                        value={filterValue?.kantor_id || ''}
+                        onChange={(val: any) => {
+                            setFilterValue((prev: any) => ({
+                                ...prev,
+                                kantor_id: val || undefined,
+                                fasilitator_id: undefined,
+                                group_id: undefined,
+                            }));
+                        }}
+                        data={(kantors || []).map((k: any) => ({
+                            value: k.id,
+                            label: k.name || k.nama,
+                        }))}
+                    />
+
+                    <SelectComponent
+                        label="Jenis Kas"
+                        placeholder="Semua Jenis"
+                        value={filterValue?.type || ''}
+                        onChange={(val: any) => {
+                            setFilterValue((prev: any) => ({
+                                ...prev,
+                                type: val || undefined,
+                            }));
+                        }}
+                        data={[
+                            { value: 'in', label: 'Kas Masuk' },
+                            { value: 'out', label: 'Kas Keluar' },
+                        ]}
+                    />
+
+                    <SelectComponent
+                        label="Fasilitator"
+                        placeholder="Semua Fasilitator"
+                        value={filterValue?.fasilitator_id || ''}
+                        onChange={(val: any) => {
+                            setFilterValue((prev: any) => ({
+                                ...prev,
+                                fasilitator_id: val || undefined,
+                                group_id: undefined,
+                            }));
+                        }}
+                        data={filteredFasilitators.map((f: any) => ({
+                            value: f.id,
+                            label: f.name,
+                        }))}
+                    />
+
+                    <SelectComponent
+                        label="Kelompok Binaan"
+                        placeholder="Semua Kelompok"
+                        value={filterValue?.group_id || ''}
+                        onChange={(val: any) => {
+                            setFilterValue((prev: any) => ({
+                                ...prev,
+                                group_id: val || undefined,
+                            }));
+                        }}
+                        data={filteredGroups.map((g: any) => ({
+                            value: g.id,
+                            label: g.name,
+                        }))}
+                    />
+
+                    <div className="grid grid-cols-2 gap-2">
+                        <DatePickerComponent
+                            label="Dari Tanggal"
+                            placeholder="Mulai"
+                            value={filterValue?.start_date || ''}
                             onChange={(val: any) => {
                                 setFilterValue((prev: any) => ({
                                     ...prev,
-                                    kantor_id: val || undefined,
+                                    start_date: val || undefined,
                                 }));
                             }}
-                            data={(kantors || []).map((k: any) => ({
-                                value: k.id,
-                                label: k.name || k.nama,
-                            }))}
+                        />
+                        <DatePickerComponent
+                            label="Sampai Tanggal"
+                            placeholder="Selesai"
+                            value={filterValue?.end_date || ''}
+                            onChange={(val: any) => {
+                                setFilterValue((prev: any) => ({
+                                    ...prev,
+                                    end_date: val || undefined,
+                                }));
+                            }}
                         />
                     </div>
                 </div>

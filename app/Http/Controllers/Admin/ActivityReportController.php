@@ -41,6 +41,8 @@ class ActivityReportController extends Controller
         return Inertia::render('admin/activity-reports/list', [
             'pageTitle' => 'Laporan Aktivitas',
             'kantors' => KantorService::getActive(),
+            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name', 'kantor_id'])->orderBy('name')->get(),
+            'groups' => Group::query()->active()->select(['id', 'name', 'fasilitator_id', 'kantor_id'])->orderBy('name')->get(),
         ]);
     }
 
@@ -72,12 +74,27 @@ class ActivityReportController extends Controller
 
         $query = ActivityReport::query()
             ->with(['fasilitator:id,name,kantor_id,kantor_name', 'group:id,name,kantor_id,kantor_name'])
-            ->search($globalSearch)
+            ->when(! empty($globalSearch), fn ($q) => $q->search($globalSearch))
             ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
                 $q->where(function ($sub) use ($filterValue) {
                     $sub->whereHas('group', fn ($g) => $g->where('kantor_id', $filterValue['kantor_id']))
                         ->orWhereHas('fasilitator', fn ($f) => $f->where('kantor_id', $filterValue['kantor_id']));
                 });
+            })
+            ->when(! empty($filterValue['fasilitator_id']), function ($q) use ($filterValue) {
+                $q->where('fasilitator_id', $filterValue['fasilitator_id']);
+            })
+            ->when(! empty($filterValue['group_id']), function ($q) use ($filterValue) {
+                $q->where('group_id', $filterValue['group_id']);
+            })
+            ->when(! empty($filterValue['start_date']), function ($q) use ($filterValue) {
+                $q->whereDate('activity_date', '>=', $filterValue['start_date']);
+            })
+            ->when(! empty($filterValue['end_date']), function ($q) use ($filterValue) {
+                $q->whereDate('activity_date', '<=', $filterValue['end_date']);
+            })
+            ->when(isset($filterValue['status']) && $filterValue['status'] !== 'all' && $filterValue['status'] !== '', function ($q) use ($filterValue) {
+                $q->where('status', filter_var($filterValue['status'], FILTER_VALIDATE_BOOLEAN));
             })
             ->orderBy($orderBy, $orderDirection);
 
