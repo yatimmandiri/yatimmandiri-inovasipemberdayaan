@@ -32,6 +32,7 @@ class FasilitatorController extends Controller
 
         return Inertia::render('admin/fasilitators/list', [
             'pageTitle' => 'Master Data Fasilitator',
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
@@ -56,10 +57,18 @@ class FasilitatorController extends Controller
             $orderDirection = 'asc';
         }
 
+        $filterValue = $request->input('filterValue', []);
+        if (is_string($filterValue)) {
+            $filterValue = json_decode($filterValue, true) ?? [];
+        }
+
         $query = Fasilitator::query()
             ->with(['programs:id,name', 'user:id,name,email', 'province:id,name', 'regency:id,name'])
             ->withCount('beneficiaries')
             ->search($globalSearch)
+            ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
+                $q->where('kantor_id', $filterValue['kantor_id']);
+            })
             ->orderBy($orderBy, $orderDirection);
 
         $data = $perPage

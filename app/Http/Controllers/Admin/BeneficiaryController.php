@@ -28,6 +28,7 @@ class BeneficiaryController extends Controller
 
         return Inertia::render('admin/beneficiaries/list', [
             'pageTitle' => 'Master Data Penerima Manfaat',
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
@@ -52,9 +53,17 @@ class BeneficiaryController extends Controller
             $orderDirection = 'asc';
         }
 
+        $filterValue = $request->input('filterValue', []);
+        if (is_string($filterValue)) {
+            $filterValue = json_decode($filterValue, true) ?? [];
+        }
+
         $query = Beneficiary::query()
             ->with(['programs:id,name', 'fasilitator:id,name', 'group:id,name', 'province:id,name', 'regency:id,name'])
             ->search($globalSearch)
+            ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
+                $q->where('kantor_id', $filterValue['kantor_id']);
+            })
             ->orderBy($orderBy, $orderDirection);
 
         $data = $perPage

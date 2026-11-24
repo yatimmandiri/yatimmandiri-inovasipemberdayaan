@@ -27,6 +27,7 @@ class GroupController extends Controller
 
         return Inertia::render('admin/groups/list', [
             'pageTitle' => 'Master Data Kelompok',
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
@@ -51,10 +52,18 @@ class GroupController extends Controller
             $orderDirection = 'asc';
         }
 
+        $filterValue = $request->input('filterValue', []);
+        if (is_string($filterValue)) {
+            $filterValue = json_decode($filterValue, true) ?? [];
+        }
+
         $query = Group::query()
             ->with(['fasilitator:id,name', 'program:id,name', 'province:id,name', 'regency:id,name'])
             ->withCount('beneficiaries')
             ->search($globalSearch)
+            ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
+                $q->where('kantor_id', $filterValue['kantor_id']);
+            })
             ->orderBy($orderBy, $orderDirection);
 
         $data = $perPage

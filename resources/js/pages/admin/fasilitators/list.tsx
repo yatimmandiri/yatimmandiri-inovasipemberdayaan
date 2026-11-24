@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import fasilitators from '@/routes/admin/fasilitators';
 import { formatDate } from '@/utils/formatDate';
-import { router, useForm } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
 import {
     BadgeCheckIcon,
     BadgeXIcon,
@@ -41,8 +41,9 @@ import {
 import { useState } from 'react';
 
 export default function ListPage() {
+    const { kantors }: any = usePage<any>().props;
     const [refreshData, setRefreshData] = useState(false);
-    const [filterValue, setFilterValue] = useState({});
+    const [filterValue, setFilterValue] = useState<any>({});
 
     // Dialog User
     const [userModalOpen, setUserModalOpen] = useState(false);
@@ -303,6 +304,29 @@ export default function ListPage() {
 
     return (
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 shadow-xs">
+                <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-foreground">Filter Kantor:</span>
+                    <select
+                        value={filterValue?.kantor_id || ''}
+                        onChange={(e) => {
+                            setFilterValue((prev: any) => ({
+                                ...prev,
+                                kantor_id: e.target.value || undefined,
+                            }));
+                        }}
+                        className="rounded-md border border-input bg-background px-3 py-1.5 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                    >
+                        <option value="">Semua Kantor Cabang</option>
+                        {(kantors || []).map((k: any) => (
+                            <option key={k.id} value={k.id}>
+                                {k.name || k.nama}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
             <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
                 <DataTableProvider
                     columns={columns}
