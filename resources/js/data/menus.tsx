@@ -21,7 +21,6 @@ import groups from "@/routes/admin/groups";
 import beneficiaries from "@/routes/admin/beneficiaries";
 import activityReports from "@/routes/admin/activity-reports";
 import cashTransactions from "@/routes/admin/cash-transactions";
-import reports from "@/routes/admin/reports";
 import {
   BarChart3Icon,
   ChevronRight,
@@ -239,9 +238,15 @@ export const NavigationList = [
         icon: PrinterIcon,
         children: [
           {
-            title: "Report Data Pemberdayaan",
-            href: reports.index().url,
+            title: "Report Aktivitas",
+            href: "/admin/reports/activities",
             permission: "view-activity-report",
+            icon: ChevronRight,
+          },
+          {
+            title: "Report Kas",
+            href: "/admin/reports/cash",
+            permission: "view-cash-transaction",
             icon: ChevronRight,
           },
         ],
