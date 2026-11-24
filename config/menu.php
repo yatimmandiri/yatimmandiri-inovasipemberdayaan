@@ -163,7 +163,7 @@ return [
         ],
         [
             'title' => 'Pemberdayaan',
-            'roles' => ['Administrators', 'Editors'],
+            'roles' => ['Administrators', 'Editors', 'Fasilitator'],
             'children' => [
                 [
                     'title' => 'Master Data',
@@ -192,7 +192,7 @@ return [
                 ],
                 [
                     'title' => 'Transactions',
-                    'roles' => ['Administrators', 'Editors'],
+                    'roles' => ['Administrators', 'Editors', 'Fasilitator'],
                     'icon' => 'ShoppingCart',
                     'children' => [
                         [
@@ -211,7 +211,7 @@ return [
                 ],
                 [
                     'title' => 'Reports',
-                    'roles' => ['Administrators', 'Editors'],
+                    'roles' => ['Administrators', 'Editors', 'Fasilitator'],
                     'icon' => 'PrintIcon',
                     'children' => [
                         [
