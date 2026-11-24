@@ -16,6 +16,11 @@ require __DIR__ . '/admin/fasilitator-breadcrumbs.php';
 require __DIR__ . '/admin/group-breadcrumbs.php';
 require __DIR__ . '/admin/beneficiary-breadcrumbs.php';
 require __DIR__ . '/admin/activity-report-breadcrumbs.php';
+require __DIR__ . '/admin/cash-transaction-breadcrumbs.php';
+
+Breadcrumbs::for('admin.reports.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.dashboard')->push('Report Data Pemberdayaan', route('admin.reports.index'));
+});
 
 Breadcrumbs::for('admin.news.index', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.dashboard')->push('Berita', route('admin.news.index'));

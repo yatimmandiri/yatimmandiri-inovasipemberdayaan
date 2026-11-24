@@ -20,7 +20,10 @@ import fasilitators from "@/routes/admin/fasilitators";
 import groups from "@/routes/admin/groups";
 import beneficiaries from "@/routes/admin/beneficiaries";
 import activityReports from "@/routes/admin/activity-reports";
+import cashTransactions from "@/routes/admin/cash-transactions";
+import reports from "@/routes/admin/reports";
 import {
+  BarChart3Icon,
   ChevronRight,
   CogIcon,
   CpuIcon,
@@ -210,6 +213,18 @@ export const NavigationList = [
           {
             title: "Laporan Aktivitas",
             href: activityReports.index().url,
+            permission: "view-activity-report",
+            icon: ChevronRight,
+          },
+          {
+            title: "Laporan Kas",
+            href: cashTransactions.index().url,
+            permission: "view-cash-transaction",
+            icon: ChevronRight,
+          },
+          {
+            title: "Report Data Pemberdayaan",
+            href: reports.index().url,
             permission: "view-activity-report",
             icon: ChevronRight,
           },
