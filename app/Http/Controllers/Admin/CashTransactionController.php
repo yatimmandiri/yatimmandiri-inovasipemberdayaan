@@ -10,6 +10,7 @@ use App\Http\Requests\Company\UpdateCashTransactionRequest;
 use App\Models\Company\CashTransaction;
 use App\Models\Company\Fasilitator;
 use App\Models\Company\Group;
+use App\Services\KantorService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -41,6 +42,7 @@ class CashTransactionController extends Controller
 
         return Inertia::render('admin/cash-transactions/list', [
             'pageTitle' => 'Laporan Kas Kelompok',
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
@@ -82,6 +84,12 @@ class CashTransactionController extends Controller
             })
             ->when(isset($filterValue['status']) && $filterValue['status'] !== 'all' && $filterValue['status'] !== '', function ($q) use ($filterValue) {
                 $q->where('status', filter_var($filterValue['status'], FILTER_VALIDATE_BOOLEAN));
+            })
+            ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
+                $q->where(function ($sub) use ($filterValue) {
+                    $sub->whereHas('group', fn ($g) => $g->where('kantor_id', $filterValue['kantor_id']))
+                        ->orWhereHas('fasilitator', fn ($f) => $f->where('kantor_id', $filterValue['kantor_id']));
+                });
             })
             ->orderBy($orderBy, $direction);
 

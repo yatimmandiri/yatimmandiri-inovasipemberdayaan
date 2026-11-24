@@ -10,6 +10,7 @@ use App\Http\Requests\Company\UpdateActivityReportRequest;
 use App\Models\Company\ActivityReport;
 use App\Models\Company\Fasilitator;
 use App\Models\Company\Group;
+use App\Services\KantorService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -39,6 +40,7 @@ class ActivityReportController extends Controller
 
         return Inertia::render('admin/activity-reports/list', [
             'pageTitle' => 'Laporan Aktivitas',
+            'kantors' => KantorService::getActive(),
         ]);
     }
 
@@ -63,9 +65,20 @@ class ActivityReportController extends Controller
             $orderDirection = 'asc';
         }
 
+        $filterValue = $request->input('filterValue', []);
+        if (is_string($filterValue)) {
+            $filterValue = json_decode($filterValue, true) ?? [];
+        }
+
         $query = ActivityReport::query()
-            ->with(['fasilitator:id,name', 'group:id,name'])
+            ->with(['fasilitator:id,name,kantor_id,kantor_name', 'group:id,name,kantor_id,kantor_name'])
             ->search($globalSearch)
+            ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
+                $q->where(function ($sub) use ($filterValue) {
+                    $sub->whereHas('group', fn ($g) => $g->where('kantor_id', $filterValue['kantor_id']))
+                        ->orWhereHas('fasilitator', fn ($f) => $f->where('kantor_id', $filterValue['kantor_id']));
+                });
+            })
             ->orderBy($orderBy, $orderDirection);
 
         $data = $perPage

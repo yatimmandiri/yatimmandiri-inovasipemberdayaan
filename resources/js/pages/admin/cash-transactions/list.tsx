@@ -1,10 +1,11 @@
 import { DataTableComponent } from '@/components/partials/dataTables';
 import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDataTables';
+import { SelectComponent } from '@/components/partials/select-component';
 import { renderRowHeader } from '@/components/partials/dataTables/utils/dataTable-utils';
 import { Badge } from '@/components/ui/badge';
 import cashTransactions from '@/routes/admin/cash-transactions';
 import { formatDate } from '@/utils/formatDate';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import {
     ArrowDownLeftIcon,
     ArrowUpRightIcon,
@@ -23,8 +24,9 @@ const formatRupiah = (val: number | string) => {
 };
 
 export default function ListPage() {
+    const { kantors }: any = usePage<any>().props;
     const [refreshData, setRefreshData] = useState(false);
-    const [filterValue, setFilterValue] = useState({});
+    const [filterValue, setFilterValue] = useState<any>({});
 
     const renderRowStatus = (info: any) => {
         const handleStatus = (id: number) => {
@@ -159,6 +161,28 @@ export default function ListPage() {
 
     return (
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 shadow-xs">
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <span className="text-sm font-medium text-foreground whitespace-nowrap">Filter Kantor:</span>
+                    <div className="w-full sm:w-72">
+                        <SelectComponent
+                            placeholder="Pilih Kantor Cabang..."
+                            value={filterValue?.kantor_id || ''}
+                            onChange={(val: any) => {
+                                setFilterValue((prev: any) => ({
+                                    ...prev,
+                                    kantor_id: val || undefined,
+                                }));
+                            }}
+                            data={(kantors || []).map((k: any) => ({
+                                value: k.id,
+                                label: k.name || k.nama,
+                            }))}
+                        />
+                    </div>
+                </div>
+            </div>
+
             <div className="relative min-h-screen flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
                 <DataTableProvider
                     columns={columns}
