@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { SelectComponent } from '@/components/partials/select-component';
 import {
     Table,
     TableBody,
@@ -111,42 +112,32 @@ export default function ReportsIndexPage() {
 
                 <form onSubmit={handleFilter} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 items-end">
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-foreground">
-                            Fasilitator
-                        </label>
-                        <select
+                        <SelectComponent
+                            label="Fasilitator"
+                            placeholder="Semua Fasilitator"
                             value={fasilitatorId}
-                            onChange={(e) => {
-                                setFasilitatorId(e.target.value);
+                            onChange={(val: any) => {
+                                setFasilitatorId(val || '');
                                 setGroupId('');
                             }}
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
-                        >
-                            <option value="">Semua Fasilitator</option>
-                            {(fasilitators || []).map((f: any) => (
-                                <option key={f.id} value={f.id}>
-                                    {f.name} {f.kantor_name ? `(${f.kantor_name})` : ''}
-                                </option>
-                            ))}
-                        </select>
+                            data={(fasilitators || []).map((f: any) => ({
+                                value: f.id,
+                                label: `${f.name}${f.kantor_name ? ` (${f.kantor_name})` : ''}`,
+                            }))}
+                        />
                     </div>
 
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-foreground">
-                            Kelompok Binaan
-                        </label>
-                        <select
+                        <SelectComponent
+                            label="Kelompok Binaan"
+                            placeholder="Semua Kelompok"
                             value={groupId}
-                            onChange={(e) => setGroupId(e.target.value)}
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
-                        >
-                            <option value="">Semua Kelompok</option>
-                            {filteredGroups.map((g: any) => (
-                                <option key={g.id} value={g.id}>
-                                    {g.name}
-                                </option>
-                            ))}
-                        </select>
+                            onChange={(val: any) => setGroupId(val || '')}
+                            data={filteredGroups.map((g: any) => ({
+                                value: g.id,
+                                label: g.name,
+                            }))}
+                        />
                     </div>
 
                     <div>

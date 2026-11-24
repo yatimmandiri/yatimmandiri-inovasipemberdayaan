@@ -1,5 +1,6 @@
 import { DataTableComponent } from '@/components/partials/dataTables';
 import { DataTableProvider } from '@/components/partials/dataTables/hooks/useDataTables';
+import { SelectComponent } from '@/components/partials/select-component';
 import {
     renderRowDate,
     renderRowHeader,
@@ -305,25 +306,24 @@ export default function ListPage() {
     return (
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 shadow-xs">
-                <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-foreground">Filter Kantor:</span>
-                    <select
-                        value={filterValue?.kantor_id || ''}
-                        onChange={(e) => {
-                            setFilterValue((prev: any) => ({
-                                ...prev,
-                                kantor_id: e.target.value || undefined,
-                            }));
-                        }}
-                        className="rounded-md border border-input bg-background px-3 py-1.5 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
-                    >
-                        <option value="">Semua Kantor Cabang</option>
-                        {(kantors || []).map((k: any) => (
-                            <option key={k.id} value={k.id}>
-                                {k.name || k.nama}
-                            </option>
-                        ))}
-                    </select>
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <span className="text-sm font-medium text-foreground whitespace-nowrap">Filter Kantor:</span>
+                    <div className="w-full sm:w-72">
+                        <SelectComponent
+                            placeholder="Pilih Kantor Cabang..."
+                            value={filterValue?.kantor_id || ''}
+                            onChange={(val: any) => {
+                                setFilterValue((prev: any) => ({
+                                    ...prev,
+                                    kantor_id: val || undefined,
+                                }));
+                            }}
+                            data={(kantors || []).map((k: any) => ({
+                                value: k.id,
+                                label: k.name || k.nama,
+                            }))}
+                        />
+                    </div>
                 </div>
             </div>
 
