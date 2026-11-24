@@ -18,8 +18,12 @@ require __DIR__ . '/admin/beneficiary-breadcrumbs.php';
 require __DIR__ . '/admin/activity-report-breadcrumbs.php';
 require __DIR__ . '/admin/cash-transaction-breadcrumbs.php';
 
-Breadcrumbs::for('admin.reports.index', function (BreadcrumbTrail $trail) {
-    $trail->parent('admin.dashboard')->push('Report Data Pemberdayaan', route('admin.reports.index'));
+Breadcrumbs::for('admin.reports.activities', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.dashboard')->push('Report Aktivitas', route('admin.reports.activities'));
+});
+
+Breadcrumbs::for('admin.reports.cash', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.dashboard')->push('Report Kas Kelompok', route('admin.reports.cash'));
 });
 
 Breadcrumbs::for('admin.news.index', function (BreadcrumbTrail $trail) {

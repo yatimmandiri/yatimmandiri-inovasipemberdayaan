@@ -126,7 +126,10 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'verified', 'auth.admi
     Route::get('cash-transactions/data', [CashTransactionController::class, 'getData'])->name('cash-transactions.data');
     Route::resource('cash-transactions', CashTransactionController::class);
 
-    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::prefix('reports')->as('reports.')->group(function () {
+        Route::get('activities', [ReportController::class, 'activities'])->name('activities');
+        Route::get('cash', [ReportController::class, 'cash'])->name('cash');
+    });
 
     Route::get('news/data', [NewsController::class, 'getData'])->name('news.data');
     Route::resource('news', NewsController::class)->only(['index']);

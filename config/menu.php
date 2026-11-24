@@ -215,9 +215,15 @@ return [
                     'icon' => 'PrintIcon',
                     'children' => [
                         [
-                            'title' => 'Report Data Pemberdayaan',
-                            'route' => 'admin.reports.index',
+                            'title' => 'Report Aktivitas',
+                            'route' => 'admin.reports.activities',
                             'permission' => 'view-activity-report',
+                            'icon' => 'ChevronRight',
+                        ],
+                        [
+                            'title' => 'Report Kas',
+                            'route' => 'admin.reports.cash',
+                            'permission' => 'view-cash-transaction',
                             'icon' => 'ChevronRight',
                         ],
                     ],
