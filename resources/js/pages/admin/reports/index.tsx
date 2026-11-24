@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { DatePickerComponent } from '@/components/partials/datePicker-component';
 import { SelectComponent } from '@/components/partials/select-component';
 import {
     Table,
@@ -141,26 +142,20 @@ export default function ReportsIndexPage() {
                     </div>
 
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-foreground">
-                            Dari Tanggal
-                        </label>
-                        <input
-                            type="date"
+                        <DatePickerComponent
+                            label="Dari Tanggal"
+                            placeholder="Pilih Tanggal Mulai"
                             value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                            onChange={(val: any) => setStartDate(val || '')}
                         />
                     </div>
 
                     <div>
-                        <label className="mb-1 block text-xs font-medium text-foreground">
-                            Sampai Tanggal
-                        </label>
-                        <input
-                            type="date"
+                        <DatePickerComponent
+                            label="Sampai Tanggal"
+                            placeholder="Pilih Tanggal Akhir"
                             value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-ring"
+                            onChange={(val: any) => setEndDate(val || '')}
                         />
                     </div>
 

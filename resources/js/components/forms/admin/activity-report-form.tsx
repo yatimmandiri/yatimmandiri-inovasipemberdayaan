@@ -1,4 +1,5 @@
 import { ButtonComponent } from '@/components/partials/button-component';
+import { DatePickerComponent } from '@/components/partials/datePicker-component';
 import {
     InputFileComponent,
     InputTextComponent,
@@ -200,17 +201,13 @@ export const ActivityReportForm = ({ dataId }: { dataId?: number }) => {
                         }))}
                     />
 
-                    <InputTextComponent
-                        type="date"
+                    <DatePickerComponent
                         label="Tanggal Kegiatan"
-                        name="activity_date"
                         value={data.activity_date}
-                        handleOnChange={(value: string) =>
-                            setData('activity_date', value)
+                        handleOnChange={(val: string) =>
+                            setData('activity_date', val)
                         }
-                        errors={!!errors.activity_date}
-                        helperText={errors.activity_date}
-                        color={errors.activity_date ? 'danger' : 'default'}
+                        error={errors?.activity_date}
                         required
                     />
 

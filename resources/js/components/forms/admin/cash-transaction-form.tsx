@@ -1,4 +1,5 @@
 import { ButtonComponent } from '@/components/partials/button-component';
+import { DatePickerComponent } from '@/components/partials/datePicker-component';
 import {
     InputFileComponent,
     InputTextComponent,
@@ -201,13 +202,11 @@ export const CashTransactionForm = ({ dataId }: { dataId?: number }) => {
                         )}
                     </div>
 
-                    <InputTextComponent
+                    <DatePickerComponent
                         label="Tanggal Transaksi"
-                        type="date"
-                        name="transaction_date"
                         value={data.transaction_date}
-                        handleOnChange={(e: any) =>
-                            setData('transaction_date', e.target.value)
+                        handleOnChange={(val: string) =>
+                            setData('transaction_date', val)
                         }
                         error={errors?.transaction_date}
                         required

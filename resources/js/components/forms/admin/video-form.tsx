@@ -1,4 +1,5 @@
 import { ButtonComponent } from '@/components/partials/button-component';
+import { DatePickerComponent } from '@/components/partials/datePicker-component';
 import { InputTextComponent } from '@/components/partials/input-component';
 import { TextAreaComponent } from '@/components/partials/textarea-component';
 import { Fieldset } from '@headlessui/react';
@@ -92,17 +93,13 @@ export const VideoForm = ({ dataId }: { dataId?: number }) => {
                     errors={errors.thumbnail_url}
                     helperText={errors.thumbnail_url}
                 />
-                <InputTextComponent
-                    type="date"
+                <DatePickerComponent
                     label="Published At"
-                    name="published_at"
                     value={data.published_at}
                     handleOnChange={(value: string) =>
                         setData('published_at', value)
                     }
-                    color={errors.published_at ? 'danger' : 'default'}
-                    errors={errors.published_at}
-                    helperText={errors.published_at}
+                    error={errors.published_at}
                 />
                 <div className="md:col-span-2">
                     <TextAreaComponent
