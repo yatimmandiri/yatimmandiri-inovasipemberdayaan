@@ -57,13 +57,16 @@ export const MainNav = ({ items }: any) => {
 
     const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
 
-    const normalizePath = (path: string) =>
-        '/' + path.replace(/^\/+|\/+$/g, '');
+    const normalizePath = (path: string) => {
+        if (!path) return '';
+        const trimmed = path.trim().replace(/^\/+|\/+$/g, '');
+        return trimmed ? '/' + trimmed : '/';
+    };
 
     const currentPath = normalizePath(currentUrl);
 
     const getPathname = (href: string) => {
-        if (!href) return '';
+        if (!href || href === '#') return '';
         try {
             return normalizePath(
                 new URL(href, window.location.origin).pathname,
@@ -71,6 +74,17 @@ export const MainNav = ({ items }: any) => {
         } catch {
             return normalizePath(href);
         }
+    };
+
+    const isPathActive = (href: string) => {
+        const itemPath = getPathname(href);
+        if (!itemPath || itemPath === '/' || itemPath === '/admin') {
+            return currentPath === itemPath;
+        }
+        return (
+            currentPath === itemPath ||
+            currentPath.startsWith(itemPath + '/')
+        );
     };
 
     const hasPermission = (permission: string) =>
@@ -114,16 +128,12 @@ export const MainNav = ({ items }: any) => {
 
     const hasExactMatchingChild = (children: any[]): boolean => {
         return children?.some((child) => {
-            const childPath = getPathname(child.href || '');
-
-            const isMatch =
-                currentPath === childPath ||
-                currentPath.startsWith(childPath + '/');
-
+            if (child.href && isPathActive(child.href)) {
+                return true;
+            }
             return (
-                isMatch ||
-                (child.children?.length &&
-                    hasExactMatchingChild(child.children))
+                child.children?.length > 0 &&
+                hasExactMatchingChild(child.children)
             );
         });
     };
@@ -141,15 +151,11 @@ export const MainNav = ({ items }: any) => {
 
         const traverse = (menus: any[], parents: string[] = []) => {
             menus.forEach((item) => {
-                const itemPath = getPathname(item.href || '');
+                const isDirectMatch = item.href && isPathActive(item.href);
                 const hasMatchingChild =
                     item.children && hasExactMatchingChild(item.children);
 
-                if (
-                    currentPath === itemPath ||
-                    currentPath.startsWith(itemPath + '/') ||
-                    hasMatchingChild
-                ) {
+                if (isDirectMatch || hasMatchingChild) {
                     parents.forEach((key) => {
                         newOpenMenus[key] = true;
                     });
