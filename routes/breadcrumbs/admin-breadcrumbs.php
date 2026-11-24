@@ -22,8 +22,16 @@ Breadcrumbs::for('admin.reports.activities', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.dashboard')->push('Report Aktivitas', route('admin.reports.activities'));
 });
 
+Breadcrumbs::for('admin.reports.activities.data', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.reports.activities')->push('Data', route('admin.reports.activities.data'));
+});
+
 Breadcrumbs::for('admin.reports.cash', function (BreadcrumbTrail $trail) {
     $trail->parent('admin.dashboard')->push('Report Kas Kelompok', route('admin.reports.cash'));
+});
+
+Breadcrumbs::for('admin.reports.cash.data', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.reports.cash')->push('Data', route('admin.reports.cash.data'));
 });
 
 Breadcrumbs::for('admin.news.index', function (BreadcrumbTrail $trail) {
