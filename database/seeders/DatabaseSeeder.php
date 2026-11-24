@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SliderSeeder::class,
             ProductSeeder::class,
             PemberdayaanSeeder::class,
+            BeneficiarySeeder::class,
         ]);
     }
 }
