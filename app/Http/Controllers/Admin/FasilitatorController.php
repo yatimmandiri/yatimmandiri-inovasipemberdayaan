@@ -62,10 +62,17 @@ class FasilitatorController extends Controller
             $filterValue = json_decode($filterValue, true) ?? [];
         }
 
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $query = Fasilitator::query()
             ->with(['programs:id,name', 'user:id,name,email', 'province:id,name', 'regency:id,name'])
             ->withCount('beneficiaries')
             ->search($globalSearch)
+            ->when($isFasilitatorRole, function ($q) use ($currentFasilitatorId) {
+                $q->where('id', $currentFasilitatorId ?? 0);
+            })
             ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
                 $q->where('kantor_id', $filterValue['kantor_id']);
             })
@@ -132,6 +139,7 @@ class FasilitatorController extends Controller
     public function show(Fasilitator $fasilitator)
     {
         $this->authorize('view', $fasilitator);
+        $this->authorizeFasilitatorOwnership($fasilitator->id);
 
         return Inertia::render('admin/fasilitators/show', [
             'pageTitle' => 'Detail Fasilitator: '.$fasilitator->name,
@@ -154,6 +162,7 @@ class FasilitatorController extends Controller
     public function edit(Fasilitator $fasilitator)
     {
         $this->authorize('update', $fasilitator);
+        $this->authorizeFasilitatorOwnership($fasilitator->id);
 
         return Inertia::render('admin/fasilitators/edit', [
             'pageTitle' => 'Edit Fasilitator: '.$fasilitator->name,
@@ -175,6 +184,7 @@ class FasilitatorController extends Controller
     public function update(UpdateFasilitatorRequest $request, Fasilitator $fasilitator)
     {
         $this->authorize('update', $fasilitator);
+        $this->authorizeFasilitatorOwnership($fasilitator->id);
 
         $data = $request->validated();
         $programIds = $data['program_ids'] ?? [];
@@ -210,6 +220,7 @@ class FasilitatorController extends Controller
     public function destroy(Fasilitator $fasilitator)
     {
         $this->authorize('delete', $fasilitator);
+        $this->authorizeFasilitatorOwnership($fasilitator->id);
 
         $oldData = $fasilitator->replicate();
         $fasilitator->delete();
@@ -235,6 +246,7 @@ class FasilitatorController extends Controller
     public function status(Fasilitator $fasilitator)
     {
         $this->authorize('update', $fasilitator);
+        $this->authorizeFasilitatorOwnership($fasilitator->id);
 
         $fasilitator->update(['status' => ! $fasilitator->status]);
 

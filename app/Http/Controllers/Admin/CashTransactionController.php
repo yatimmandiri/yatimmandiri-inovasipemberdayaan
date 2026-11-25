@@ -40,11 +40,24 @@ class CashTransactionController extends Controller
     {
         $this->authorize('viewAny', CashTransaction::class);
 
+        $isFasilitatorOnly = $this->isFasilitatorOnly();
+        $currentFasilitatorId = $this->currentFasilitatorId();
+
         return Inertia::render('admin/cash-transactions/list', [
             'pageTitle' => 'Laporan Kas Kelompok',
             'kantors' => KantorService::getActive(),
-            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name', 'kantor_id'])->orderBy('name')->get(),
-            'groups' => Group::query()->active()->select(['id', 'name', 'fasilitator_id', 'kantor_id'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name', 'kantor_id'])
+                ->orderBy('name')
+                ->get(),
+            'groups' => Group::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name', 'fasilitator_id', 'kantor_id'])
+                ->orderBy('name')
+                ->get(),
             'categories' => self::CATEGORIES,
         ]);
     }
@@ -73,9 +86,16 @@ class CashTransactionController extends Controller
             $filterValue = json_decode($filterValue, true) ?? [];
         }
 
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $query = CashTransaction::query()
             ->with(['group:id,name,fasilitator_id', 'fasilitator:id,name'])
             ->when(! empty($globalSearch), fn ($q) => $q->search($globalSearch))
+            ->when($isFasilitatorRole, function ($q) use ($currentFasilitatorId) {
+                $q->where('fasilitator_id', $currentFasilitatorId ?? 0);
+            })
             ->when(isset($filterValue['type']) && $filterValue['type'] !== 'all' && ! empty($filterValue['type']), function ($q) use ($filterValue) {
                 $q->where('type', $filterValue['type']);
             })
@@ -140,10 +160,23 @@ class CashTransactionController extends Controller
     {
         $this->authorize('create', CashTransaction::class);
 
+        $isFasilitatorOnly = $this->isFasilitatorOnly();
+        $currentFasilitatorId = $this->currentFasilitatorId();
+
         return Inertia::render('admin/cash-transactions/create', [
             'pageTitle' => 'Catat Transaksi Kas',
-            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
-            'groups' => Group::query()->active()->select(['id', 'name', 'fasilitator_id'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
+            'groups' => Group::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name', 'fasilitator_id'])
+                ->orderBy('name')
+                ->get(),
             'categories' => self::CATEGORIES,
         ]);
     }
@@ -156,6 +189,9 @@ class CashTransactionController extends Controller
         $this->authorize('create', CashTransaction::class);
 
         $validated = $request->validated();
+        if ($this->isFasilitatorOnly()) {
+            $validated['fasilitator_id'] = $this->currentFasilitatorId();
+        }
 
         if ($request->hasFile('proof')) {
             $validated['proof'] = $this->uploadFile($request->file('proof'), 'uploads/cash-transactions');
@@ -178,6 +214,7 @@ class CashTransactionController extends Controller
     public function show(CashTransaction $cashTransaction)
     {
         $this->authorize('view', $cashTransaction);
+        $this->authorizeFasilitatorOwnership($cashTransaction->fasilitator_id);
 
         $cashTransaction->load(['group', 'fasilitator']);
 
@@ -193,12 +230,26 @@ class CashTransactionController extends Controller
     public function edit(CashTransaction $cashTransaction)
     {
         $this->authorize('update', $cashTransaction);
+        $this->authorizeFasilitatorOwnership($cashTransaction->fasilitator_id);
+
+        $isFasilitatorOnly = $this->isFasilitatorOnly();
+        $currentFasilitatorId = $this->currentFasilitatorId();
 
         return Inertia::render('admin/cash-transactions/edit', [
             'pageTitle' => 'Edit Transaksi Kas',
             'cashTransaction' => $cashTransaction,
-            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
-            'groups' => Group::query()->active()->select(['id', 'name', 'fasilitator_id'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
+            'groups' => Group::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name', 'fasilitator_id'])
+                ->orderBy('name')
+                ->get(),
             'categories' => self::CATEGORIES,
         ]);
     }
@@ -209,8 +260,12 @@ class CashTransactionController extends Controller
     public function update(UpdateCashTransactionRequest $request, CashTransaction $cashTransaction)
     {
         $this->authorize('update', $cashTransaction);
+        $this->authorizeFasilitatorOwnership($cashTransaction->fasilitator_id);
 
         $validated = $request->validated();
+        if ($this->isFasilitatorOnly()) {
+            $validated['fasilitator_id'] = $this->currentFasilitatorId();
+        }
 
         if ($request->hasFile('proof')) {
             $validated['proof'] = $this->replaceFile(
@@ -239,6 +294,7 @@ class CashTransactionController extends Controller
     public function destroy(CashTransaction $cashTransaction)
     {
         $this->authorize('delete', $cashTransaction);
+        $this->authorizeFasilitatorOwnership($cashTransaction->fasilitator_id);
 
         if ($cashTransaction->proof) {
             $this->deleteFile($cashTransaction->proof);
@@ -259,6 +315,7 @@ class CashTransactionController extends Controller
     public function status(CashTransaction $cashTransaction)
     {
         $this->authorize('update', $cashTransaction);
+        $this->authorizeFasilitatorOwnership($cashTransaction->fasilitator_id);
 
         $cashTransaction->update(['status' => ! $cashTransaction->status]);
 

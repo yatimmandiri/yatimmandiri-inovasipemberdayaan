@@ -145,6 +145,38 @@ class UserRolePermissionSeeder extends Seeder
             ['name' => 'data-cash-transaction'],
         ])->each(fn ($permission) => Permission::firstOrCreate($permission)->assignRole(['Administrators', 'Editors']));
 
+        // Berikan permission terkait pemberdayaan ke role Fasilitator
+        $fasilitatorPermissions = [
+            'view-fasilitator',
+            'data-fasilitator',
+            'view-group',
+            'create-group',
+            'update-group',
+            'data-group',
+            'view-beneficiary',
+            'create-beneficiary',
+            'update-beneficiary',
+            'delete-beneficiary',
+            'data-beneficiary',
+            'view-activity-report',
+            'create-activity-report',
+            'update-activity-report',
+            'delete-activity-report',
+            'data-activity-report',
+            'view-cash-transaction',
+            'create-cash-transaction',
+            'update-cash-transaction',
+            'delete-cash-transaction',
+            'data-cash-transaction',
+        ];
+        $fasilitatorRole = Role::firstOrCreate(['name' => 'Fasilitator', 'guard_name' => 'web']);
+        foreach ($fasilitatorPermissions as $permName) {
+            $perm = Permission::firstOrCreate(['name' => $permName, 'guard_name' => 'web']);
+            if (! $fasilitatorRole->hasPermissionTo($perm)) {
+                $fasilitatorRole->givePermissionTo($perm);
+            }
+        }
+
         // Admin default: idempoten by email agar seeder aman dijalankan ulang di DB hidup.
         User::firstOrCreate(
             ['email' => 'scrum@yatimmandiri.org'],

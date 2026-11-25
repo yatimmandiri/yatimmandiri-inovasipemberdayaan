@@ -38,11 +38,24 @@ class ActivityReportController extends Controller
     {
         $this->authorize('viewAny', ActivityReport::class);
 
+        $isFasilitatorOnly = $this->isFasilitatorOnly();
+        $currentFasilitatorId = $this->currentFasilitatorId();
+
         return Inertia::render('admin/activity-reports/list', [
             'pageTitle' => 'Laporan Aktivitas',
             'kantors' => KantorService::getActive(),
-            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name', 'kantor_id'])->orderBy('name')->get(),
-            'groups' => Group::query()->active()->select(['id', 'name', 'fasilitator_id', 'kantor_id'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name', 'kantor_id'])
+                ->orderBy('name')
+                ->get(),
+            'groups' => Group::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name', 'fasilitator_id', 'kantor_id'])
+                ->orderBy('name')
+                ->get(),
         ]);
     }
 
@@ -72,9 +85,16 @@ class ActivityReportController extends Controller
             $filterValue = json_decode($filterValue, true) ?? [];
         }
 
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $query = ActivityReport::query()
             ->with(['fasilitator:id,name,kantor_id,kantor_name', 'group:id,name,kantor_id,kantor_name'])
             ->when(! empty($globalSearch), fn ($q) => $q->search($globalSearch))
+            ->when($isFasilitatorRole, function ($q) use ($currentFasilitatorId) {
+                $q->where('fasilitator_id', $currentFasilitatorId ?? 0);
+            })
             ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
                 $q->where(function ($sub) use ($filterValue) {
                     $sub->whereHas('group', fn ($g) => $g->where('kantor_id', $filterValue['kantor_id']))
@@ -159,6 +179,7 @@ class ActivityReportController extends Controller
     public function show(ActivityReport $activityReport)
     {
         $this->authorize('view', $activityReport);
+        $this->authorizeFasilitatorOwnership($activityReport->fasilitator_id);
 
         return Inertia::render('admin/activity-reports/show', [
             'pageTitle' => 'Detail Laporan Aktivitas: '.$activityReport->title,
@@ -175,6 +196,7 @@ class ActivityReportController extends Controller
     public function edit(ActivityReport $activityReport)
     {
         $this->authorize('update', $activityReport);
+        $this->authorizeFasilitatorOwnership($activityReport->fasilitator_id);
 
         return Inertia::render('admin/activity-reports/edit', [
             'pageTitle' => 'Edit Laporan Aktivitas: '.$activityReport->title,
@@ -189,6 +211,7 @@ class ActivityReportController extends Controller
     public function update(UpdateActivityReportRequest $request, ActivityReport $activityReport)
     {
         $this->authorize('update', $activityReport);
+        $this->authorizeFasilitatorOwnership($activityReport->fasilitator_id);
 
         $data = $request->validated();
         $data['status'] = $request->boolean('status', true);
@@ -226,6 +249,7 @@ class ActivityReportController extends Controller
     public function destroy(ActivityReport $activityReport)
     {
         $this->authorize('delete', $activityReport);
+        $this->authorizeFasilitatorOwnership($activityReport->fasilitator_id);
 
         $oldData = $activityReport->replicate();
         $this->deleteFile($activityReport->photo);
@@ -252,6 +276,7 @@ class ActivityReportController extends Controller
     public function status(ActivityReport $activityReport)
     {
         $this->authorize('update', $activityReport);
+        $this->authorizeFasilitatorOwnership($activityReport->fasilitator_id);
 
         $activityReport->update(['status' => ! $activityReport->status]);
 
@@ -266,6 +291,12 @@ class ActivityReportController extends Controller
      */
     private function resolveFasilitator(array $data): array
     {
+        if ($this->isFasilitatorOnly()) {
+            $data['fasilitator_id'] = $this->currentFasilitatorId();
+
+            return $data;
+        }
+
         $group = Group::query()->find($data['group_id'] ?? null);
 
         if ($group?->fasilitator_id) {
@@ -282,9 +313,22 @@ class ActivityReportController extends Controller
      */
     private function formOptions(): array
     {
+        $isFasilitatorOnly = $this->isFasilitatorOnly();
+        $currentFasilitatorId = $this->currentFasilitatorId();
+
         return [
-            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
-            'groups' => Group::query()->active()->select(['id', 'name', 'fasilitator_id'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
+            'groups' => Group::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name', 'fasilitator_id'])
+                ->orderBy('name')
+                ->get(),
             'types' => self::ACTIVITY_TYPES,
         ];
     }

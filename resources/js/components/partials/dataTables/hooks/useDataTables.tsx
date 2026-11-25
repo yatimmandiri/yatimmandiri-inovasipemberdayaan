@@ -25,6 +25,7 @@ interface DataTableProps {
     setRefreshData?: any;
     columns?: any;
     withActions?: boolean;
+    withTimestamps?: boolean;
     formatDataExport: any;
     customButtons?: any;
     rowSelection?: any;
@@ -51,6 +52,7 @@ export const DataTableProvider = ({
     setRefreshData,
     columns,
     withActions = true,
+    withTimestamps = true,
     formatDataExport,
     customButtons,
     setRowSelection,
@@ -227,7 +229,7 @@ export const DataTableProvider = ({
             ...columns.filter(
                 (c: any) => c.accessorKey !== 'actions' && c.id !== 'actions', // exclude action
             ),
-            ...baseEndColumns,
+            ...(withTimestamps ? baseEndColumns : []),
         ];
 
         // Hilangkan duplikat accessorKey/id (custom replace base)

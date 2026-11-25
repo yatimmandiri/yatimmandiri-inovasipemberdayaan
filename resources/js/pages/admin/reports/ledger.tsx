@@ -418,6 +418,7 @@ export default function LedgerReportPage() {
                         urlFetchData="/admin/reports/ledger/data"
                         formatDataExport={formatDataExport}
                         withActions={false}
+                        withTimestamps={false}
                     >
                         <DataTableComponent
                             buttonActive={{

@@ -58,9 +58,16 @@ class BeneficiaryController extends Controller
             $filterValue = json_decode($filterValue, true) ?? [];
         }
 
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $query = Beneficiary::query()
             ->with(['programs:id,name', 'fasilitator:id,name', 'group:id,name', 'province:id,name', 'regency:id,name'])
             ->search($globalSearch)
+            ->when($isFasilitatorRole, function ($q) use ($currentFasilitatorId) {
+                $q->where('fasilitator_id', $currentFasilitatorId ?? 0);
+            })
             ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
                 $q->where('kantor_id', $filterValue['kantor_id']);
             })
@@ -80,11 +87,24 @@ class BeneficiaryController extends Controller
     {
         $this->authorize('create', Beneficiary::class);
 
+        $isFasilitatorOnly = $this->isFasilitatorOnly();
+        $currentFasilitatorId = $this->currentFasilitatorId();
+
         return Inertia::render('admin/beneficiaries/create', [
             'pageTitle' => 'Tambah Penerima Manfaat',
             'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
-            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
-            'groups' => Group::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
+            'groups' => Group::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
             'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
             'kantors' => KantorService::getActive(),
         ]);
@@ -98,6 +118,9 @@ class BeneficiaryController extends Controller
         $this->authorize('create', Beneficiary::class);
 
         $data = $request->validated();
+        if ($this->isFasilitatorOnly()) {
+            $data['fasilitator_id'] = $this->currentFasilitatorId();
+        }
         $programIds = $data['program_ids'] ?? [];
         unset($data['program_ids']);
         $data['status'] = $request->boolean('status', true);
@@ -128,6 +151,7 @@ class BeneficiaryController extends Controller
     public function show(Beneficiary $beneficiary)
     {
         $this->authorize('view', $beneficiary);
+        $this->authorizeFasilitatorOwnership($beneficiary->fasilitator_id);
 
         return Inertia::render('admin/beneficiaries/show', [
             'pageTitle' => 'Detail Penerima Manfaat: '.$beneficiary->name,
@@ -149,13 +173,27 @@ class BeneficiaryController extends Controller
     public function edit(Beneficiary $beneficiary)
     {
         $this->authorize('update', $beneficiary);
+        $this->authorizeFasilitatorOwnership($beneficiary->fasilitator_id);
+
+        $isFasilitatorOnly = $this->isFasilitatorOnly();
+        $currentFasilitatorId = $this->currentFasilitatorId();
 
         return Inertia::render('admin/beneficiaries/edit', [
             'pageTitle' => 'Edit Penerima Manfaat: '.$beneficiary->name,
             'beneficiary' => $beneficiary->load('programs:id,name'),
             'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
-            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
-            'groups' => Group::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
+            'groups' => Group::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
             'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
             'kantors' => KantorService::getActive(),
         ]);
@@ -167,8 +205,12 @@ class BeneficiaryController extends Controller
     public function update(UpdateBeneficiaryRequest $request, Beneficiary $beneficiary)
     {
         $this->authorize('update', $beneficiary);
+        $this->authorizeFasilitatorOwnership($beneficiary->fasilitator_id);
 
         $data = $request->validated();
+        if ($this->isFasilitatorOnly()) {
+            $data['fasilitator_id'] = $this->currentFasilitatorId();
+        }
         $programIds = $data['program_ids'] ?? [];
         unset($data['program_ids']);
         $data['status'] = $request->boolean('status', true);
@@ -202,6 +244,7 @@ class BeneficiaryController extends Controller
     public function destroy(Beneficiary $beneficiary)
     {
         $this->authorize('delete', $beneficiary);
+        $this->authorizeFasilitatorOwnership($beneficiary->fasilitator_id);
 
         $oldData = $beneficiary->replicate();
         $beneficiary->delete();
@@ -227,6 +270,7 @@ class BeneficiaryController extends Controller
     public function status(Beneficiary $beneficiary)
     {
         $this->authorize('update', $beneficiary);
+        $this->authorizeFasilitatorOwnership($beneficiary->fasilitator_id);
 
         $beneficiary->update(['status' => ! $beneficiary->status]);
 

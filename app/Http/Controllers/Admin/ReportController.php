@@ -18,15 +18,30 @@ class ReportController extends Controller
      */
     public function activities(Request $request)
     {
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $kantorId = $request->query('kantor_id');
-        $fasilitatorId = $request->query('fasilitator_id');
+        $fasilitatorId = $isFasilitatorRole ? $currentFasilitatorId : $request->query('fasilitator_id');
         $groupId = $request->query('group_id');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
 
         $kantors = KantorService::getActive();
-        $fasilitators = Fasilitator::query()->active()->select(['id', 'name', 'kantor_id', 'kantor_name'])->orderBy('name')->get();
-        $groups = Group::query()->active()->select(['id', 'name', 'fasilitator_id', 'kantor_id', 'leader_name'])->orderBy('name')->get();
+        $fasilitators = Fasilitator::query()
+            ->active()
+            ->when($isFasilitatorRole, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+            ->select(['id', 'name', 'kantor_id', 'kantor_name'])
+            ->orderBy('name')
+            ->get();
+
+        $groups = Group::query()
+            ->active()
+            ->when($isFasilitatorRole, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+            ->select(['id', 'name', 'fasilitator_id', 'kantor_id', 'leader_name'])
+            ->orderBy('name')
+            ->get();
 
         // Query Laporan Aktivitas
         $activityQuery = ActivityReport::query()
@@ -109,6 +124,10 @@ class ReportController extends Controller
             $orderDirection = 'desc';
         }
 
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $filterValue = $request->input('filterValue', []);
         if (is_string($filterValue)) {
             $filterValue = json_decode($filterValue, true) ?? [];
@@ -117,6 +136,7 @@ class ReportController extends Controller
         $query = ActivityReport::query()
             ->with(['fasilitator:id,name,kantor_id,kantor_name', 'group:id,name,kantor_id,kantor_name'])
             ->when(! empty($globalSearch), fn ($q) => $q->search($globalSearch))
+            ->when($isFasilitatorRole, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
             ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
                 $q->where(function ($sub) use ($filterValue) {
                     $sub->whereHas('group', fn ($g) => $g->where('kantor_id', $filterValue['kantor_id']))
@@ -155,6 +175,10 @@ class ReportController extends Controller
             $orderDirection = 'desc';
         }
 
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $filterValue = $request->input('filterValue', []);
         if (is_string($filterValue)) {
             $filterValue = json_decode($filterValue, true) ?? [];
@@ -163,6 +187,7 @@ class ReportController extends Controller
         $query = CashTransaction::query()
             ->with(['fasilitator:id,name,kantor_id,kantor_name', 'group:id,name,kantor_id,kantor_name'])
             ->when(! empty($globalSearch), fn ($q) => $q->search($globalSearch))
+            ->when($isFasilitatorRole, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
             ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
                 $q->where(function ($sub) use ($filterValue) {
                     $sub->whereHas('group', fn ($g) => $g->where('kantor_id', $filterValue['kantor_id']))
@@ -188,15 +213,30 @@ class ReportController extends Controller
      */
     public function cash(Request $request)
     {
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $kantorId = $request->query('kantor_id');
-        $fasilitatorId = $request->query('fasilitator_id');
+        $fasilitatorId = $isFasilitatorRole ? $currentFasilitatorId : $request->query('fasilitator_id');
         $groupId = $request->query('group_id');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
 
         $kantors = KantorService::getActive();
-        $fasilitators = Fasilitator::query()->active()->select(['id', 'name', 'kantor_id', 'kantor_name'])->orderBy('name')->get();
-        $groups = Group::query()->active()->select(['id', 'name', 'fasilitator_id', 'kantor_id', 'leader_name'])->orderBy('name')->get();
+        $fasilitators = Fasilitator::query()
+            ->active()
+            ->when($isFasilitatorRole, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+            ->select(['id', 'name', 'kantor_id', 'kantor_name'])
+            ->orderBy('name')
+            ->get();
+
+        $groups = Group::query()
+            ->active()
+            ->when($isFasilitatorRole, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+            ->select(['id', 'name', 'fasilitator_id', 'kantor_id', 'leader_name'])
+            ->orderBy('name')
+            ->get();
 
         // Query Kas
         $cashQuery = CashTransaction::query()
@@ -278,8 +318,12 @@ class ReportController extends Controller
      */
     public function ledger(Request $request)
     {
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $kantorId = $request->query('kantor_id');
-        $fasilitatorId = $request->query('fasilitator_id');
+        $fasilitatorId = $isFasilitatorRole ? $currentFasilitatorId : $request->query('fasilitator_id');
         $groupId = $request->query('group_id');
         $month = $request->query('month', now()->format('Y-m'));
 
@@ -288,8 +332,19 @@ class ReportController extends Controller
         $endDate = $request->query('end_date') ?: ($month ? \Carbon\Carbon::parse("{$month}-01")->endOfMonth()->toDateString() : now()->endOfMonth()->toDateString());
 
         $kantors = KantorService::getActive();
-        $fasilitators = Fasilitator::query()->active()->select(['id', 'name', 'kantor_id', 'kantor_name'])->orderBy('name')->get();
-        $groups = Group::query()->active()->select(['id', 'name', 'fasilitator_id', 'kantor_id', 'leader_name'])->orderBy('name')->get();
+        $fasilitators = Fasilitator::query()
+            ->active()
+            ->when($isFasilitatorRole, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+            ->select(['id', 'name', 'kantor_id', 'kantor_name'])
+            ->orderBy('name')
+            ->get();
+
+        $groups = Group::query()
+            ->active()
+            ->when($isFasilitatorRole, fn ($q) => $q->where('fasilitator_id', $currentFasilitatorId ?? 0))
+            ->select(['id', 'name', 'fasilitator_id', 'kantor_id', 'leader_name'])
+            ->orderBy('name')
+            ->get();
 
         // Base filter query callback
         $applyScope = function ($q) use ($kantorId, $fasilitatorId, $groupId) {
@@ -362,6 +417,10 @@ class ReportController extends Controller
      */
     public function getLedgerData(Request $request)
     {
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $perPage = $request->input('perPage', null);
         $page = $request->input('page', 1);
         $globalSearch = $request->input('globalSearch', '');
@@ -372,7 +431,7 @@ class ReportController extends Controller
         }
 
         $kantorId = $filterValue['kantor_id'] ?? null;
-        $fasilitatorId = $filterValue['fasilitator_id'] ?? null;
+        $fasilitatorId = $isFasilitatorRole ? $currentFasilitatorId : ($filterValue['fasilitator_id'] ?? null);
         $groupId = $filterValue['group_id'] ?? null;
         $month = $filterValue['month'] ?? now()->format('Y-m');
 

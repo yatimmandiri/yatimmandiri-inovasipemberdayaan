@@ -36,6 +36,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Social::class);
     }
 
+    public function fasilitator(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\Company\Fasilitator::class);
+    }
+
     public function resolvedPermissions()
     {
         return $this->roles()

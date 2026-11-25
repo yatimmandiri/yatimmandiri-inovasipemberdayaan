@@ -57,10 +57,17 @@ class GroupController extends Controller
             $filterValue = json_decode($filterValue, true) ?? [];
         }
 
+        $user = $request->user();
+        $isFasilitatorRole = $user && $user->hasRole('Fasilitator') && ! $user->hasRole(['Administrators', 'Editors']);
+        $currentFasilitatorId = $isFasilitatorRole ? $user->fasilitator?->id : null;
+
         $query = Group::query()
             ->with(['fasilitator:id,name', 'program:id,name', 'province:id,name', 'regency:id,name'])
             ->withCount('beneficiaries')
             ->search($globalSearch)
+            ->when($isFasilitatorRole, function ($q) use ($currentFasilitatorId) {
+                $q->where('fasilitator_id', $currentFasilitatorId ?? 0);
+            })
             ->when(! empty($filterValue['kantor_id']), function ($q) use ($filterValue) {
                 $q->where('kantor_id', $filterValue['kantor_id']);
             })
@@ -80,9 +87,17 @@ class GroupController extends Controller
     {
         $this->authorize('create', Group::class);
 
+        $isFasilitatorOnly = $this->isFasilitatorOnly();
+        $currentFasilitatorId = $this->currentFasilitatorId();
+
         return Inertia::render('admin/groups/create', [
             'pageTitle' => 'Tambah Kelompok',
-            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
             'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
             'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
             'kantors' => KantorService::getActive(),
@@ -97,6 +112,9 @@ class GroupController extends Controller
         $this->authorize('create', Group::class);
 
         $data = $request->validated();
+        if ($this->isFasilitatorOnly()) {
+            $data['fasilitator_id'] = $this->currentFasilitatorId();
+        }
         $data['status'] = $request->boolean('status', true);
 
         $group = Group::create($data);
@@ -122,6 +140,7 @@ class GroupController extends Controller
     public function show(Group $group)
     {
         $this->authorize('view', $group);
+        $this->authorizeFasilitatorOwnership($group->fasilitator_id);
 
         return Inertia::render('admin/groups/show', [
             'pageTitle' => 'Detail Kelompok: '.$group->name,
@@ -143,11 +162,20 @@ class GroupController extends Controller
     public function edit(Group $group)
     {
         $this->authorize('update', $group);
+        $this->authorizeFasilitatorOwnership($group->fasilitator_id);
+
+        $isFasilitatorOnly = $this->isFasilitatorOnly();
+        $currentFasilitatorId = $this->currentFasilitatorId();
 
         return Inertia::render('admin/groups/edit', [
             'pageTitle' => 'Edit Kelompok: '.$group->name,
             'group' => $group,
-            'fasilitators' => Fasilitator::query()->active()->select(['id', 'name'])->orderBy('name')->get(),
+            'fasilitators' => Fasilitator::query()
+                ->active()
+                ->when($isFasilitatorOnly, fn ($q) => $q->where('id', $currentFasilitatorId ?? 0))
+                ->select(['id', 'name'])
+                ->orderBy('name')
+                ->get(),
             'programs' => Program::query()->select(['id', 'name'])->orderBy('name')->get(),
             'provinces' => Province::query()->select(['id', 'name'])->orderBy('name')->get(),
             'kantors' => KantorService::getActive(),
@@ -160,8 +188,12 @@ class GroupController extends Controller
     public function update(UpdateGroupRequest $request, Group $group)
     {
         $this->authorize('update', $group);
+        $this->authorizeFasilitatorOwnership($group->fasilitator_id);
 
         $data = $request->validated();
+        if ($this->isFasilitatorOnly()) {
+            $data['fasilitator_id'] = $this->currentFasilitatorId();
+        }
         $data['status'] = $request->boolean('status', true);
 
         $oldData = $group->replicate();
@@ -190,6 +222,7 @@ class GroupController extends Controller
     public function destroy(Group $group)
     {
         $this->authorize('delete', $group);
+        $this->authorizeFasilitatorOwnership($group->fasilitator_id);
 
         $oldData = $group->replicate();
         $group->delete();
@@ -215,6 +248,7 @@ class GroupController extends Controller
     public function status(Group $group)
     {
         $this->authorize('update', $group);
+        $this->authorizeFasilitatorOwnership($group->fasilitator_id);
 
         $group->update(['status' => ! $group->status]);
 
